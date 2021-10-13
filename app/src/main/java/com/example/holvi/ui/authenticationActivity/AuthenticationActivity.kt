@@ -6,9 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import com.example.holvi.theme.HolviTheme
-import com.example.holvi.ui.common.composable.BottomButton
+import com.example.holvi.ui.authenticationActivity.composable.AuthenticationMainScreen
 import com.example.holvi.ui.common.composable.CircleTextButton
-import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
 
 class AuthenticationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,14 +15,18 @@ class AuthenticationActivity : ComponentActivity() {
         setContent {
             HolviTheme {
                 Scaffold(
-                    topBar = {
-                        TopAppBarBackWithLogo()
-                    },
-                    bottomBar = { BottomButton(text = "Save") }
-                ) {
+                    /*   topBar = {
+                           TopAppBarOnlyIcon(res = R.drawable.ic_power){
 
-                }
-
+                           }
+                       },
+                       bottomBar = {
+                           BottomButton(text = "Save")
+                       },*/
+                    content = {
+                        AuthenticationMainScreen()
+                    }
+                )
             }
         }
     }
@@ -34,6 +37,6 @@ class AuthenticationActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     HolviTheme {
-        CircleTextButton("G")
+        CircleTextButton("G", 40) {}
     }
 }
