@@ -250,3 +250,4 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/android,androidstudio,java,kotlin
 /gradle.properties
 /gradle/wrapper/gradle-wrapper.properties
+/.idea/inspectionProfiles/Project_Default.xml

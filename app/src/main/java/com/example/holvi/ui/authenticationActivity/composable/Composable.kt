@@ -14,14 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
 
-@Preview(showSystemUi = true)
+
 @Composable
-fun AuthenticationMainScreen() {
+fun AuthenticationMainScreen(onClick: () -> Unit) {
     HolviTheme {
         Column(
             modifier = Modifier
@@ -37,7 +36,9 @@ fun AuthenticationMainScreen() {
                 color = Color.White,
                 style = MaterialTheme.typography.body1
             )
-            Button(onClick = {}, shape = RoundedCornerShape(8.dp)) {
+            Button(onClick = {
+                onClick.invoke()
+            }, shape = RoundedCornerShape(8.dp)) {
                 Text(
                     text = "Authenticate",
                     Modifier.padding(4.dp),

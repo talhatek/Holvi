@@ -26,7 +26,12 @@ val Typography = Typography(
         fontSize = 34.sp,
         letterSpacing = 0.25.sp
     ),
-
+    h5 = TextStyle(
+        fontFamily = PoppinsMedium,
+        fontWeight = FontWeight.Normal,
+        fontSize = 24.sp,
+        letterSpacing = 0.sp
+    ),
     button = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.W500,
