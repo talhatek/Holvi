@@ -1,6 +1,5 @@
 package com.example.holvi.ui.authenticationActivity.composable
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.SpaceAround
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,20 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
-
 
 @Composable
 fun AuthenticationMainScreen(onClick: () -> Unit) {
     HolviTheme {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black, shape = RectangleShape),
+                .fillMaxSize(),
             verticalArrangement = SpaceAround,
             horizontalAlignment = CenterHorizontally
         ) {

@@ -1,6 +1,7 @@
 package com.example.holvi.ui.menuActivity
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
@@ -34,6 +35,7 @@ class MenuActivity : ComponentActivity() {
                                 GENERATE
                             )
                         ) {
+                            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
                             when (it) {
                                 ADD -> {
                                 }

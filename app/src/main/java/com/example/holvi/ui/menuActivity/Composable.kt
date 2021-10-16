@@ -1,7 +1,9 @@
 package com.example.holvi.ui.menuActivity
 
-import androidx.compose.foundation.background
+
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -26,32 +28,35 @@ fun MenuMainScreen(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth()
-                .background(Color.Black),
+                .fillMaxWidth(),
             horizontalAlignment = CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.fillMaxHeight(0.05f))
 
             Text(
                 text = "What you wanna do?",
                 style = MaterialTheme.typography.body1,
                 color = Color.White
             )
-            Spacer(modifier = Modifier.height(20.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = CenterHorizontally
-            ) {
-                itemList.forEach {
-                    MenuItem(title = it) { selectedTitle ->
-                        onItemSelected.invoke(selectedTitle)
+            Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+            BoxWithConstraints {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(((this.maxHeight / 100) * 10)),
+                    horizontalAlignment = CenterHorizontally,
+
+                    ) {
+                    items(itemList) { menuItem ->
+                        MenuItem(title = menuItem) { selectedTitle ->
+                            onItemSelected.invoke(selectedTitle)
+                        }
                     }
+
+
                 }
             }
-
         }
     }
 }

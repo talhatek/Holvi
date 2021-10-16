@@ -11,7 +11,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.toUpperCase
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.holvi.R
 
@@ -60,16 +59,15 @@ fun TopAppBarOnlyIcon(@DrawableRes res: Int, onIconClicked: () -> Unit) {
 
 }
 
-@Preview(showBackground = true)
 @Composable
-fun TopAppBarBackWithLogo() {
+fun TopAppBarBackWithLogo(onBackClicked: () -> Unit) {
     CenterTopAppBar(
         title = {
             Text(text = "Holvi", textDecoration = TextDecoration.Underline)
         },
         navigationIcon = {
             IconButton(
-                onClick = { /*onBackClicked.invoke()*/ },
+                onClick = { onBackClicked.invoke() },
                 enabled = true,
                 modifier = Modifier.fillMaxWidth()
             ) {

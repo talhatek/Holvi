@@ -27,7 +27,7 @@ class AuthenticationActivity : FragmentActivity() {
             }
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                Toast.makeText(this@AuthenticationActivity, "Succeed", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this@AuthenticationActivity, MenuActivity::class.java))
             }
 
             override fun onAuthenticationFailed() {
