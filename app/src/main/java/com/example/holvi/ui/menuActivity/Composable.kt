@@ -1,6 +1,7 @@
 package com.example.holvi.ui.menuActivity
 
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -39,15 +41,18 @@ fun MenuMainScreen(
                 color = Color.White
             )
             Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-            BoxWithConstraints {
+            BoxWithConstraints() {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(((this.maxHeight / 100) * 10)),
+                    verticalArrangement = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) Arrangement.spacedBy(
+                        ((this.maxHeight / 100) * 10)
+                    ) else Arrangement.SpaceEvenly,
                     horizontalAlignment = CenterHorizontally,
+                    contentPadding = PaddingValues(vertical = 16.dp)
 
-                    ) {
+                ) {
                     items(itemList) { menuItem ->
                         MenuItem(title = menuItem) { selectedTitle ->
                             onItemSelected.invoke(selectedTitle)
