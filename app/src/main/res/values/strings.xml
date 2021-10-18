@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Holvi</string>
     <string name="title_activity_menu">MenuActivity</string>
+    <string name="title_activity_add">AddActivity</string>
 </resources>

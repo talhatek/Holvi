@@ -29,7 +29,7 @@ fun CircleTextButton(text: String, percentage: Int, onClicked: () -> Unit) {
             BoxWithConstraints() {
                 Text(
                     text = text.toUpperCase(Locale.current),
-                    fontSize = ((this.maxWidth / 100) * percentage).value.sp
+                    fontSize = ((this.maxWidth / 100) * 50).value.sp
                 )
 
             }
