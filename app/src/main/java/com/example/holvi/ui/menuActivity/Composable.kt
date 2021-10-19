@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.example.holvi.theme.HolviTheme
-import com.example.holvi.ui.extension.MenuType
+import com.example.holvi.utils.MenuType
 
 
 @Composable

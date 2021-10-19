@@ -17,7 +17,11 @@ import com.example.holvi.ui.addActivity.composable.PasswordInputView
 import com.example.holvi.ui.common.composable.BottomButton
 import com.example.holvi.ui.common.composable.CircleTextButton
 import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
-import com.example.holvi.ui.extension.MenuType.Companion.ADD
+import com.example.holvi.utils.MenuType.Companion.ADD
+import com.example.holvi.utils.PasswordManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 class AddActivity : ComponentActivity() {
@@ -44,7 +48,7 @@ class AddActivity : ComponentActivity() {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             val myAddViewModel = get<AddViewModel>()
-
+                            val passwordManager = PasswordManager()
                             InputView(hintParam = "Site Name") {
 
                             }
@@ -57,7 +61,11 @@ class AddActivity : ComponentActivity() {
 
                             }
                             CircleTextButton(text = "G", percentage = 20) {
-                                myAddViewModel.text.value = "kuddisi"
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    myAddViewModel.text.value =
+                                        passwordManager.generatePassword(length = 8)
+                                }
+
                             }
                         }
                     }

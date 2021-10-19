@@ -9,12 +9,12 @@ import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
 import com.example.holvi.ui.addActivity.AddActivity
 import com.example.holvi.ui.common.composable.TopAppBarOnlyIcon
-import com.example.holvi.ui.extension.MenuType
-import com.example.holvi.ui.extension.MenuType.Companion.ADD
-import com.example.holvi.ui.extension.MenuType.Companion.DELETE
-import com.example.holvi.ui.extension.MenuType.Companion.GENERATE
-import com.example.holvi.ui.extension.MenuType.Companion.SEE_ALL
-import com.example.holvi.ui.extension.MenuType.Companion.UPDATE
+import com.example.holvi.utils.MenuType
+import com.example.holvi.utils.MenuType.Companion.ADD
+import com.example.holvi.utils.MenuType.Companion.DELETE
+import com.example.holvi.utils.MenuType.Companion.GENERATE
+import com.example.holvi.utils.MenuType.Companion.SEE_ALL
+import com.example.holvi.utils.MenuType.Companion.UPDATE
 import kotlin.system.exitProcess
 
 class MenuActivity : ComponentActivity() {

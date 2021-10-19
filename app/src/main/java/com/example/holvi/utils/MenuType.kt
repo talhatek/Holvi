@@ -1,4 +1,4 @@
-package com.example.holvi.ui.extension
+package com.example.holvi.utils
 
 
 import androidx.annotation.StringDef
@@ -19,7 +19,6 @@ annotation class MenuType {
 
     }
 }
-
 
 
 
