@@ -8,6 +8,7 @@ import androidx.compose.material.Scaffold
 import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
 import com.example.holvi.ui.addActivity.AddActivity
+import com.example.holvi.ui.allActivity.AllActivity
 import com.example.holvi.ui.common.composable.TopAppBarOnlyIcon
 import com.example.holvi.utils.MenuType
 import com.example.holvi.utils.MenuType.Companion.ADD
@@ -49,6 +50,12 @@ class MenuActivity : ComponentActivity() {
                                 UPDATE -> {
                                 }
                                 SEE_ALL -> {
+                                    startActivity(
+                                        Intent(
+                                            this@MenuActivity,
+                                            AllActivity::class.java
+                                        )
+                                    )
                                 }
                                 DELETE -> {
                                 }

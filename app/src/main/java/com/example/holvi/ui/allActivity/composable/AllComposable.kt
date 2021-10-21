@@ -3,8 +3,9 @@ package com.example.holvi.ui.allActivity.composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -12,25 +13,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.holvi.R
+import com.example.holvi.db.Password
 import com.example.holvi.theme.PoppinsRegular
 import com.example.holvi.theme.PoppinsSemiBold
+import com.example.holvi.theme.PrimaryGreen
+import com.example.holvi.theme.SecondPrimaryDark
 
-@Preview(showSystemUi = true)
+
 @Composable
-fun PasswordItem() {
+fun PasswordItem(password: Password) {
+    var passwordText by remember { mutableStateOf("*".repeat(password.password.length)) }
+    var resId by remember { mutableStateOf(R.drawable.ic_invisible) }
+    var visible by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth(.8f),
         elevation = 12.dp,
-        backgroundColor = Color(0xFF2F2A34)
+        backgroundColor = if (password.id % 2 == 0) SecondPrimaryDark else PrimaryGreen
     ) {
-        Column(modifier = Modifier.padding(24.dp)) {
+        Column(modifier = Modifier.padding(8.dp)) {
             Text(
-                text = "Facebook",
+                text = password.siteName,
                 style = TextStyle(
                     fontFamily = PoppinsSemiBold,
                     fontWeight = FontWeight.SemiBold,
@@ -49,29 +55,46 @@ fun PasswordItem() {
                     modifier = Modifier.fillMaxWidth(.5f)
                 ) {
                     Text(
-                        text = "**********",
+                        text = passwordText,
                         style = TextStyle(
                             fontFamily = PoppinsRegular,
                             fontWeight = FontWeight.Normal,
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center,
-
-
-                            ),
+                        ),
 
 
                         color = Color.White
                     )
                     Spacer(Modifier.weight(.1f))
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_invisible),
-                        contentDescription = "hiddenOrShown",
-                        tint = Color.White
-                    )
+                    IconButton(
+                        onClick = {
+                            if (visible) {
+                                passwordText = "*".repeat(password.password.length)
+                                resId = R.drawable.ic_invisible
+                            } else {
+                                passwordText = password.password
+                                resId = R.drawable.ic_visible
+                            }
+                            visible = !visible
+
+                        },
+                        enabled = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(Modifier.size(28.dp))
+                    ) {
+                        Icon(
+                            painter = painterResource(id = resId),
+                            contentDescription = "hiddenOrShown",
+                            tint = Color.White
+                        )
+                    }
+
                 }
             }
             Text(
-                text = "talhatek",
+                text = password.userName,
                 style = TextStyle(
                     fontFamily = PoppinsRegular,
                     fontWeight = FontWeight.Normal,

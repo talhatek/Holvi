@@ -76,4 +76,13 @@ dependencies {
     // Koin test features
     testImplementation "io.insert-koin:koin-test:$koin_version"
 
+    def room_version = "2.3.0"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-paging:2.4.0-beta01"
+
+    testImplementation "androidx.room:room-testing:$room_version"
+
+
 }
