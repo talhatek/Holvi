@@ -109,11 +109,13 @@ fun TopAppBarBackWithLogo(onBackClicked: () -> Unit) {
 
 
 @Composable
-fun BottomButton(text: String) {
+fun BottomButton(text: String, onClicked: () -> Unit) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(.1f), onClick = {}, shape = RectangleShape
+            .fillMaxHeight(.1f), onClick = {
+            onClicked.invoke()
+        }, shape = RectangleShape
     ) {
         Text(
             text = text,

@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.holvi.R
-import com.example.holvi.db.Password
+import com.example.holvi.db.model.Password
 import com.example.holvi.theme.PoppinsRegular
 import com.example.holvi.theme.PoppinsSemiBold
 import com.example.holvi.theme.PrimaryGreen

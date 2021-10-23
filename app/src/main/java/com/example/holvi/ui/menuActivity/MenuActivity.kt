@@ -10,6 +10,7 @@ import com.example.holvi.theme.HolviTheme
 import com.example.holvi.ui.addActivity.AddActivity
 import com.example.holvi.ui.allActivity.AllActivity
 import com.example.holvi.ui.common.composable.TopAppBarOnlyIcon
+import com.example.holvi.ui.deleteActivity.DeleteActivity
 import com.example.holvi.utils.MenuType
 import com.example.holvi.utils.MenuType.Companion.ADD
 import com.example.holvi.utils.MenuType.Companion.DELETE
@@ -58,6 +59,12 @@ class MenuActivity : ComponentActivity() {
                                     )
                                 }
                                 DELETE -> {
+                                    startActivity(
+                                        Intent(
+                                            this@MenuActivity,
+                                            DeleteActivity::class.java
+                                        )
+                                    )
                                 }
                                 GENERATE -> {
                                 }

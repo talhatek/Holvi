@@ -14,11 +14,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.example.holvi.di.AddViewModel
 import com.example.holvi.theme.PoppinsRegular
+import com.example.holvi.ui.addActivity.AddViewModel
 
 @Composable
-fun InputView(hintParam: String, onValueChanged: () -> Unit) {
+fun InputView(hintParam: String, onValueChanged: (input: String) -> Unit) {
     var value by remember { mutableStateOf("") }
     var hint by remember { mutableStateOf(hintParam) }
 
@@ -26,7 +26,7 @@ fun InputView(hintParam: String, onValueChanged: () -> Unit) {
         value = value,
         onValueChange = {
             value = it
-            onValueChanged.invoke()
+            onValueChanged.invoke(it)
         },
         placeholder = {
             Text(
@@ -66,15 +66,19 @@ fun InputView(hintParam: String, onValueChanged: () -> Unit) {
 }
 
 @Composable
-fun PasswordInputView(addViewModel: AddViewModel, hintParam: String, onValueChanged: () -> Unit) {
+fun PasswordInputView(
+    addViewModel: AddViewModel,
+    hintParam: String,
+    onValueChanged: (input: String) -> Unit
+) {
 
     var hint by remember { mutableStateOf(hintParam) }
-    var data by remember { addViewModel.text }
+    var data by remember { addViewModel.passwordUiHint }
     TextField(
         value = data,
         onValueChange = {
             data = it
-            onValueChanged.invoke()
+            onValueChanged.invoke(it)
         },
         placeholder = {
             Text(

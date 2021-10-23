@@ -2,4 +2,6 @@
     <string name="app_name">Holvi</string>
     <string name="title_activity_menu">MenuActivity</string>
     <string name="title_activity_add">AddActivity</string>
+    <string name="title_activity_all">AllActivity</string>
+    <string name="title_activity_delete">DeleteActivity</string>
 </resources>
