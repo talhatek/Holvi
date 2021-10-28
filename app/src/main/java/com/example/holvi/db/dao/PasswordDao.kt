@@ -12,11 +12,14 @@ interface PasswordDao {
     @Query("SELECT * FROM password")
     fun getAllPasswords(): Flow<List<Password>>
 
+    @Query("SELECT password.site_name FROM password")
+    fun getAllSiteNames(): Flow<List<String>>
+
     @Insert
     suspend fun addPassword(password: Password)
 
-    @Query("DELETE FROM  password WHERE id = :passwordId")
-    suspend fun deletePassword(passwordId: Int)
+    @Query("DELETE FROM  password WHERE site_name = :siteName")
+    suspend fun deletePassword(siteName: String): Int
 
 
 }
