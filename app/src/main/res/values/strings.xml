@@ -4,4 +4,5 @@
     <string name="title_activity_add">AddActivity</string>
     <string name="title_activity_all">AllActivity</string>
     <string name="title_activity_delete">DeleteActivity</string>
+    <string name="title_activity_generate">GenerateActivity</string>
 </resources>
