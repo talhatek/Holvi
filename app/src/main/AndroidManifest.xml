@@ -16,7 +16,11 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Holvi.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.menuActivity.MenuActivity"
@@ -43,13 +47,7 @@
             android:name=".ui.generateActivity.GenerateActivity"
             android:exported="true"
             android:label="@string/title_activity_delete"
-            android:theme="@style/Theme.Holvi.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.Holvi.NoActionBar"/>
 
     </application>
 

@@ -70,6 +70,18 @@ class DeleteActivity : ComponentActivity() {
                                 else -> Unit
                             }
                         }
+
+                    }
+                    LaunchedEffect(key1 = true){
+                        deleteViewModel.isEmptyState.collect {
+                            when (it) {
+                                is DeleteViewModel.IsEmptyState.Empty -> {
+                                    scaffoldState.snackbarHostState.showSnackbar("You don't have any password.")
+
+                                }
+                                else -> Unit
+                            }
+                        }
                     }
                     if (siteChooser) {
                         HolviChooseSiteDialog(
@@ -85,7 +97,14 @@ class DeleteActivity : ComponentActivity() {
                             Text(
                                 modifier = Modifier
                                     .padding(vertical = 4.dp)
-                                    .clickable { siteChooser = true },
+                                    .clickable {
+                                        if (siteNames.isEmpty())
+                                            deleteViewModel.warnUi()
+                                        else {
+                                            siteChooser = true
+                                        }
+
+                                    },
                                 text = selectedSiteName
                             )
                             Divider(Modifier.fillMaxWidth(.7f), color = Color.White)

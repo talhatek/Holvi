@@ -14,13 +14,13 @@ import androidx.compose.ui.graphics.Color
 
 
 @Composable
-fun HolviGenerateSwitch(switchText: String) {
+fun HolviGenerateSwitch(switchText: String,checkedChangeListener:(isChecked:Boolean)->Unit) {
     val checkedState = remember { mutableStateOf(true) }
     Row(modifier = Modifier.fillMaxWidth(.8f), horizontalArrangement = Arrangement.SpaceAround) {
         Text(text = switchText)
         Switch(
             checked = checkedState.value,
-            onCheckedChange = { checkedState.value = it },
+            onCheckedChange = { checkedState.value = it;checkedChangeListener.invoke(checkedState.value) },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.Black,
                 checkedTrackColor = Color.White,
