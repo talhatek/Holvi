@@ -42,7 +42,7 @@
         <activity
             android:name=".ui.generateActivity.GenerateActivity"
             android:exported="true"
-            android:label="@string/title_activity_delete"
+            android:label="@string/title_activity_generate"
             android:theme="@style/Theme.Holvi.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
