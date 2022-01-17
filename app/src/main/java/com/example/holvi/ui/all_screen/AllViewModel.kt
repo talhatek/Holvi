@@ -1,4 +1,4 @@
-package com.example.holvi.ui.allActivity
+package com.example.holvi.ui.all_screen
 
 import androidx.lifecycle.ViewModel
 import com.example.holvi.db.dao.PasswordDao

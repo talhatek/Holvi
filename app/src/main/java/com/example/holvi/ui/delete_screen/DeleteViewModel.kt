@@ -1,9 +1,11 @@
-package com.example.holvi.ui.deleteActivity
+package com.example.holvi.ui.delete_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.holvi.db.dao.PasswordDao
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class DeleteViewModel(private val passwordDao: PasswordDao) : ViewModel() {

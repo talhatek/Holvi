@@ -47,6 +47,7 @@ class GenerateViewModel : ViewModel() {
         activeCount.value = if (isActive) activeCount.value + 1 else activeCount.value - 1
         lengthSelectorText.value = "Password length"
         currentSelectedLength.value = -1
+
     }
 
     fun generatePassword() {
@@ -69,10 +70,15 @@ class GenerateViewModel : ViewModel() {
     }
 
     fun copyToClipBoard(clipboardManager: ClipboardManager) {
-        val clipData =
-            ClipData.newPlainText("label", currentPassword.value)
-        clipboardManager.setPrimaryClip(clipData)
-        sendUiEvent(GenerateViewUiEvent.SnackbarEvent("Copied to clipboard!"))
+        if (currentPassword.value.isEmpty())
+            sendUiEvent(GenerateViewUiEvent.SnackbarEvent("You must generate password!"))
+        else {
+            val clipData =
+                ClipData.newPlainText("label", currentPassword.value)
+            clipboardManager.setPrimaryClip(clipData)
+            sendUiEvent(GenerateViewUiEvent.SnackbarEvent("Copied to clipboard!"))
+        }
+
     }
 
     sealed class GenerateViewUiEvent {

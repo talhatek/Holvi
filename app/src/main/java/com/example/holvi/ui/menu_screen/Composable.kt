@@ -1,4 +1,4 @@
-package com.example.holvi.ui.menuActivity
+package com.example.holvi.ui.menu_screen
 
 
 import android.content.res.Configuration
@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -17,12 +18,59 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
+import com.example.holvi.ui.common.composable.TopAppBarOnlyIcon
 import com.example.holvi.utils.MenuType
-
+import com.example.holvi.utils.Screen
 
 @Composable
-fun MenuMainScreen(
+fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {
+    HolviTheme {
+        Scaffold(topBar = {
+            TopAppBarOnlyIcon(res = R.drawable.ic_power) {
+                onExitClick.invoke()
+            }
+        },
+            content = {
+                MenuScreenContent(
+                    itemList = mutableListOf<@MenuType String>(
+                        MenuType.ADD,
+                        MenuType.SEE_ALL,
+                        MenuType.DELETE,
+                        MenuType.GENERATE
+                    )
+                ) {
+                    when (it) {
+                        MenuType.ADD -> {
+                            navController.navigate(Screen.AddScreen.route)
+
+                        }
+                        MenuType.SEE_ALL -> {
+                            navController.navigate(Screen.AllScreen.route)
+
+                        }
+                        MenuType.DELETE -> {
+                            navController.navigate(Screen.DeleteScreen.route)
+
+
+                        }
+                        MenuType.GENERATE -> {
+                            navController.navigate(Screen.GenerateScreen.route)
+
+                        }
+
+                    }
+                }
+            }
+
+        )
+    }
+}
+
+@Composable
+fun MenuScreenContent(
     @PreviewParameter(MenuProvider::class) @MenuType itemList: List<String>,
     onItemSelected: (title: String) -> Unit
 ) {

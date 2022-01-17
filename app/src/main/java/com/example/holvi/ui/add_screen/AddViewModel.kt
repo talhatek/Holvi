@@ -1,4 +1,4 @@
-package com.example.holvi.ui.addActivity
+package com.example.holvi.ui.add_screen
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

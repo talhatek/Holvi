@@ -4,7 +4,7 @@
 
     <application
         android:name=".ui.HolviApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -16,40 +16,17 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Holvi.NoActionBar">
-
-        </activity>
-        <activity
-            android:name=".ui.menuActivity.MenuActivity"
-            android:exported="true"
-            android:label="@string/title_activity_menu"
-            android:theme="@style/Theme.Holvi.NoActionBar" />
-        <activity
-            android:name=".ui.addActivity.AddActivity"
-            android:exported="true"
-            android:label="@string/title_activity_add"
-            android:theme="@style/Theme.Holvi.NoActionBar" />
-
-        <activity
-            android:name=".ui.allActivity.AllActivity"
-            android:exported="true"
-            android:label="@string/title_activity_all"
-            android:theme="@style/Theme.Holvi.NoActionBar" />
-        <activity
-            android:name=".ui.deleteActivity.DeleteActivity"
-            android:exported="true"
-            android:label="@string/title_activity_delete"
-            android:theme="@style/Theme.Holvi.NoActionBar" />
-        <activity
-            android:name=".ui.generateActivity.GenerateActivity"
-            android:exported="true"
-            android:label="@string/title_activity_generate"
-            android:theme="@style/Theme.Holvi.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.menu_screen.MenuActivity"
+            android:exported="true"
+            android:label="@string/title_activity_menu"
+            android:theme="@style/Theme.Holvi.NoActionBar" />
 
     </application>
 

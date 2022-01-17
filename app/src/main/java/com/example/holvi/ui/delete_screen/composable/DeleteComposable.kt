@@ -1,4 +1,4 @@
-package com.example.holvi.ui.deleteActivity.composable
+package com.example.holvi.ui.delete_screen.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -21,9 +22,104 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
+import com.example.holvi.theme.HolviTheme
 import com.example.holvi.theme.PoppinsRegular
 import com.example.holvi.theme.SecondPrimary
+import com.example.holvi.ui.common.composable.BottomButton
+import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
+import com.example.holvi.ui.delete_screen.DeleteViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
 
+@ExperimentalComposeUiApi
+@Composable
+fun DeleteScreen(navController: NavController) {
+    val scaffoldState = rememberScaffoldState()
+    var siteChooser by remember { mutableStateOf(false) }
+    var selectedSiteName by remember { mutableStateOf("Choose a site") }
+    val deleteViewModel = get<DeleteViewModel>()
+    val scope = rememberCoroutineScope()
+    val siteNames =
+        deleteViewModel.getAllSiteNames().collectAsState(initial = listOf()).value
+    HolviTheme {
+        Scaffold(
+            topBar = {
+                TopAppBarBackWithLogo {
+                    navController.popBackStack()
+                }
+            },
+            bottomBar = {
+                BottomButton(text = "Delete") {
+                    scope.launch(Dispatchers.IO) {
+                        deleteViewModel.delete(selectedSiteName)
+                    }
+                }
+            },
+            scaffoldState = scaffoldState
+        ) {
+            LaunchedEffect(key1 = true) {
+                deleteViewModel.passwordDeleteState.collect {
+                    when (it) {
+                        is DeleteViewModel.DeletePasswordState.Success -> {
+                            scaffoldState.snackbarHostState.showSnackbar("Site deleted successfully.")
+                            selectedSiteName = "Choose another site"
+                        }
+                        is DeleteViewModel.DeletePasswordState.Failure -> {
+                            scaffoldState.snackbarHostState.showSnackbar("Site could not deleted.")
+                        }
+                        is DeleteViewModel.DeletePasswordState.SuccessEmpty -> {
+                            scaffoldState.snackbarHostState.showSnackbar("Something went wrong.")
+
+                        }
+                        else -> Unit
+                    }
+                }
+
+            }
+            LaunchedEffect(key1 = true) {
+                deleteViewModel.isEmptyState.collect {
+                    when (it) {
+                        is DeleteViewModel.IsEmptyState.Empty -> {
+                            scaffoldState.snackbarHostState.showSnackbar("You don't have any password.")
+
+                        }
+                        else -> Unit
+                    }
+                }
+            }
+            if (siteChooser) {
+                HolviChooseSiteDialog(
+                    siteList = siteNames,
+                    onItemSelected = {
+                        selectedSiteName = it
+                        siteChooser = false
+                    },
+                    onDismiss = { siteChooser = false })
+            }
+            Box(contentAlignment = Center, modifier = Modifier.fillMaxSize()) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                if (siteNames.isEmpty())
+                                    deleteViewModel.warnUi()
+                                else {
+                                    siteChooser = true
+                                }
+
+                            },
+                        text = selectedSiteName
+                    )
+                    Divider(Modifier.fillMaxWidth(.7f), color = Color.White)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun HolviDropdown(

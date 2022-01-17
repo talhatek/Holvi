@@ -8,16 +8,19 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.fragment.app.FragmentActivity
 import com.example.holvi.BuildConfig
 import com.example.holvi.theme.HolviTheme
 import com.example.holvi.ui.authenticationActivity.composable.AuthenticationMainScreen
-import com.example.holvi.ui.menuActivity.MenuActivity
+import com.example.holvi.ui.menu_screen.MenuActivity
 
+@ExperimentalComposeUiApi
 class AuthenticationActivity : FragmentActivity() {
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var biometricInfo: BiometricPrompt.PromptInfo
     private lateinit var biometricManager: BiometricManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         biometricManager = BiometricManager.from(this)
