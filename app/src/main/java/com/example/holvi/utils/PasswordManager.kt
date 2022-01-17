@@ -4,21 +4,21 @@ import java.security.SecureRandom
 
 class PasswordManager {
 
-    private val lowerCaseLetters: String = "abcdefghijklmnopqrstuvwxyz"
-    private val uppercaseLetters: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    private val numbers: String = "0123456789"
-    private val symbol: String = "@#=+!£$%&?/*-"
+    private var lowerCaseLetters: String = "abcdefghijklmnopqrstuvwxyz"
+    private var uppercaseLetters: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    private var numbers: String = "0123456789"
+    private var symbol: String = "@#=+!£$%&?/*-"
     private val maxPasswordLength: Float = 20F
     private val maxPasswordFactor: Float = 10F
 
 
-    // TODO: 19.10.2021 ADD FORBIDDEN LETTERS
     fun generatePassword(
         isWithLetters: Boolean = true,
         isWithUppercase: Boolean = true,
         isWithNumbers: Boolean = true,
         isWithSpecial: Boolean = true,
-        length: Int
+        length: Int,
+        forbiddenLetters: CharArray = charArrayOf()
     ): String {
 
         var result = ""
@@ -29,6 +29,17 @@ class PasswordManager {
         var numberCounter = 0
         var symbolCounter = 0
         var selectedTypeCounter = 0
+
+        for (ch in forbiddenLetters) {
+            when {
+                lowerCaseLetters.contains(ch) -> this.lowerCaseLetters =
+                    lowerCaseLetters.replace(ch.toString(), "")
+                uppercaseLetters.contains(ch) -> this.uppercaseLetters =
+                    uppercaseLetters.replace(ch.toString(), "")
+                numbers.contains(ch) -> this.numbers = numbers.replace(ch.toString(), "")
+                symbol.contains(ch) -> this.symbol = symbol.replace(ch.toString(), "")
+            }
+        }
 
         if (isWithLetters) {
             result += this.lowerCaseLetters
@@ -48,6 +59,7 @@ class PasswordManager {
             result += this.symbol
             selectedTypeCounter++
         }
+
 
         val rnd = SecureRandom.getInstance("SHA1PRNG")
         val sb = StringBuilder(length)
@@ -102,6 +114,7 @@ class PasswordManager {
         }
         return sb.toString()
     }
+
 
     /**
      * Evaluate a random password

@@ -26,15 +26,19 @@ import com.example.holvi.theme.SecondPrimary
 
 
 @Composable
-fun HolviDropdown(data: List<Int>, defaultHint: String, onItemSelected: (length: Int) -> Unit) {
+fun HolviDropdown(
+    data: List<Int>,
+    defaultHint: MutableState<String>,
+    onItemSelected: (length: Int) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     val tmpData = data.toMutableList()
-    var selectedtmpData by remember { mutableStateOf(defaultHint) }
+    var selectedTmpData by remember { defaultHint }
     Row(horizontalArrangement = Arrangement.Start, modifier = Modifier.clickable {
         expanded = !expanded
     }) { // Anchor view
         Text(
-            text = selectedtmpData, style = TextStyle(
+            text = selectedTmpData, style = TextStyle(
                 fontFamily = PoppinsRegular,
                 fontWeight = FontWeight.Normal,
                 fontSize = 24.sp,
@@ -55,12 +59,12 @@ fun HolviDropdown(data: List<Int>, defaultHint: String, onItemSelected: (length:
                 expanded = false
             }) {
             tmpData.forEach {
-                if (selectedtmpData == it.toString())
+                if (selectedTmpData == it.toString())
                     return@forEach
                 DropdownMenuItem(
                     onClick = {
                         expanded = false
-                        selectedtmpData = it.toString()
+                        selectedTmpData = it.toString()
                         onItemSelected.invoke(it)
                     },
                 ) {

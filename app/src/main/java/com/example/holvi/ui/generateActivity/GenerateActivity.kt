@@ -1,5 +1,6 @@
 package com.example.holvi.ui.generateActivity
 
+import android.content.ClipboardManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,6 +8,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,6 +23,7 @@ import com.example.holvi.ui.common.composable.CircleIconButton
 import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
 import com.example.holvi.ui.deleteActivity.composable.HolviDropdown
 import com.example.holvi.ui.generateActivity.composable.HolviGenerateSwitch
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.get
 
 class GenerateActivity : ComponentActivity() {
@@ -27,6 +32,18 @@ class GenerateActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             HolviTheme {
+                val scaffoldState = rememberScaffoldState()
+                val scope = rememberCoroutineScope()
+                val viewModel = get<GenerateViewModel>()
+                LaunchedEffect(key1 = true) {
+                    viewModel.uiEvent.collectLatest {
+                        when (it) {
+                            is GenerateViewModel.GenerateViewUiEvent.SnackbarEvent -> {
+                                scaffoldState.snackbarHostState.showSnackbar(it.message)
+                            }
+                        }
+                    }
+                }
                 Scaffold(
                     topBar = {
                         TopAppBarBackWithLogo {
@@ -35,11 +52,12 @@ class GenerateActivity : ComponentActivity() {
                     },
                     bottomBar = {
                         BottomButton(text = "Copy to clipboard") {
-
+                            viewModel.copyToClipBoard(getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
                         }
-                    }
+                    },
+                    scaffoldState = scaffoldState
                 ) {
-                    val viewModel = get<GenerateViewModel>()
+
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -60,22 +78,26 @@ class GenerateActivity : ComponentActivity() {
                         }
                         Spacer(
                             modifier = Modifier
-                                .fillMaxHeight(.1f)
+                                .fillMaxHeight(.05f)
                                 .fillMaxWidth()
                         )
-                        CircleIconButton(iconIdRes = R.drawable.ic_renew, percentage = 20) {
+                        CircleIconButton(iconIdRes = R.drawable.ic_renew, percentage = 15) {
                             viewModel.generatePassword()
                         }
                         Spacer(
                             modifier = Modifier
-                                .fillMaxHeight(.1f)
+                                .fillMaxHeight(.05f)
                                 .fillMaxWidth()
                         )
                         InputView(hintParam = "Forbidden") {
-
+                            viewModel.forbiddenLetters.value = it
                         }
-                        HolviDropdown(data = viewModel.dropdownItems, "Choose password length") {
+                        HolviDropdown(
+                            data = viewModel.dropdownItems,
+                            viewModel.lengthSelectorText
+                        ) {
                             viewModel.currentSelectedLength.value = it
+                            viewModel.lengthSelectorText.value = it.toString()
                         }
 
 
