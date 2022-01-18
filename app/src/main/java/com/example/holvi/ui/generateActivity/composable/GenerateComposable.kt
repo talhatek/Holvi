@@ -3,18 +3,25 @@ package com.example.holvi.ui.generateActivity.composable
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
-import com.example.holvi.ui.add_screen.composable.InputView
+import com.example.holvi.theme.PoppinsRegular
 import com.example.holvi.ui.common.composable.BottomButton
 import com.example.holvi.ui.common.composable.CircleIconButton
 import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
@@ -86,7 +93,7 @@ fun GenerateScreen(navController: NavController) {
                         .fillMaxHeight(.05f)
                         .fillMaxWidth()
                 )
-                InputView(hintParam = "Forbidden") {
+                SimpleInputView(hintParam = "Forbidden") {
                     viewModel.forbiddenLetters.value = it
                 }
                 HolviDropdown(
@@ -132,6 +139,59 @@ fun GenerateScreen(navController: NavController) {
         }
     }
 }
+
+@Composable
+fun SimpleInputView(
+    hintParam: String,
+    onValueChanged: (input: String) -> Unit
+) {
+    var value by remember { mutableStateOf("") }
+    var hint by remember { mutableStateOf(hintParam) }
+
+    TextField(
+        value = value,
+        onValueChange = {
+            value = it
+            onValueChanged.invoke(it)
+        },
+        placeholder = {
+            Text(
+                text = hint,
+                modifier = Modifier
+                    .alpha(.5f)
+                    .background(Color.Transparent)
+                    .fillMaxWidth(),
+                style = TextStyle(
+                    fontFamily = PoppinsRegular,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 24.sp,
+                    textAlign = TextAlign.Center,
+
+                    ),
+                color = Color.White
+            )
+        },
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.Transparent,
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.White
+        ),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+        modifier = Modifier
+            .fillMaxWidth(.7f)
+            .onFocusEvent {
+                if (it.isFocused) {
+                    if (value.isEmpty())
+                        hint = ""
+                } else
+                    if (value.isEmpty())
+                        hint = hintParam
+            },
+        singleLine = true
+    )
+
+}
+
 
 @Composable
 fun HolviGenerateSwitch(switchText: String, isChecked: (state: Boolean) -> Unit) {

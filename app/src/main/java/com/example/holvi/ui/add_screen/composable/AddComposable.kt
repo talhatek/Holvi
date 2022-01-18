@@ -62,6 +62,7 @@ fun AddScreen(navController: NavController) {
         Scaffold(
             topBar = {
                 TopAppBarBackWithLogo {
+                    myAddViewModel.clearPassword()
                     navController.popBackStack()
                 }
             },
@@ -113,9 +114,17 @@ fun AddScreen(navController: NavController) {
 
 @Composable
 fun InputView(hintParam: String, onValueChanged: (input: String) -> Unit) {
+    val viewModel = get<AddViewModel>()
     var value by remember { mutableStateOf("") }
     var hint by remember { mutableStateOf(hintParam) }
+    LaunchedEffect(key1 = true, block = {
+        viewModel.clearInputsSharedFlow.collectLatest {
+            if (it == 1) {
+                value = ""
 
+            }
+        }
+    })
     TextField(
         value = value,
         onValueChange = {
@@ -172,7 +181,7 @@ fun PasswordInputView(
     var hint by remember { mutableStateOf(hintParam) }
 
     LaunchedEffect(key1 = true, block = {
-        viewModel.receiver.collectLatest {
+        viewModel.clearInputsSharedFlow.collectLatest {
             if (it == 1) {
                 value = ""
                 focusManager.clearFocus()

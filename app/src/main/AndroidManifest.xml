@@ -5,9 +5,9 @@
     <application
         android:name=".ui.HolviApp"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_holvi_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_holvi_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Holvi">
 
