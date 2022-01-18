@@ -1,5 +1,6 @@
 package com.example.holvi.ui.generateActivity.composable
 
+import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
@@ -22,12 +23,14 @@ import com.example.holvi.ui.generateActivity.GenerateViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.get
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun GenerateScreen(navController: NavController) {
     HolviTheme {
         val scaffoldState = rememberScaffoldState()
         val scope = rememberCoroutineScope()
         val viewModel = get<GenerateViewModel>()
+        val forbiddenHint = mutableStateOf("Forbidden")
         LaunchedEffect(key1 = true) {
             viewModel.uiEvent.collectLatest {
                 when (it) {

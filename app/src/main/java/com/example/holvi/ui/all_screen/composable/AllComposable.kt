@@ -32,23 +32,30 @@ fun AllScreen(navController: NavController) {
                 navController.popBackStack()
             }
         }) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                content = {
-                    items(data) { item ->
-                        PasswordItem(password = item)
-                    }
-                },
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(
-                    16.dp,
-                    Alignment.CenterVertically
-                ),
-                contentPadding = PaddingValues(top = 16.dp)
+            if (data.isEmpty()) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    Text(text = "You don't have any saved password.")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    content = {
+                        items(data) { item ->
+                            PasswordItem(password = item)
+                        }
+                    },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(
+                        16.dp,
+                        Alignment.CenterVertically
+                    ),
+                    contentPadding = PaddingValues(top = 16.dp)
 
-            )
+                )
+            }
+
         }
 
     }

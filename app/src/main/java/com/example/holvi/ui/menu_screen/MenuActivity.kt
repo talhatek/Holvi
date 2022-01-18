@@ -12,7 +12,6 @@ import com.example.holvi.ui.all_screen.composable.AllScreen
 import com.example.holvi.ui.delete_screen.composable.DeleteScreen
 import com.example.holvi.ui.generateActivity.composable.GenerateScreen
 import com.example.holvi.utils.Screen
-import kotlin.system.exitProcess
 
 @ExperimentalComposeUiApi
 class MenuActivity : ComponentActivity() {
@@ -46,9 +45,5 @@ class MenuActivity : ComponentActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        exitProcess(0)
-    }
 }
 

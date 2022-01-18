@@ -1,5 +1,6 @@
 package com.example.holvi.ui.add_screen.composable
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,8 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,21 +30,22 @@ import com.example.holvi.ui.common.composable.BottomButton
 import com.example.holvi.ui.common.composable.CircleTextButton
 import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
 import com.example.holvi.utils.MenuType
-import com.example.holvi.utils.PasswordManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun AddScreen(navController: NavController) {
     HolviTheme {
         val scaffoldState = rememberScaffoldState()
+        val myAddViewModel = get<AddViewModel>()
+        val scope = rememberCoroutineScope()
         var siteName by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var userName by remember { mutableStateOf("") }
-        val myAddViewModel = get<AddViewModel>()
-        val scope = rememberCoroutineScope()
         LaunchedEffect(key1 = true) {
             myAddViewModel.passwordAddState.collect {
                 when (it) {
@@ -48,7 +53,7 @@ fun AddScreen(navController: NavController) {
                         scaffoldState.snackbarHostState.showSnackbar("Password added successfully.")
                     }
                     is AddPasswordState.Failure -> {
-                        scaffoldState.snackbarHostState.showSnackbar("Password could not added.")
+                        scaffoldState.snackbarHostState.showSnackbar(it.message)
                     }
                     else -> Unit
                 }
@@ -58,8 +63,6 @@ fun AddScreen(navController: NavController) {
             topBar = {
                 TopAppBarBackWithLogo {
                     navController.popBackStack()
-                    myAddViewModel.passwordUiHint.value = ""
-
                 }
             },
             bottomBar = {
@@ -85,7 +88,6 @@ fun AddScreen(navController: NavController) {
                     verticalArrangement = Arrangement.SpaceAround,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val passwordManager = PasswordManager()
                     InputView(hintParam = "Site Name") {
                         siteName = it
                     }
@@ -94,15 +96,11 @@ fun AddScreen(navController: NavController) {
                         userName = it
 
                     }
-                    PasswordInputView(myAddViewModel, hintParam = "Password") {
+                    PasswordInputView(hintParam = "Password") {
                         password = it
                     }
                     CircleTextButton(text = "G", percentage = 20) {
-                        scope.launch(Dispatchers.Default) {
-                            myAddViewModel.passwordUiHint.value =
-                                passwordManager.generatePassword(length = 8)
-                            password = myAddViewModel.passwordUiHint.value
-                        }
+                        password = myAddViewModel.generatePassword()
                     }
                 }
             },
@@ -164,25 +162,47 @@ fun InputView(hintParam: String, onValueChanged: (input: String) -> Unit) {
 
 @Composable
 fun PasswordInputView(
-    addViewModel: AddViewModel,
     hintParam: String,
     onValueChanged: (input: String) -> Unit
 ) {
-
+    val viewModel = get<AddViewModel>()
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    var value by remember { mutableStateOf("") }
     var hint by remember { mutableStateOf(hintParam) }
-    var data by remember { addViewModel.passwordUiHint }
+
+    LaunchedEffect(key1 = true, block = {
+        viewModel.receiver.collectLatest {
+            if (it == 1) {
+                value = ""
+                focusManager.clearFocus()
+            }
+        }
+    })
+    LaunchedEffect(key1 = true, block = {
+        viewModel.passwordStateFlow.collectLatest {
+            if (it.isNotEmpty()) {
+                value = it
+                focusManager.clearFocus()
+            }
+        }
+    })
+
+
     TextField(
-        value = data,
+        value = value,
         onValueChange = {
-            data = it
+            value = it
             onValueChanged.invoke(it)
         },
         placeholder = {
             Text(
                 text = hint,
                 modifier = Modifier
+                    .alpha(.5f)
                     .background(Color.Transparent)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
                 style = TextStyle(
                     fontFamily = PoppinsRegular,
                     fontWeight = FontWeight.Normal,
@@ -198,22 +218,15 @@ fun PasswordInputView(
             focusedIndicatorColor = Color.White,
             unfocusedIndicatorColor = Color.White
         ),
-
-        textStyle = TextStyle(
-            fontFamily = PoppinsRegular,
-            fontWeight = FontWeight.Normal,
-            fontSize = 24.sp,
-            textAlign = TextAlign.Center,
-
-            ),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         modifier = Modifier
             .fillMaxWidth(.7f)
             .onFocusEvent {
                 if (it.isFocused) {
-                    if (data.isEmpty())
+                    if (value.isEmpty())
                         hint = ""
                 } else
-                    if (data.isEmpty())
+                    if (value.isEmpty())
                         hint = hintParam
             },
         singleLine = true
