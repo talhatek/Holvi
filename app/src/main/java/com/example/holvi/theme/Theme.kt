@@ -2,17 +2,9 @@ package com.example.holvi.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 
-private val DarkColorPalette = darkColors(
-    primary = PrimaryGreen,
-    primaryVariant = SecondPrimary,
-    secondary = SecondPrimaryDark,
-    background = BackGround,
-
-    )
 
 private val LightColorPalette = lightColors(
     primary = PrimaryGreen,
@@ -30,9 +22,9 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun HolviTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
+fun HolviTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colors = if (darkTheme) {
-        DarkColorPalette
+        LightColorPalette
     } else {
         LightColorPalette
     }

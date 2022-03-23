@@ -1,11 +1,12 @@
 package com.example.holvi.ui.add_screen.composable
 
-import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +16,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +38,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun AddScreen(navController: NavController) {
     HolviTheme {
@@ -82,28 +83,47 @@ fun AddScreen(navController: NavController) {
                 }
             },
             content = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(.8f),
-                    verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    InputView(hintParam = "Site Name") {
-                        siteName = it
-                    }
+                BoxWithConstraints {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(.8f),
+                        verticalArrangement = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) Arrangement.spacedBy(
+                            ((this.maxHeight / 100) * 10)
+                        ) else Arrangement.SpaceEvenly,
+                        horizontalAlignment = Alignment.CenterHorizontally,
 
-                    InputView(hintParam = "User Name") {
-                        userName = it
+                        ) {
+                        item {
+                            InputView(hintParam = "Site Name", viewModel = myAddViewModel) {
+                                siteName = it
+                            }
 
-                    }
-                    PasswordInputView(hintParam = "Password") {
-                        password = it
-                    }
-                    CircleTextButton(text = "G", percentage = 20) {
-                        password = myAddViewModel.generatePassword()
+                        }
+                        item {
+                            InputView(hintParam = "User Name", viewModel = myAddViewModel) {
+                                userName = it
+
+                            }
+                        }
+                        item {
+                            PasswordInputView(hintParam = "Password", viewModel = myAddViewModel) {
+                                password = it
+                            }
+                        }
+                        item {
+                            CircleTextButton(
+                                text = "G",
+                                percentage = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) 10 else 20
+                            ) {
+                                password = myAddViewModel.generatePassword()
+                            }
+                        }
+
+
                     }
                 }
+
             },
             scaffoldState = scaffoldState
         )
@@ -111,10 +131,8 @@ fun AddScreen(navController: NavController) {
 
 }
 
-
 @Composable
-fun InputView(hintParam: String, onValueChanged: (input: String) -> Unit) {
-    val viewModel = get<AddViewModel>()
+fun InputView(hintParam: String, viewModel: AddViewModel, onValueChanged: (input: String) -> Unit) {
     var value by remember { mutableStateOf("") }
     var hint by remember { mutableStateOf(hintParam) }
     LaunchedEffect(key1 = true, block = {
@@ -171,10 +189,10 @@ fun InputView(hintParam: String, onValueChanged: (input: String) -> Unit) {
 
 @Composable
 fun PasswordInputView(
+    viewModel: AddViewModel,
     hintParam: String,
     onValueChanged: (input: String) -> Unit
 ) {
-    val viewModel = get<AddViewModel>()
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     var value by remember { mutableStateOf("") }

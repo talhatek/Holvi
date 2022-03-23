@@ -7,17 +7,42 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
+import com.example.holvi.ui.HolviApp
+import com.example.holvi.ui.authenticationActivity.AuthenticationViewModel
+import com.example.holvi.ui.authenticationActivity.SQState
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.get
 
 @Composable
-fun AuthenticationMainScreen(onClick: () -> Unit) {
+fun AuthenticationMainScreen(onClick: () -> Unit, onMessageDeliver: (message: String) -> Unit) {
+    val viewModel = get<AuthenticationViewModel>()
+    val context = LocalContext.current
+    var buttonEnabledState by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(key1 = true, block = {
+        viewModel.sqState.collectLatest {
+            when (it) {
+                is SQState.Success -> {
+                    (context.applicationContext as HolviApp).initSq(it.id)
+                    buttonEnabledState = true
+                }
+                is SQState.Error -> {
+                    onMessageDeliver.invoke(it.message)
+                }
+                else -> Unit
+            }
+        }
+    })
     HolviTheme {
         Column(
             modifier = Modifier
@@ -34,7 +59,7 @@ fun AuthenticationMainScreen(onClick: () -> Unit) {
             )
             Button(onClick = {
                 onClick.invoke()
-            }, shape = RoundedCornerShape(8.dp)) {
+            }, enabled = buttonEnabledState, shape = RoundedCornerShape(8.dp)) {
                 Text(
                     text = "Authenticate",
                     Modifier.padding(4.dp),

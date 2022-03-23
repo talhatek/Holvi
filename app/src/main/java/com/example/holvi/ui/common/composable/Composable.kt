@@ -1,6 +1,7 @@
 package com.example.holvi.ui.common.composable
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -35,19 +36,29 @@ import com.example.holvi.theme.SecondPrimary
 @Composable
 fun CircleTextButton(text: String, percentage: Int, onClicked: () -> Unit) {
     BoxWithConstraints {
+        val buttonSize =
+            (this.maxWidth / 100) * percentage
+
+        Log.e("sizeDebug", "maxWidth ${this.maxWidth}")
+        Log.e("sizeDebug", "maxHeight ${this.maxHeight}")
+        Log.e("sizeDebug", "button size ${buttonSize.value}")
         Button(
             onClick = {
                 onClicked.invoke()
             },
-            modifier = Modifier.size((if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) this.maxHeight else this.maxWidth / 100) * percentage),
+            modifier = Modifier.size(buttonSize),
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
             elevation = ButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 12.dp)
         ) {
             BoxWithConstraints {
+                val fontSize =
+                    ((this.maxWidth / 100) * 50).value.sp
+                Log.e("sizeDebug", "font size ${fontSize.value}")
+
                 Text(
                     text = text.toUpperCase(Locale.current),
-                    fontSize = ((if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) this.maxHeight else this.maxWidth / 100) * 50).value.sp,
+                    fontSize = fontSize,
                     style = TextStyle(
                         color = Color.Black,
                         fontFamily = PoppinsBold,

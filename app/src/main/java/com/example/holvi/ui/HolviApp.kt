@@ -10,6 +10,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 
 class HolviApp : Application() {
+    var firebaseIdentifier: String = "default"
 
     override fun onCreate() {
         super.onCreate()
@@ -18,5 +19,9 @@ class HolviApp : Application() {
             androidContext(androidContext = this@HolviApp)
             modules(listOf(roomModule, viewModule))
         }
+    }
+
+    fun initSq(id: String) {
+        firebaseIdentifier = id
     }
 }
