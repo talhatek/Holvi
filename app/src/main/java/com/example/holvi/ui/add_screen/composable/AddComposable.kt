@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -255,7 +256,8 @@ fun PasswordInputView(
                 } else
                     if (value.isEmpty())
                         hint = hintParam
-            },
+            }
+            .testTag("PasswordTextField"),
         singleLine = true
     )
 

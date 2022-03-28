@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,7 +47,9 @@ fun CircleTextButton(text: String, percentage: Int, onClicked: () -> Unit) {
             onClick = {
                 onClicked.invoke()
             },
-            modifier = Modifier.size(buttonSize),
+            modifier = Modifier
+                .size(buttonSize)
+                .testTag("G"),
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
             elevation = ButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 12.dp)
