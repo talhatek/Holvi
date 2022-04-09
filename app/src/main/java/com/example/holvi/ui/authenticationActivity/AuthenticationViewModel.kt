@@ -29,7 +29,7 @@ class AuthenticationViewModel : ViewModel() {
         try {
             val id = FirebaseInstallations.getInstance().id.await()
             val key =
-                db.collection("")
+                db.collection("unx")
                     .document(id).get().await()
                     .toObject(Key::class.java)
             if (key == null) initKey(id) else _sqState.emit(SQState.Success(key.id))

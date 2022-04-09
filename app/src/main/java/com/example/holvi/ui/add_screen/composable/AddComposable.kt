@@ -33,6 +33,7 @@ import com.example.holvi.ui.common.composable.BottomButton
 import com.example.holvi.ui.common.composable.CircleTextButton
 import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
 import com.example.holvi.utils.MenuType
+import com.example.holvi.utils.SnackbarController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -43,8 +44,10 @@ import org.koin.androidx.compose.get
 fun AddScreen(navController: NavController) {
     HolviTheme {
         val scaffoldState = rememberScaffoldState()
-        val myAddViewModel = get<AddViewModel>()
         val scope = rememberCoroutineScope()
+        val snackbarController =
+            SnackbarController(scope = scope)
+        val myAddViewModel = get<AddViewModel>()
         var siteName by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var userName by remember { mutableStateOf("") }
@@ -52,10 +55,14 @@ fun AddScreen(navController: NavController) {
             myAddViewModel.passwordAddState.collect {
                 when (it) {
                     is AddPasswordState.Success -> {
-                        scaffoldState.snackbarHostState.showSnackbar("Password added successfully.")
+                        snackbarController.showSnackbar(
+                            scaffoldState = scaffoldState,
+                            "Password added successfully."
+                        )
                     }
                     is AddPasswordState.Failure -> {
-                        scaffoldState.snackbarHostState.showSnackbar(it.message)
+                        snackbarController.showSnackbar(scaffoldState = scaffoldState, it.message)
+
                     }
                     else -> Unit
                 }
