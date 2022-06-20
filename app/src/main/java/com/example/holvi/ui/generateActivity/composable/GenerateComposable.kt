@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -27,9 +28,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
 import com.example.holvi.theme.PoppinsRegular
 import com.example.holvi.ui.common.composable.BottomButton
+import com.example.holvi.ui.common.composable.CircleIconButton
 import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
 import com.example.holvi.ui.delete_screen.composable.HolviDropdown
 import com.example.holvi.ui.generateActivity.GenerateViewModel
@@ -93,9 +96,9 @@ fun GenerateScreen(navController: NavController) {
                         .fillMaxHeight(.05f)
                         .fillMaxWidth()
                 )
-//                CircleIconButton(iconIdRes = R.drawable.ic_renew, percentage = 15) {
-//                    viewModel.generatePassword()
-//                }
+               CircleIconButton(iconIdRes = R.drawable.ic_renew, percentage = 15) {
+                   viewModel.generatePassword()
+               }
                 Spacer(
                     modifier = Modifier
                         .fillMaxHeight(.05f)
@@ -208,13 +211,13 @@ fun HolviGenerateSwitch(switchText: String, isChecked: (state: Boolean) -> Unit)
         modifier = Modifier
             .fillMaxWidth(.8f)
             .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = switchText,
             Modifier
                 .fillMaxWidth(.5f)
-                .background(Color.Red)
         )
         HolviSwitch(checkedState.value) {
             if (it == 0)
@@ -230,8 +233,8 @@ fun HolviGenerateSwitch(switchText: String, isChecked: (state: Boolean) -> Unit)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HolviSwitch(isChecked: Int, onCheckedChange: (checked: Int) -> Unit) {
-    val width = 72.dp
-    val marbleSize = 36.dp
+    val width = LocalConfiguration.current.screenWidthDp.times(0.15f).dp
+    val marbleSize = width.div(2f)
     val marblePadding = 4.dp
     val scope = rememberCoroutineScope()
     val swipeableState = rememberSwipeableState(isChecked)

@@ -12,6 +12,10 @@ interface PasswordDao {
     @Query("SELECT * FROM password")
     suspend fun getAllPasswords(): List<Password>
 
+    @Query(" SELECT * FROM password where password.site_name  LIKE :query " +
+            " OR   password.user_name  LIKE :query ")
+    suspend fun searchThroughPasswords(query: String): List<Password>
+
     @Query("SELECT password.site_name FROM password")
     fun getAllSiteNames(): Flow<List<String>>
 

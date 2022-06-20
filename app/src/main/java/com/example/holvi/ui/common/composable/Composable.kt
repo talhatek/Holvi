@@ -6,6 +6,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -87,23 +89,21 @@ fun CircleIconButton(@DrawableRes iconIdRes: Int, percentage: Int, onClicked: ()
         ),
     )
     BoxWithConstraints {
-        Button(
+        IconButton(
+            modifier = Modifier
+                .size(this.maxWidth.div(10))
+                .clip(CircleShape)
+                .background(MaterialTheme.colors.primary),
             onClick = {
                 degree.value = degree.value + 180f
                 onClicked.invoke()
-
-            },
-            modifier = Modifier.size((if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) this.maxHeight else this.maxWidth / 100) * percentage),
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
-            elevation = ButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 12.dp)
-        ) {
+            }) {
             Icon(
-                modifier = Modifier.rotate(angle),
+                modifier = Modifier
+                    .rotate(angle),
                 painter = painterResource(id = iconIdRes),
                 contentDescription = "Renew"
             )
-
         }
     }
 }
