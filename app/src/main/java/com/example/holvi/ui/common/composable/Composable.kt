@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.toUpperCase
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.holvi.R
 import com.example.holvi.theme.PoppinsBold
@@ -37,21 +36,18 @@ import com.example.holvi.utils.rememberWindowInfo
 @Composable
 fun CircleTextButton(text: String, onClicked: () -> Unit) {
     val windowInfo = rememberWindowInfo()
-
+    val buttonSize =
+        windowInfo.minDimension.div(10f)
     BoxWithConstraints {
-        val buttonSize =
-            windowInfo.minDimension.div(10f)
-
-        Button(
+        IconButton(
             onClick = {
                 onClicked.invoke()
             },
             modifier = Modifier
                 .size(buttonSize)
+                .clip(CircleShape)
+                .background(MaterialTheme.colors.primary)
                 .testTag("G"),
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
-            elevation = ButtonDefaults.elevation(defaultElevation = 8.dp, pressedElevation = 12.dp)
         ) {
             BoxWithConstraints {
                 val fontSize =
@@ -76,7 +72,7 @@ fun CircleTextButton(text: String, onClicked: () -> Unit) {
 fun CircleIconButton(@DrawableRes iconIdRes: Int, onClicked: () -> Unit) {
     val windowInfo = rememberWindowInfo()
 
-    val degree = remember { mutableStateOf(60f) }
+    val degree = remember { mutableStateOf(90f) }
     val angle: Float by animateFloatAsState(
         targetValue = degree.value,
         animationSpec = tween(
@@ -89,9 +85,10 @@ fun CircleIconButton(@DrawableRes iconIdRes: Int, onClicked: () -> Unit) {
             modifier = Modifier
                 .size(windowInfo.minDimension.div(10f))
                 .clip(CircleShape)
-                .background(MaterialTheme.colors.primary),
+                .background(MaterialTheme.colors.primary)
+                .testTag("Renew"),
             onClick = {
-                degree.value = degree.value + 180f
+                degree.value = degree.value + 180f % 360
                 onClicked.invoke()
             }) {
             Icon(
