@@ -1,6 +1,5 @@
 package com.example.holvi.ui.common.composable
 
-import android.content.res.Configuration
 import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -19,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -34,17 +32,17 @@ import com.example.holvi.theme.PoppinsBold
 import com.example.holvi.theme.PoppinsLight
 import com.example.holvi.theme.PoppinsRegular
 import com.example.holvi.theme.SecondPrimary
+import com.example.holvi.utils.rememberWindowInfo
 
 
 @Composable
 fun CircleTextButton(text: String, percentage: Int, onClicked: () -> Unit) {
+    val windowInfo = rememberWindowInfo()
+
     BoxWithConstraints {
         val buttonSize =
-            (this.maxWidth / 100) * percentage
+            windowInfo.minDimension.div(10f)
 
-        Log.e("sizeDebug", "maxWidth ${this.maxWidth}")
-        Log.e("sizeDebug", "maxHeight ${this.maxHeight}")
-        Log.e("sizeDebug", "button size ${buttonSize.value}")
         Button(
             onClick = {
                 onClicked.invoke()
@@ -80,6 +78,8 @@ fun CircleTextButton(text: String, percentage: Int, onClicked: () -> Unit) {
 
 @Composable
 fun CircleIconButton(@DrawableRes iconIdRes: Int, percentage: Int, onClicked: () -> Unit) {
+    val windowInfo = rememberWindowInfo()
+
     val degree = remember { mutableStateOf(60f) }
     val angle: Float by animateFloatAsState(
         targetValue = degree.value,
@@ -91,7 +91,7 @@ fun CircleIconButton(@DrawableRes iconIdRes: Int, percentage: Int, onClicked: ()
     BoxWithConstraints {
         IconButton(
             modifier = Modifier
-                .size(this.maxWidth.div(10))
+                .size(windowInfo.minDimension.div(10f))
                 .clip(CircleShape)
                 .background(MaterialTheme.colors.primary),
             onClick = {

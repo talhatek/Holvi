@@ -2,6 +2,7 @@ package com.example.holvi.ui.generateActivity.composable
 
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -18,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -36,6 +37,7 @@ import com.example.holvi.ui.common.composable.CircleIconButton
 import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
 import com.example.holvi.ui.delete_screen.composable.HolviDropdown
 import com.example.holvi.ui.generateActivity.GenerateViewModel
+import com.example.holvi.utils.rememberWindowInfo
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
@@ -233,15 +235,20 @@ fun HolviGenerateSwitch(switchText: String, isChecked: (state: Boolean) -> Unit)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HolviSwitch(isChecked: Int, onCheckedChange: (checked: Int) -> Unit) {
-    val width = LocalConfiguration.current.screenWidthDp.times(0.15f).dp
-    val marbleSize = width.div(2f)
+    val windowInfo = rememberWindowInfo()
+    val width = windowInfo.minDimension.times(.1f)
+    val marbleSize = width.div(3f)
+    val yOffset by remember {
+        mutableStateOf(width.value.div(2).toInt() - marbleSize.value.toInt())
+    }
     val marblePadding = 4.dp
     val scope = rememberCoroutineScope()
     val swipeableState = rememberSwipeableState(isChecked)
     val backgroundColor = animateColorAsState(
         targetValue = if (swipeableState.currentValue != 0) Color(0xFF34C759) else Color(0xD6787880)
     )
-    val sizePx = with(LocalDensity.current) { marbleSize.minus(marblePadding.times(2)).toPx() }
+    val sizePx =
+        with(LocalDensity.current) { width.minus(marbleSize + marblePadding.times(2)).toPx() }
     val anchors = mapOf(0f to 0, sizePx - 1f to 1) // Maps anchor points (in px) to states
     LaunchedEffect(key1 = swipeableState.currentValue, block = {
         onCheckedChange.invoke(swipeableState.currentValue)
@@ -249,6 +256,7 @@ fun HolviSwitch(isChecked: Int, onCheckedChange: (checked: Int) -> Unit) {
     Box(
         modifier = Modifier
             .width(width)
+            .aspectRatio(2f)
             .clip(CircleShape)
             .swipeable(
                 state = swipeableState,
@@ -259,7 +267,6 @@ fun HolviSwitch(isChecked: Int, onCheckedChange: (checked: Int) -> Unit) {
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = {
-
                         if (it.x > width
                                 .toPx()
                                 .div(2)
@@ -275,14 +282,26 @@ fun HolviSwitch(isChecked: Int, onCheckedChange: (checked: Int) -> Unit) {
                 )
             }
             .background(backgroundColor.value)
+            .onGloballyPositioned {
+                Log.e("sizeFixerBg", it.size.toString())
+            }
     ) {
         Box(
             Modifier
-                .padding(marblePadding)
-                .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
+                .padding(horizontal = marblePadding)
+                .offset {
+                    IntOffset(
+                        swipeableState.offset.value.roundToInt(),
+                        yOffset
+                    )
+                }
                 .size(marbleSize)
                 .clip(CircleShape)
                 .background(Color.White)
+                .onGloballyPositioned {
+                    Log.e("sizeFixerMarble", yOffset.toString())
+
+                }
         )
     }
 }
