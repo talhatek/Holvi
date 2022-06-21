@@ -11,10 +11,11 @@ import com.example.holvi.currentText
 import com.example.holvi.theme.HolviTheme
 import com.example.holvi.ui.menu_screen.MenuActivity
 import com.example.holvi.utils.Screen
+import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
+
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -41,7 +42,7 @@ class AddComposableTest {
     fun generateButton_isWorking() {
         composeRule.onNodeWithTag("G").performClick()
         val text = composeRule.onNodeWithTag("PasswordTextField").currentText()
-        assertEquals(8, text.toString().length)
+        assertThat(Integer(8)).isEqualTo(text.toString().length)
     }
 
     @Test
@@ -65,7 +66,6 @@ class AddComposableTest {
         composeRule.onNodeWithText("Add").performClick()
         Thread.sleep(1_000L)
         composeRule.onNodeWithText("You must fill required fields.").assertIsDisplayed()
-
 
     }
 
