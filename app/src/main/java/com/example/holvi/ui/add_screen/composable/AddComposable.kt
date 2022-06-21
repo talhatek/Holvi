@@ -121,8 +121,7 @@ fun AddScreen(navController: NavController) {
                         }
                         item {
                             CircleTextButton(
-                                text = "G",
-                                percentage = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) 10 else 20
+                                text = "G"
                             ) {
                                 password = myAddViewModel.generatePassword()
                             }

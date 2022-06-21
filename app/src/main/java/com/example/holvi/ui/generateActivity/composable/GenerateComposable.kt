@@ -98,9 +98,9 @@ fun GenerateScreen(navController: NavController) {
                         .fillMaxHeight(.05f)
                         .fillMaxWidth()
                 )
-               CircleIconButton(iconIdRes = R.drawable.ic_renew, percentage = 15) {
-                   viewModel.generatePassword()
-               }
+                CircleIconButton(iconIdRes = R.drawable.ic_renew) {
+                    viewModel.generatePassword()
+                }
                 Spacer(
                     modifier = Modifier
                         .fillMaxHeight(.05f)
@@ -283,11 +283,11 @@ fun HolviSwitch(isChecked: Int, onCheckedChange: (checked: Int) -> Unit) {
             }
             .background(backgroundColor.value)
             .onGloballyPositioned {
-                Log.e("sizeFixerBg", it.size.toString())
+
             }
     ) {
         Box(
-            Modifier
+            modifier = Modifier
                 .padding(horizontal = marblePadding)
                 .offset {
                     IntOffset(
@@ -299,7 +299,9 @@ fun HolviSwitch(isChecked: Int, onCheckedChange: (checked: Int) -> Unit) {
                 .clip(CircleShape)
                 .background(Color.White)
                 .onGloballyPositioned {
-                    Log.e("sizeFixerMarble", yOffset.toString())
+                    Log.e("sizeFixerY", yOffset.toString())
+                    Log.e("sizeFixerW", width.toString())
+                    Log.e("sizeFixerM", marbleSize.toString())
 
                 }
         )

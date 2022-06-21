@@ -1,6 +1,5 @@
 package com.example.holvi.ui.common.composable
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -36,7 +35,7 @@ import com.example.holvi.utils.rememberWindowInfo
 
 
 @Composable
-fun CircleTextButton(text: String, percentage: Int, onClicked: () -> Unit) {
+fun CircleTextButton(text: String, onClicked: () -> Unit) {
     val windowInfo = rememberWindowInfo()
 
     BoxWithConstraints {
@@ -56,16 +55,13 @@ fun CircleTextButton(text: String, percentage: Int, onClicked: () -> Unit) {
         ) {
             BoxWithConstraints {
                 val fontSize =
-                    ((this.maxWidth / 100) * 50).value.sp
-                Log.e("sizeDebug", "font size ${fontSize.value}")
-
+                    maxOf(this.maxHeight, this.maxWidth).value.div(2).sp
                 Text(
                     text = text.toUpperCase(Locale.current),
                     fontSize = fontSize,
                     style = TextStyle(
                         color = Color.Black,
                         fontFamily = PoppinsBold,
-                        fontSize = 24.sp,
                         fontWeight = FontWeight.ExtraBold
                     )
                 )
@@ -77,14 +73,14 @@ fun CircleTextButton(text: String, percentage: Int, onClicked: () -> Unit) {
 }
 
 @Composable
-fun CircleIconButton(@DrawableRes iconIdRes: Int, percentage: Int, onClicked: () -> Unit) {
+fun CircleIconButton(@DrawableRes iconIdRes: Int, onClicked: () -> Unit) {
     val windowInfo = rememberWindowInfo()
 
     val degree = remember { mutableStateOf(60f) }
     val angle: Float by animateFloatAsState(
         targetValue = degree.value,
         animationSpec = tween(
-            durationMillis = 400, // duration
+            durationMillis = 400,
             easing = FastOutSlowInEasing
         ),
     )
