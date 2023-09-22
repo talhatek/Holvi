@@ -1,6 +1,7 @@
 package com.example.holvi.utils
 
-import androidx.compose.material.ScaffoldState
+
+import androidx.compose.material3.SnackbarHostState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -13,12 +14,14 @@ class SnackbarController constructor(private val scope: CoroutineScope) {
         cancelActiveJob()
     }
 
-    fun getScope() = scope
-
-    fun showSnackbar(scaffoldState: ScaffoldState, message: String, actionLabel: String? = null) {
+    fun showSnackbar(
+        snackbarHostState: SnackbarHostState,
+        message: String,
+        actionLabel: String? = null
+    ) {
         if (snackbarJob == null) {
             snackbarJob = scope.launch {
-                scaffoldState.snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     message = message,
                     actionLabel = actionLabel
                 )
@@ -27,7 +30,7 @@ class SnackbarController constructor(private val scope: CoroutineScope) {
         } else {
             cancelActiveJob()
             snackbarJob = scope.launch {
-                scaffoldState.snackbarHostState.showSnackbar(
+                snackbarHostState.showSnackbar(
                     message = message,
                     actionLabel = actionLabel
                 )

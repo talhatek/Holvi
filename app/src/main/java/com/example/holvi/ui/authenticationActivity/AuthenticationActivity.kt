@@ -1,18 +1,23 @@
 package com.example.holvi.ui.authenticationActivity
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
-import com.example.holvi.BuildConfig
+import com.example.holvi.R
 import com.example.holvi.theme.HolviTheme
 import com.example.holvi.ui.authenticationActivity.composable.AuthenticationMainScreen
 import com.example.holvi.ui.menu_screen.MenuActivity
@@ -48,28 +53,28 @@ class AuthenticationActivity : FragmentActivity() {
             .build()
         setContent {
             HolviTheme {
-                val scaffoldState = rememberScaffoldState()
+                val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
                 Scaffold(
-                    scaffoldState = scaffoldState,
+                    snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     content = {
                         AuthenticationMainScreen(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = it.calculateTopPadding()),
                             onClick = {
-                                if (biometricManager.canAuthenticate(DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS)
-                                    biometricPrompt.authenticate(biometricInfo)
-                                else {
-                                    if (BuildConfig.DEBUG)
-                                        startActivity(Intent(this, MenuActivity::class.java))
-                                    else
-                                        Toast.makeText(
-                                            this@AuthenticationActivity,
-                                            "You can not login!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                }
+                                startActivity(
+                                    Intent(this, MenuActivity::class.java),
+                                    ActivityOptions.makeCustomAnimation(
+                                        this,
+                                        R.anim.slide_forward,
+                                        R.anim.slide_backward
+                                    ).toBundle()
+                                )
+
                             }, onMessageDeliver = {
                                 scope.launch {
-                                    scaffoldState.snackbarHostState.showSnackbar(message = it)
+                                    snackbarHostState.showSnackbar(message = it)
                                 }
                             })
                     }

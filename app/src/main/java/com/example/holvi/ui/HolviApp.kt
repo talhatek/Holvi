@@ -2,6 +2,7 @@ package com.example.holvi.ui
 
 import android.app.Application
 import com.example.holvi.BuildConfig
+import com.example.holvi.di.dbModule
 import com.example.holvi.di.roomModule
 import com.example.holvi.di.viewModule
 import org.koin.android.ext.koin.androidContext
@@ -17,7 +18,7 @@ class HolviApp : Application() {
         startKoin {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(androidContext = this@HolviApp)
-            modules(listOf(roomModule, viewModule))
+            modules(listOf(roomModule, viewModule, dbModule))
         }
     }
 

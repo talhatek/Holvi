@@ -2,156 +2,172 @@ package com.example.holvi.ui.generateActivity.composable
 
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
-import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.holvi.R
-import com.example.holvi.theme.HolviTheme
+import com.example.holvi.di.getViewModelScope
 import com.example.holvi.theme.PoppinsRegular
+import com.example.holvi.theme.SecondPrimary
 import com.example.holvi.ui.common.composable.BottomButton
 import com.example.holvi.ui.common.composable.CircleIconButton
 import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
-import com.example.holvi.ui.delete_screen.composable.HolviDropdown
 import com.example.holvi.ui.generateActivity.GenerateViewModel
-import com.example.holvi.utils.rememberWindowInfo
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.get
-import kotlin.math.roundToInt
+import org.koin.androidx.compose.getKoin
+import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun GenerateScreen(navController: NavController) {
-    HolviTheme {
-        val scaffoldState = rememberScaffoldState()
-        val scope = rememberCoroutineScope()
-        val viewModel = get<GenerateViewModel>()
-        val forbiddenHint = mutableStateOf("Forbidden")
-        LaunchedEffect(key1 = true) {
-            viewModel.uiEvent.collectLatest {
-                when (it) {
-                    is GenerateViewModel.GenerateViewUiEvent.SnackbarEvent -> {
-                        scaffoldState.snackbarHostState.showSnackbar(it.message)
-                    }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val scope = rememberCoroutineScope()
+    val viewModel = koinViewModel<GenerateViewModel>(
+        scope = getKoin()
+            .getViewModelScope(GenerateViewModel.SCOPE_NAME)
+    )
+    val forbiddenHint = mutableStateOf("Forbidden")
+    val blurDp = remember {
+        mutableStateOf(0.dp)
+    }
+
+    val blurAnimate = animateDpAsState(targetValue = blurDp.value, label = "background blur dp")
+    LaunchedEffect(key1 = true) {
+        viewModel.uiEvent.collectLatest {
+            when (it) {
+                is GenerateViewModel.GenerateViewUiEvent.SnackbarEvent -> {
+                    snackbarHostState.showSnackbar(it.message)
                 }
             }
         }
-        Scaffold(
-            topBar = {
-                TopAppBarBackWithLogo {
-                    navController.popBackStack()
-                }
-            },
-            bottomBar = {
-                val context = LocalContext.current
-                BottomButton(text = "Copy to clipboard") {
-                    viewModel.copyToClipBoard(context.getSystemService(ComponentActivity.CLIPBOARD_SERVICE) as ClipboardManager)
-                }
-            },
-            scaffoldState = scaffoldState
-        ) {
+    }
+    Scaffold(
+        modifier = Modifier.blur(blurAnimate.value, blurAnimate.value),
+        topBar = {
+            TopAppBarBackWithLogo {
+                navController.popBackStack()
+            }
+        },
+        bottomBar = {
+            val context = LocalContext.current
+            BottomButton(text = "Copy to clipboard") {
+                viewModel.copyToClipBoard(context.getSystemService(ComponentActivity.CLIPBOARD_SERVICE) as ClipboardManager)
+            }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) {
 
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = it.calculateTopPadding()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            modifier = Modifier
-                                .padding(vertical = 4.dp),
-                            text = viewModel.currentPassword.value
-                        )
-                        Divider(Modifier.fillMaxWidth(.7f), color = Color.White)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        modifier = Modifier
+                            .padding(vertical = 4.dp),
+                        text = viewModel.currentPassword.value,
+                        color = Color.White,
+                        style = TextStyle(textAlign = TextAlign.Center)
+                    )
+                    Divider(Modifier.fillMaxWidth(.7f), color = Color.White)
+                }
+            }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxHeight(.05f)
+                    .fillMaxWidth()
+            )
+            CircleIconButton(iconIdRes = R.drawable.ic_renew) {
+                viewModel.generatePassword()
+            }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxHeight(.05f)
+                    .fillMaxWidth()
+            )
+            SimpleInputView(hintParam = "Forbidden") {
+                viewModel.forbiddenLetters.value = it
+            }
+            HolviDropdown(
+                data = viewModel.dropdownItems,
+                defaultHint = viewModel.lengthSelectorText,
+                onExpanded = { expanded ->
+                    blurDp.value = if (expanded) {
+                        4.dp
+                    } else {
+                        0.dp
                     }
-                }
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxHeight(.05f)
-                        .fillMaxWidth()
-                )
-                CircleIconButton(iconIdRes = R.drawable.ic_renew) {
-                    viewModel.generatePassword()
-                }
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxHeight(.05f)
-                        .fillMaxWidth()
-                )
-                SimpleInputView(hintParam = "Forbidden") {
-                    viewModel.forbiddenLetters.value = it
-                }
-                HolviDropdown(
-                    data = viewModel.dropdownItems,
-                    viewModel.lengthSelectorText
-                ) {
+                },
+                onItemSelected = {
                     viewModel.currentSelectedLength.value = it
                     viewModel.lengthSelectorText.value = it.toString()
                 }
+            )
 
-
-                HolviGenerateSwitch(switchText = "Symbols") {
-                    with(viewModel) {
-                        updateActiveCount(it)
-                        symbolState.value = it
-                    }
-
-                }
-                HolviGenerateSwitch(switchText = "Numbers") {
-                    with(viewModel) {
-                        updateActiveCount(it)
-                        numberState.value = it
-                    }
-
-                }
-                HolviGenerateSwitch(switchText = "Upper Case") {
-                    with(viewModel) {
-                        updateActiveCount(it)
-                        upperCaseState.value = it
-                    }
-
-                }
-                HolviGenerateSwitch(switchText = "Lower Case") {
-                    with(viewModel) {
-                        updateActiveCount(it)
-                        lowerCaseState.value = it
-                    }
-
+            HolviGenerateSwitch(switchText = "Symbols") {
+                with(viewModel) {
+                    updateActiveCount(it)
+                    symbolState.value = it
                 }
 
             }
+            HolviGenerateSwitch(switchText = "Numbers") {
+                with(viewModel) {
+                    updateActiveCount(it)
+                    numberState.value = it
+                }
 
+            }
+            HolviGenerateSwitch(switchText = "Upper Case") {
+                with(viewModel) {
+                    updateActiveCount(it)
+                    upperCaseState.value = it
+                }
+
+            }
+            HolviGenerateSwitch(switchText = "Lower Case") {
+                with(viewModel) {
+                    updateActiveCount(it)
+                    lowerCaseState.value = it
+                }
+            }
         }
     }
 }
+
 
 @Composable
 fun SimpleInputView(
@@ -172,7 +188,7 @@ fun SimpleInputView(
                 text = hint,
                 modifier = Modifier
                     .alpha(.5f)
-                    .background(Color.Transparent)
+
                     .fillMaxWidth(),
                 style = TextStyle(
                     fontFamily = PoppinsRegular,
@@ -184,10 +200,13 @@ fun SimpleInputView(
                 color = Color.White
             )
         },
-        colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.Transparent,
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
             focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = Color.White
+            unfocusedIndicatorColor = Color.White,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
         ),
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         modifier = Modifier
@@ -207,105 +226,117 @@ fun SimpleInputView(
 
 
 @Composable
-fun HolviGenerateSwitch(switchText: String, isChecked: (state: Boolean) -> Unit) {
-    val checkedState = remember { mutableStateOf(1) }
+fun HolviGenerateSwitch(
+    switchText: String,
+    isChecked: (state: Boolean) -> Unit
+) {
+    val viewModel =
+        koinViewModel<GenerateViewModel>(scope = getKoin().getViewModelScope(GenerateViewModel.SCOPE_NAME))
+    val checkedState = remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
             .fillMaxWidth(.8f)
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = CenterVertically
     ) {
         Text(
             text = switchText,
             Modifier
-                .fillMaxWidth(.5f)
+                .fillMaxWidth(.5f),
+            color = Color.White
         )
-        HolviSwitch(checkedState.value) {
-            if (it == 0)
-                isChecked.invoke(false)
-            else
-                isChecked.invoke(true)
-        }
-
+        Switch(
+            colors = SwitchDefaults.colors(
+                uncheckedBorderColor = Color.Transparent,
+                checkedBorderColor = Color.Transparent,
+            ),
+            checked = checkedState.value,
+            onCheckedChange = {
+                if ((viewModel.activeCount.value == 1) and !it) {
+                    scope.launch {
+                        checkedState.value = it
+                        delay(100)
+                        checkedState.value = true
+                    }
+                } else {
+                    checkedState.value = it
+                    isChecked.invoke(it)
+                }
+            })
     }
 }
 
-
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HolviSwitch(isChecked: Int, onCheckedChange: (checked: Int) -> Unit) {
-    val windowInfo = rememberWindowInfo()
-    val width = windowInfo.minDimension.times(.1f)
-    val marbleSize = width.div(3f)
-    val yOffset by remember {
-        mutableStateOf(width.value.div(2).toInt() - marbleSize.value.toInt())
-    }
-    val marblePadding = 4.dp
-    val scope = rememberCoroutineScope()
-    val swipeableState = rememberSwipeableState(isChecked)
-    val backgroundColor = animateColorAsState(
-        targetValue = if (swipeableState.currentValue != 0) Color(0xFF34C759) else Color(0xD6787880)
-    )
-    val sizePx =
-        with(LocalDensity.current) { width.minus(marbleSize + marblePadding.times(2)).toPx() }
-    val anchors = mapOf(0f to 0, sizePx - 1f to 1) // Maps anchor points (in px) to states
-    LaunchedEffect(key1 = swipeableState.currentValue, block = {
-        onCheckedChange.invoke(swipeableState.currentValue)
+fun HolviDropdown(
+    data: List<Int>,
+    defaultHint: MutableState<String>,
+    onItemSelected: (length: Int) -> Unit,
+    onExpanded: (isExpanded: Boolean) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = expanded, block = {
+        onExpanded.invoke(expanded)
     })
-    Box(
-        modifier = Modifier
-            .width(width)
-            .aspectRatio(2f)
-            .clip(CircleShape)
-            .swipeable(
-                state = swipeableState,
-                anchors = anchors,
-                thresholds = { _, _ -> FractionalThreshold(0.3f) },
-                orientation = Orientation.Horizontal
+
+    val tmpData = data.toMutableList()
+    var selectedTmpData by remember { defaultHint }
+    Row(horizontalArrangement = Arrangement.Start, modifier = Modifier.clickable {
+        expanded = !expanded
+    }) { // Anchor view
+        Text(
+            text = selectedTmpData, style = TextStyle(
+                fontFamily = PoppinsRegular,
+                fontWeight = FontWeight.Normal,
+                fontSize = 24.sp,
+                color = Color.White
             )
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = {
-                        if (it.x > width
-                                .toPx()
-                                .div(2)
+        ) // City name label
+        Icon(
+            imageVector = Icons.Filled.ArrowDropDown,
+            "Expand collapse",
+            tint = Color.White,
+            modifier = Modifier
+                .size(24.dp)
+                .align(alignment = CenterVertically)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            modifier = Modifier
+                .background(SecondPrimary)
+                .heightIn(max = 440.dp),
+            onDismissRequest = {
+                expanded = false
+            }) {
+            tmpData.forEach {
+                if (selectedTmpData == it.toString())
+                    return@forEach
+                DropdownMenuItem(
+                    onClick = {
+                        expanded = false
+                        selectedTmpData = it.toString()
+                        onItemSelected.invoke(it)
+                    },
+                    text = {
+                        Text(
+                            text = it.toString(),
+                            style = TextStyle(
+                                fontFamily = PoppinsRegular,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 24.sp,
+                                color = Color.White
+                            ),
+                            modifier = Modifier.padding(horizontal = 24.dp)
                         )
-                            scope.launch {
-                                swipeableState.animateTo(1)
-                            }
-                        else
-                            scope.launch {
-                                swipeableState.animateTo(0)
-                            }
                     }
                 )
             }
-            .background(backgroundColor.value)
-            .onGloballyPositioned {
-
-            }
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(horizontal = marblePadding)
-                .offset {
-                    IntOffset(
-                        swipeableState.offset.value.roundToInt(),
-                        yOffset
-                    )
-                }
-                .size(marbleSize)
-                .clip(CircleShape)
-                .background(Color.White)
-                .onGloballyPositioned {
-                    Log.e("sizeFixerY", yOffset.toString())
-                    Log.e("sizeFixerW", width.toString())
-                    Log.e("sizeFixerM", marbleSize.toString())
-
-                }
-        )
+        }
     }
 }
+
+
 
 

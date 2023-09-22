@@ -5,9 +5,18 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +55,7 @@ fun CircleTextButton(text: String, onClicked: () -> Unit) {
             modifier = Modifier
                 .size(buttonSize)
                 .clip(CircleShape)
-                .background(MaterialTheme.colors.primary)
+                .background(MaterialTheme.colorScheme.primary)
                 .testTag("G"),
         ) {
             BoxWithConstraints {
@@ -61,9 +70,7 @@ fun CircleTextButton(text: String, onClicked: () -> Unit) {
                         fontWeight = FontWeight.ExtraBold
                     )
                 )
-
             }
-
         }
     }
 }
@@ -85,7 +92,7 @@ fun CircleIconButton(@DrawableRes iconIdRes: Int, onClicked: () -> Unit) {
             modifier = Modifier
                 .size(windowInfo.minDimension.div(10f))
                 .clip(CircleShape)
-                .background(MaterialTheme.colors.primary)
+                .background(MaterialTheme.colorScheme.primary)
                 .testTag("Renew"),
             onClick = {
                 degree.value = degree.value + 180f % 360
@@ -95,7 +102,8 @@ fun CircleIconButton(@DrawableRes iconIdRes: Int, onClicked: () -> Unit) {
                 modifier = Modifier
                     .rotate(angle),
                 painter = painterResource(id = iconIdRes),
-                contentDescription = "Renew"
+                contentDescription = "Renew",
+                tint = Color.White
             )
         }
     }
@@ -114,7 +122,8 @@ fun TopAppBarOnlyIcon(@DrawableRes res: Int, onIconClicked: () -> Unit) {
                 ) {
                     Icon(
                         painter = painterResource(id = res),
-                        contentDescription = "Back"
+                        contentDescription = "Back",
+                        tint = Color.White
                     )
                 }
             }
@@ -146,7 +155,8 @@ fun TopAppBarBackWithLogo(onBackClicked: () -> Unit) {
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
-                    contentDescription = "Back"
+                    contentDescription = "Back",
+                    tint = Color.White
                 )
             }
         }

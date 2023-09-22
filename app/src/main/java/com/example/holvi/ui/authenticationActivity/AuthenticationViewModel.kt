@@ -4,45 +4,48 @@ package com.example.holvi.ui.authenticationActivity
 import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.installations.FirebaseInstallations
-import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.util.*
+import java.util.UUID
 
-class AuthenticationViewModel : ViewModel() {
-    private val db = Firebase.firestore
+class AuthenticationViewModel(private val db: FirebaseFirestore) : ViewModel() {
     private val _sqState = MutableStateFlow<SQState>(SQState.Init)
-    val sqState = _sqState.asStateFlow()
+    val sqState
+        get() = _sqState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             checkKey()
         }
     }
 
     private suspend fun checkKey() {
         try {
-            val id = FirebaseInstallations.getInstance().id.await()
-            val key =
+            FirebaseInstallations.getInstance().id.await().also { id ->
                 db.collection("unx")
-                    .document(id+ Build.MANUFACTURER).get().await()
-                    .toObject(Key::class.java)
-            if (key == null) initKey(id) else _sqState.emit(SQState.Success(key.id))
+                    .document(id + Build.MANUFACTURER).get().await()
+                    .toObject(Key::class.java)?.let { key ->
+                        _sqState.emit(SQState.Success(key.id))
+                    } ?: run {
+                    initKey(id)
+                }
+            }
         } catch (e: FirebaseFirestoreException) {
             _sqState.emit(SQState.Error(e.message ?: "Unknown error"))
         }
     }
 
     private suspend fun initKey(id: String) {
-        val uuid = UUID.randomUUID().toString()
-        val key = Key(id = uuid)
-        db.collection("unx").document(id + Build.MANUFACTURER).set(key)
-        _sqState.emit(SQState.Success(uuid))
+        Key(id = UUID.randomUUID().toString()).also { key ->
+            db.collection("unx").document(id + Build.MANUFACTURER).set(key)
+            _sqState.emit(SQState.Success(key.id))
+        }
     }
 }
 
@@ -51,5 +54,5 @@ data class Key(val id: String = "")
 sealed class SQState {
     class Success(val id: String) : SQState()
     class Error(val message: String) : SQState()
-    object Init : SQState()
+    data object Init : SQState()
 }

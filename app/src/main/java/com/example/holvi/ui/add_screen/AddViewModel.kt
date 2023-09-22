@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AddViewModel(private val passwordDao: PasswordDao) : ViewModel() {
-    private val _clearInputsSharedFlow = MutableSharedFlow<Int>()
+    private val _clearInputsSharedFlow = MutableSharedFlow<ClearFocus>()
     val clearInputsSharedFlow = _clearInputsSharedFlow.asSharedFlow()
     private val password = MutableStateFlow("")
     val passwordStateFlow = password.asStateFlow()
@@ -26,9 +26,9 @@ class AddViewModel(private val passwordDao: PasswordDao) : ViewModel() {
                 try {
                     passwordDao.addPassword(password = password)
                     _passwordAddState.emit(AddPasswordState.Success)
-                    _clearInputsSharedFlow.emit(1)
+                    _clearInputsSharedFlow.emit(ClearFocus.Clear)
                 } catch (ex: Exception) {
-                    _passwordAddState.emit(AddPasswordState.Failure("Password could not added."))
+                    _passwordAddState.emit(AddPasswordState.Failure("Password could not added. ${ex.message}"))
                 }
             } else
                 _passwordAddState.emit(AddPasswordState.Failure("You must fill required fields."))
@@ -36,7 +36,11 @@ class AddViewModel(private val passwordDao: PasswordDao) : ViewModel() {
     }
 
     private fun controlPassword(password: Password): Boolean {
-        return !(password.password.isBlank() || password.siteName.isBlank() || password.userName.isBlank())
+        return listOf(
+            password.password,
+            password.siteName,
+            password.userName
+        ).all { it.isNotBlank() and it.isNotEmpty() }
     }
 
     fun generatePassword(): String {
@@ -54,8 +58,13 @@ class AddViewModel(private val passwordDao: PasswordDao) : ViewModel() {
     }
 }
 
+sealed interface ClearFocus {
+    data object Init : ClearFocus
+    data object Clear : ClearFocus
+}
+
 sealed class AddPasswordState {
-    object Success : AddPasswordState()
+    data object Success : AddPasswordState()
     class Failure(val message: String) : AddPasswordState()
-    object Empty : AddPasswordState()
+    data object Empty : AddPasswordState()
 }

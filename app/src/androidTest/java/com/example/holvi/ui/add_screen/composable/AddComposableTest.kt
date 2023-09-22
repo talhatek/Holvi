@@ -1,21 +1,20 @@
 package com.example.holvi.ui.add_screen.composable
 
 
+import androidx.activity.compose.setContent
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.holvi.currentText
 import com.example.holvi.theme.HolviTheme
+import com.example.holvi.ui.all_screen.composable.AllScreen
 import com.example.holvi.ui.menu_screen.MenuActivity
 import com.example.holvi.utils.Screen
-import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -24,14 +23,15 @@ class AddComposableTest {
     @get:Rule
     val composeRule = createAndroidComposeRule<MenuActivity>()
 
+
     @Before
     fun setUp() {
-        composeRule.setContent {
+        composeRule.activity.setContent {
             val navController = rememberNavController()
             HolviTheme {
-                NavHost(navController = navController, startDestination = Screen.AddScreen.route) {
-                    composable(Screen.AddScreen.route) {
-                        AddScreen(navController = navController)
+                NavHost(navController = navController, startDestination = Screen.AllScreen.route) {
+                    composable(Screen.AllScreen.route) {
+                        AllScreen(navController = navController)
                     }
                 }
             }
@@ -40,14 +40,13 @@ class AddComposableTest {
 
     @Test
     fun generateButton_isWorking() {
-        composeRule.onNodeWithTag("G").performClick()
-        val text = composeRule.onNodeWithTag("PasswordTextField").currentText()
-        assertThat(Integer(8)).isEqualTo(text.toString().length)
+        composeRule.onNodeWithTag("addFab").performClick()
+        Thread.sleep(1_000L)
+        composeRule.onNodeWithTag("addSheet").assertIsDisplayed()
     }
 
     @Test
     fun savePassword_success() {
-
         composeRule.onNodeWithText("Site Name").performTextInput("Test Site")
         composeRule.onNodeWithText("User Name").performTextInput("Test User")
         composeRule.onNodeWithTag("G").performClick()

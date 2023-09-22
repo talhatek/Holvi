@@ -1,8 +1,26 @@
 package com.example.holvi.ui.common.composable
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Surface
+import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,9 +46,10 @@ fun CenterTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colors.primarySurface,
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = contentColorFor(backgroundColor),
-    elevation: Dp = AppBarDefaults.TopAppBarElevation
+    elevation: Dp = 12.dp
+
 ) {
     val defLeftSectionWidth = if (navigationIcon == null) withoutIconWidth else iconWidth
     var leftSectionWidth by remember { mutableStateOf(defLeftSectionWidth) }
@@ -41,7 +60,7 @@ fun CenterTopAppBar(
         backgroundColor,
         contentColor,
         elevation,
-        AppBarDefaults.ContentPadding,
+        PaddingValues(),
         RectangleShape,
         modifier
     ) {
@@ -53,7 +72,7 @@ fun CenterTopAppBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CompositionLocalProvider(
-                    LocalContentAlpha provides ContentAlpha.high,
+                    LocalContentColor provides (LocalContentColor.current.copy(alpha = 0.4f)),
                     content = navigationIcon
                 )
             }
@@ -69,16 +88,19 @@ fun CenterTopAppBar(
             if (leftSectionWidth != defLeftSectionWidth
                 || rightSectionPadding != 0f
             ) {
-                ProvideTextStyle(value = MaterialTheme.typography.h6) {
+                ProvideTextStyle(value = MaterialTheme.typography.titleSmall) {
                     CompositionLocalProvider(
-                        LocalContentAlpha provides ContentAlpha.high,
+                        LocalContentColor provides (LocalContentColor.current.copy(alpha = 0.4f)),
+
                         content = title
                     )
                 }
             }
         }
 
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        CompositionLocalProvider(
+            LocalContentColor provides (LocalContentColor.current.copy(alpha = 0.4f)),
+        ) {
             with(LocalDensity.current) {
                 Row(
                     Modifier
@@ -118,9 +140,9 @@ fun AppBar(
     Surface(
         color = backgroundColor,
         contentColor = contentColor,
-        elevation = elevation,
         shape = shape,
-        modifier = modifier
+        modifier = modifier,
+        shadowElevation = elevation
     ) {
         Row(
             Modifier

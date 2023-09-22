@@ -1,6 +1,10 @@
 package com.example.holvi.utils
 
+import android.util.Base64
 import java.security.SecureRandom
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 class PasswordManager {
 
@@ -115,31 +119,38 @@ class PasswordManager {
         return sb.toString()
     }
 
+    companion object {
 
-    /**
-     * Evaluate a random password
-     * @param passwordToTest String with the password to test
-     * @return a number from 0 to 1, 0 is a very bad password and 1 is a perfect password
-     */
-    fun evaluatePassword(passwordToTest: String): Float {
+        fun String.encrypt(password: String): String {
+            val secretKeySpec = SecretKeySpec(password.repeat(4).toByteArray(), "AES")
+            val iv = ByteArray(16)
+            val charArray = password.toCharArray()
+            for (i in charArray.indices) {
+                iv[i] = charArray[i].code.toByte()
+            }
+            val ivParameterSpec = IvParameterSpec(iv)
 
-        var factor = 0
-        val length = passwordToTest.length
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec)
 
-        if (passwordToTest.matches(Regex(".*[" + this.lowerCaseLetters + "].*"))) {
-            factor += 2
-        }
-        if (passwordToTest.matches(Regex(".*[" + this.uppercaseLetters + "].*"))) {
-            factor += 2
-        }
-        if (passwordToTest.matches(Regex(".*[" + this.numbers + "].*"))) {
-            factor += 1
-        }
-        if (passwordToTest.matches(Regex(".*[" + this.symbol + "].*"))) {
-            factor += 5
+            val encryptedValue = cipher.doFinal(this.toByteArray())
+            return Base64.encodeToString(encryptedValue, Base64.DEFAULT)
         }
 
-        return (factor * length) / (maxPasswordFactor * maxPasswordLength)
+        fun String.decrypt(password: String): String {
+            val secretKeySpec = SecretKeySpec(password.repeat(4).toByteArray(), "AES")
+            val iv = ByteArray(16)
+            val charArray = password.toCharArray()
+            for (i in charArray.indices) {
+                iv[i] = charArray[i].code.toByte()
+            }
+            val ivParameterSpec = IvParameterSpec(iv)
+
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec)
+
+            val decryptedByteValue = cipher.doFinal(Base64.decode(this, Base64.DEFAULT))
+            return String(decryptedByteValue)
+        }
     }
-
 }

@@ -1,6 +1,6 @@
 package com.example.holvi.theme
 
-import androidx.compose.material.Typography
+import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -15,29 +15,29 @@ val PoppinsMedium = FontFamily(Font(R.font.poppins_medium))
 val PoppinsRegular = FontFamily(Font(R.font.poppins_regular))
 val PoppinsLight = FontFamily(Font(R.font.poppins_light))
 val Typography = Typography(
-    body1 = TextStyle(
+    bodyLarge = TextStyle(
         fontFamily = PoppinsMedium,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
     ),
-    h4 = TextStyle(
+    titleLarge = TextStyle(
         fontFamily = PoppinsSemiBold,
         fontWeight = FontWeight.Normal,
         fontSize = 34.sp,
         letterSpacing = 0.25.sp
     ),
-    h5 = TextStyle(
+    titleMedium = TextStyle(
         fontFamily = PoppinsMedium,
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         letterSpacing = 0.sp
     ),
-    button = TextStyle(
+    titleSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.W500,
         fontSize = 14.sp
     ),
-    caption = TextStyle(
+    labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp

@@ -3,6 +3,7 @@ package com.example.holvi.ui.generateActivity
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import com.example.holvi.utils.PasswordManager
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -19,21 +21,23 @@ class GenerateViewModel : ViewModel() {
     val upperCaseState = mutableStateOf(true)
     val lowerCaseState = mutableStateOf(true)
     val dropdownItems = mutableListOf<Int>()
-    private val activeCount = MutableStateFlow(4)
+    private val _activeCount = MutableStateFlow(4)
+    val activeCount = _activeCount.asStateFlow()
     val currentPassword = mutableStateOf("")
     private val passwordManager = PasswordManager()
-    val currentSelectedLength = mutableStateOf(-1)
+    val currentSelectedLength = mutableStateOf(0)
     val forbiddenLetters = mutableStateOf("")
     val lengthSelectorText = mutableStateOf("Password length")
     private val _uiEvent = MutableSharedFlow<GenerateViewUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
     init {
+        Log.e("LifecycleEventObserver", "initing VM")
         viewModelScope.launch {
-            activeCount.collectLatest {
+            _activeCount.collectLatest {
                 val tmp = mutableListOf<Int>()
                 for (i in 1..50) {
-                    if (i % activeCount.value == 0 && !dropdownItems.contains(i) && i > it)
+                    if (i % _activeCount.value == 0 && !dropdownItems.contains(i) && i > it)
                         tmp.add(i)
                 }
                 dropdownItems.clear()
@@ -44,13 +48,14 @@ class GenerateViewModel : ViewModel() {
 
 
     fun updateActiveCount(isActive: Boolean) {
-        activeCount.value = if (isActive) activeCount.value + 1 else activeCount.value - 1
+        _activeCount.value = if (isActive) _activeCount.value + 1 else _activeCount.value - 1
         lengthSelectorText.value = "Password length"
         currentSelectedLength.value = -1
 
     }
 
     fun generatePassword() {
+        Log.e("LifecycleEventObserver", currentSelectedLength.value.toString())
         if (isProducible())
             currentPassword.value = passwordManager.generatePassword(
                 lowerCaseState.value,
@@ -91,4 +96,7 @@ class GenerateViewModel : ViewModel() {
         }
     }
 
+    companion object {
+        const val SCOPE_NAME = "GENERATE_VIEW_MODEL_SCOPE"
+    }
 }
