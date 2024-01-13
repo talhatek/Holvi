@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -60,9 +61,9 @@ class AuthenticationActivity : FragmentActivity() {
             }
         })
         biometricInfo = BiometricPrompt.PromptInfo.Builder()
-            .setNegativeButtonText("Cancel")
             .setTitle("Authenticate")
             .setDescription("Please authenticate to continue.")
+            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
             .build()
         setContent {
             HolviTheme {
@@ -76,7 +77,7 @@ class AuthenticationActivity : FragmentActivity() {
                                 .fillMaxSize()
                                 .padding(top = it.calculateTopPadding()),
                             onClick = {
-                                if (biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS)
+                                if (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS)
                                     biometricPrompt.authenticate(biometricInfo)
                                 else {
                                     if (BuildConfig.DEBUG)
@@ -84,7 +85,7 @@ class AuthenticationActivity : FragmentActivity() {
                                     else {
                                         scope.launch {
                                             snackbarHostState.showSnackbar(
-                                                message = "You can not login! Your device does not support fingerprint, iris, or face kind of authentication."
+                                                message = "You can not login! Your device does not support fingerprint, iris, face, PIN, pattern, or password kind of authentication."
                                             )
                                         }
                                     }

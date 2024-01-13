@@ -37,18 +37,19 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
             }
         }
         viewModelScope.launch(Dispatchers.Default) {
-            searchQuery.debounce(250L).distinctUntilChanged().collectLatest {
-                try {
-                    val data = passwordDao.searchThroughPasswords("%$it%")
-                    sortAndSet(data = data)
-                } catch (ex: Exception) {
-                    _allPasswords.emit(
-                        PasswordsState.Error(
-                            message = ex.message ?: "Unknown Error"
+            searchQuery.debounce(250L).filter { it.isNotBlank() }.distinctUntilChanged()
+                .collectLatest {
+                    try {
+                        val data = passwordDao.searchThroughPasswords("%$it%")
+                        sortAndSet(data = data)
+                    } catch (ex: Exception) {
+                        _allPasswords.emit(
+                            PasswordsState.Error(
+                                message = ex.message ?: "Unknown Error"
+                            )
                         )
-                    )
+                    }
                 }
-            }
         }
 
     }
@@ -111,6 +112,7 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
             _allPasswords.emit(
                 PasswordsState.Success(
                     data = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.siteName })
+                        .mapIndexed { index, password -> password.copy(id = index) }
                         .toPersistentList()
                 )
             )
