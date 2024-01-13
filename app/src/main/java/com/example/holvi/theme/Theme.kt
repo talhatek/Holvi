@@ -1,30 +1,28 @@
 package com.example.holvi.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
-
-
-private val LightColorPalette = lightColorScheme(
-    primary = PrimaryGreen,
-    onPrimary = SecondPrimary,
-    secondary = SecondPrimaryDark,
-    background = BackGround,
-)
+import androidx.compose.ui.text.TextStyle
 
 @Composable
-fun HolviTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        LightColorPalette
-    } else {
-        LightColorPalette
-    }
+fun HolviTheme(content: @Composable () -> Unit) {
+    val colors = MaterialTheme.colorScheme.copy(
+        primary = PrimaryGreen,
+        onBackground = SecondPrimary,
+        secondary = SecondPrimaryDark,
+        background = BackGround,
+    )
 
     MaterialTheme(
         colorScheme = colors,
         shapes = Shapes,
         typography = Typography,
-        content = content
+        content = {
+            ProvideTextStyle(
+                value = TextStyle(color = PrimaryTextColor),
+                content = content
+            )
+        }
     )
 }

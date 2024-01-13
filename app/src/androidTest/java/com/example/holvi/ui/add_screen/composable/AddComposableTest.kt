@@ -9,8 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.holvi.theme.HolviTheme
-import com.example.holvi.ui.all_screen.composable.AllScreen
-import com.example.holvi.ui.menu_screen.MenuActivity
+import com.example.holvi.ui.all_screen.AllScreen
+import com.example.holvi.ui.menuActivity.MenuActivity
 import com.example.holvi.utils.Screen
 import org.junit.Before
 import org.junit.Rule

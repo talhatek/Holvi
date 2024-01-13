@@ -4,7 +4,7 @@ import com.example.holvi.ui.add_screen.AddViewModel
 import com.example.holvi.ui.all_screen.AllViewModel
 import com.example.holvi.ui.authenticationActivity.AuthenticationViewModel
 
-import com.example.holvi.ui.generateActivity.GenerateViewModel
+import com.example.holvi.ui.generate_screen.GenerateViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

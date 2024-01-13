@@ -23,17 +23,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.holvi.ui.common.composable.TopAppBarBackWithLogo
+import com.example.holvi.theme.PrimaryTextColor
+import com.example.holvi.ui.common.TopAppBarBackWithLogo
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
@@ -87,24 +88,26 @@ fun PortScreen(navController: NavController) {
         ) {
 
             Button(onClick = { viewModel.onEvent(PortViewModel.PortEvent.Import) }) {
-                Text(text = "Import", color = Color.White)
+                Text(text = "Import", color = PrimaryTextColor)
 
             }
             Button(onClick = {
                 exportDialogVisible = true
 
             }) {
-                Text(text = "Export", color = Color.White)
+                Text(text = "Export", color = PrimaryTextColor)
             }
         }
         if (exportDialogVisible) {
             ExportModelSheet(
+                pathLength = 4,
                 sheetState = modalSheet,
                 onDismiss = { exportDialogVisible = false },
                 onExport = { path ->
                     exportDialogVisible = false
                     viewModel.onEvent(PortViewModel.PortEvent.Export(pathId = path))
-                })
+                }
+            )
         }
     }
 }
@@ -112,36 +115,17 @@ fun PortScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExportModelSheet(
+    pathLength: Int,
     sheetState: SheetState,
     onDismiss: (isItemUpdated: Boolean) -> Unit,
     onExport: (value: String) -> Unit,
 ) {
-    val itemWidth = LocalConfiguration.current.screenWidthDp.div(5).dp
 
+    val itemWidth = LocalConfiguration.current.screenWidthDp.div(pathLength.plus(1)).dp
     val snackState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val firstFocusRequester = remember { FocusRequester() }
-    val secondFocusRequester = remember { FocusRequester() }
-    val thirdFocusRequester = remember { FocusRequester() }
-    val fourthFocusRequester = remember { FocusRequester() }
-    var pathIndexFirst by remember {
-        mutableStateOf("")
-    }
-    var pathIndexSecond by remember {
-        mutableStateOf("")
-    }
-    var pathIndexThird by remember {
-        mutableStateOf("")
-    }
-    var pathIndexFourth by remember {
-        mutableStateOf("")
-    }
-
-    fun findValue(old: String, new: String): String {
-        return when {
-            new.isBlank() or (old == new) -> new
-            else -> new.filterNot { it in old }.ifBlank { old }
-        }
+    var path by remember {
+        mutableStateOf(" ".repeat(pathLength))
     }
 
     ModalBottomSheet(
@@ -165,78 +149,25 @@ fun ExportModelSheet(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 val focusManager = LocalFocusManager.current
-                OutlinedTextField(
-                    modifier = Modifier
-                        .size(itemWidth)
-                        .focusRequester(firstFocusRequester),
-                    value = pathIndexFirst,
-                    onValueChange = {
-                        pathIndexFirst = findValue(pathIndexFirst, it)
-                        if (pathIndexFirst.isNotBlank())
-                            secondFocusRequester.requestFocus()
 
-                    },
-                    textStyle = TextStyle(color = Color.White, textAlign = TextAlign.Center),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = Color.Transparent,
-                        selectionColors = TextSelectionColors(Color.Transparent, Color.Transparent)
-                    ),
-                    singleLine = true,
-                )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .size(itemWidth)
-                        .focusRequester(secondFocusRequester),
-                    value = pathIndexSecond,
-                    onValueChange = {
-                        pathIndexSecond = findValue(pathIndexSecond, it)
-                        if (pathIndexSecond.isNotBlank())
-                            thirdFocusRequester.requestFocus()
-                    },
-                    textStyle = TextStyle(color = Color.White, textAlign = TextAlign.Center),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = Color.Transparent,
-                        selectionColors = TextSelectionColors(Color.Transparent, Color.Transparent)
-                    ),
-                    singleLine = true,
-                )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .size(itemWidth)
-                        .focusRequester(thirdFocusRequester),
-                    value = pathIndexThird,
-                    onValueChange = {
-                        pathIndexThird = findValue(pathIndexThird, it)
-                        if (pathIndexThird.isNotBlank())
-                            fourthFocusRequester.requestFocus()
-                    },
-                    textStyle = TextStyle(color = Color.White, textAlign = TextAlign.Center),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = Color.Transparent,
-                        selectionColors = TextSelectionColors(Color.Transparent, Color.Transparent)
-                    ),
-                    singleLine = true,
-                )
+                for (i in 0..<pathLength) {
+                    CodeBox(
+                        itemWidth = itemWidth,
+                        onValueChanged = {
+                            path = path.toCharArray().also { charArray ->
+                                charArray[i] = it.firstOrNull() ?: " ".first()
+                            }.concatToString()
 
-                OutlinedTextField(
-                    modifier = Modifier
-                        .size(itemWidth)
-                        .focusRequester(fourthFocusRequester),
-                    value = pathIndexFourth,
-                    onValueChange = {
-                        pathIndexFourth = findValue(pathIndexFourth, it)
-                        if (pathIndexSecond.isNotBlank()) {
-                            fourthFocusRequester.freeFocus()
-                            focusManager.clearFocus()
+                            if (it.isNotBlank()) {
+                                if (i == pathLength - 1) {
+                                    focusManager.clearFocus()
+                                } else {
+                                    focusManager.moveFocus(FocusDirection.Next)
+                                }
+                            }
                         }
-                    },
-                    textStyle = TextStyle(color = Color.White, textAlign = TextAlign.Center),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = Color.Transparent,
-                        selectionColors = TextSelectionColors(Color.Transparent, Color.Transparent)
-                    ),
-                    singleLine = true,
-                )
+                    )
+                }
             }
 
             Button(
@@ -246,20 +177,14 @@ fun ExportModelSheet(
                         top = 64.dp
                     ),
                 onClick = {
-                    listOf(
-                        pathIndexFirst,
-                        pathIndexSecond,
-                        pathIndexThird,
-                        pathIndexFourth
-                    ).joinToString { "" }.also { path ->
-                        if (path.length != 4) {
-                            scope.launch {
-                                snackState.showSnackbar("Please control your key.")
-                            }
-                        } else {
-                            onExport.invoke(path)
+                    if (path.trim().length != 4) {
+                        scope.launch {
+                            snackState.showSnackbar("Please control your key.")
                         }
+                    } else {
+                        onExport.invoke(path)
                     }
+
                 }) {
                 Text(text = "Export")
             }
@@ -267,5 +192,38 @@ fun ExportModelSheet(
             SnackbarHost(hostState = snackState, Modifier)
 
         }
+    }
+}
+
+@Composable
+fun CodeBox(itemWidth: Dp, onValueChanged: (value: String) -> Unit) {
+
+    var value by remember {
+        mutableStateOf("")
+    }
+
+
+    OutlinedTextField(
+        modifier = Modifier
+            .size(itemWidth),
+        value = value,
+        onValueChange = {
+            value = findValue(value, it)
+            onValueChanged.invoke(value)
+
+        },
+        textStyle = TextStyle(color = PrimaryTextColor, textAlign = TextAlign.Center),
+        colors = OutlinedTextFieldDefaults.colors(
+            cursorColor = Color.Transparent,
+            selectionColors = TextSelectionColors(Color.Transparent, Color.Transparent)
+        ),
+        singleLine = true,
+    )
+}
+
+fun findValue(old: String, new: String): String {
+    return when {
+        new.isBlank() or (old == new) -> new
+        else -> new.filterNot { it in old }.ifBlank { old }.run { this }
     }
 }

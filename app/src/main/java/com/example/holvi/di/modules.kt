@@ -1,6 +1,5 @@
 package com.example.holvi.di
 
-import android.util.Log
 import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.example.holvi.db.HolviDb
@@ -8,7 +7,7 @@ import com.example.holvi.ui.HolviApp
 import com.example.holvi.ui.add_screen.AddViewModel
 import com.example.holvi.ui.all_screen.AllViewModel
 import com.example.holvi.ui.authenticationActivity.AuthenticationViewModel
-import com.example.holvi.ui.generateActivity.GenerateViewModel
+import com.example.holvi.ui.generate_screen.GenerateViewModel
 import com.example.holvi.ui.port_screen.PortViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -49,11 +48,9 @@ val viewModule = module {
 fun Koin.getViewModelScope(name: String): Scope {
     val scope = getOrCreateScope(name, named(name))
     if (scope.closed) {
-        Log.e("koin", "closed creating new one")
         deleteScope(name)
         return getOrCreateScope(name, named(name))
     }
-    Log.e("koin", "it is not closed")
     return scope
 }
 

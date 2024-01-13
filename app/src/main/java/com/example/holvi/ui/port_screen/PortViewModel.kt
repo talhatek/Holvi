@@ -65,7 +65,7 @@ class PortViewModel(
                         it.data?.toPassword(pathId)
                             ?.let { password -> passwordDao.addPassword(password) }
                     }
-                    _portResult.emit(PortResult.ExportSuccess(""))
+                    _portResult.emit(PortResult.ExportSuccess("All passwords successfully exported."))
                 }
             }
         }

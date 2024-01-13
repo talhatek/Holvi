@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.holvi.db.dao.PasswordDao
 import com.example.holvi.db.model.Password
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,9 +20,10 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
 
     private val _allPasswords = MutableStateFlow<PasswordsState>(PasswordsState.Init)
     val allPasswords = _allPasswords.asStateFlow()
-    private val _passwordDeleteState = MutableSharedFlow<DeletePasswordState>()
 
+    private val _passwordDeleteState = MutableSharedFlow<DeletePasswordState>()
     val passwordDeleteState = _passwordDeleteState.asSharedFlow()
+
     private val deletedItem = MutableStateFlow<Password?>(null)
     private var clearDeletedItemJob: Job? = null
 
@@ -27,21 +31,16 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
 
     init {
         getAll()
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             deletedItem.collectLatest {
                 if (it == null) clearDeletedItemJob = null
             }
         }
-        viewModelScope.launch {
-            searchQuery.debounce(444L).filter { query ->
-                if (query.isEmpty() || query.length < 2) {
-                    return@filter false
-                }
-                return@filter true
-            }.distinctUntilChanged().collectLatest {
+        viewModelScope.launch(Dispatchers.Default) {
+            searchQuery.debounce(250L).distinctUntilChanged().collectLatest {
                 try {
                     val data = passwordDao.searchThroughPasswords("%$it%")
-                    _allPasswords.emit(PasswordsState.Success(data = data))
+                    sortAndSet(data = data)
                 } catch (ex: Exception) {
                     _allPasswords.emit(
                         PasswordsState.Error(
@@ -55,14 +54,14 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
     }
 
     fun getAll() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             _allPasswords.emit(PasswordsState.Loading)
             try {
                 passwordDao.observeAllPasswords().collectLatest { data ->
                     if (data.isEmpty()) {
                         _allPasswords.emit(PasswordsState.Empty)
                     } else {
-                        _allPasswords.emit(PasswordsState.Success(data = data))
+                        sortAndSet(data)
                     }
                 }
             } catch (ex: Exception) {
@@ -73,7 +72,7 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
 
 
     fun delete(siteName: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
                 val item = passwordDao.getPassword(siteName)
                 val effectedRowCount = passwordDao.deletePassword(password = item)
@@ -96,7 +95,7 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
     }
 
     fun undoDelete() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             deletedItem.value?.let {
                 passwordDao.addPassword(it)
                 deletedItem.value = null
@@ -106,13 +105,24 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
             }
         }
     }
+
+    private fun sortAndSet(data: List<Password>) {
+        viewModelScope.launch(Dispatchers.Default) {
+            _allPasswords.emit(
+                PasswordsState.Success(
+                    data = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.siteName })
+                        .toPersistentList()
+                )
+            )
+        }
+    }
 }
 
 sealed class PasswordsState {
     data object Loading : PasswordsState()
     data object Init : PasswordsState()
     data object Empty : PasswordsState()
-    class Success(val data: List<Password>) : PasswordsState()
+    class Success(val data: PersistentList<Password>) : PasswordsState()
     class Error(val message: String) : PasswordsState()
 }
 
