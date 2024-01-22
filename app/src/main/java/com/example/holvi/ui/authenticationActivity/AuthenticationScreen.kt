@@ -86,7 +86,7 @@ fun AuthenticationMainScreen(
                 .fillMaxWidth(.52f)
                 .height(52.dp),
             onClick = {
-                onClick.invoke()
+                onClick()
             }, enabled = buttonEnabledState,
             shape = RoundedCornerShape(8.dp),
             colors = ButtonColors(

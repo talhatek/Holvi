@@ -2,7 +2,9 @@ package com.example.holvi.ui.port_screen
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +15,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.selection.TextSelectionColors
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +38,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.nativeKeyCode
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -133,8 +149,7 @@ fun ExportModelSheet(
         sheetState = sheetState,
         modifier = Modifier
             .wrapContentHeight()
-            .fillMaxWidth()
-            .imePadding(),
+            .fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.background
     ) {
         Column(
@@ -195,9 +210,9 @@ fun ExportModelSheet(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CodeBox(itemWidth: Dp, onValueChanged: (value: String) -> Unit) {
-
     var value by remember {
         mutableStateOf("")
     }
@@ -205,11 +220,19 @@ fun CodeBox(itemWidth: Dp, onValueChanged: (value: String) -> Unit) {
 
     OutlinedTextField(
         modifier = Modifier
+            .imePadding()
+            .onKeyEvent {
+                if (it.key.nativeKeyCode == KeyEvent.KEYCODE_DEL) {
+                    value = ""
+                    onValueChanged(value)
+                }
+                true
+            }
             .size(itemWidth),
         value = value,
         onValueChange = {
             value = findValue(value, it)
-            onValueChanged.invoke(value)
+            onValueChanged(value)
 
         },
         textStyle = TextStyle(color = PrimaryTextColor, textAlign = TextAlign.Center),
