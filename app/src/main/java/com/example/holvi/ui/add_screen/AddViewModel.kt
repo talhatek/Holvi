@@ -51,11 +51,6 @@ class AddViewModel(private val passwordDao: PasswordDao) : ViewModel() {
         return data
     }
 
-    fun clearPassword() {
-        viewModelScope.launch {
-            password.emit("")
-        }
-    }
 }
 
 sealed interface ClearFocus {

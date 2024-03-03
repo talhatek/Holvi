@@ -94,6 +94,7 @@ fun InputView(
             color = PrimaryTextColor
         ),
         modifier = Modifier
+            .testTag(hintParam)
             .fillMaxWidth(.7f)
             .onFocusEvent {
                 if (it.isFocused) {
@@ -193,6 +194,7 @@ fun PasswordInputView(
         trailingIcon = {
             Box(
                 modifier = Modifier
+                    .testTag("generateIcon")
                     .size(24.dp)
                     .clip(CircleShape)
                     .background(

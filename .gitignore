@@ -252,3 +252,4 @@ fabric.properties
 /gradle/wrapper/gradle-wrapper.properties
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/migrations.xml
+/.idea/deploymentTargetDropDown.xml
