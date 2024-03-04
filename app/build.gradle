@@ -10,16 +10,17 @@ android {
 
 
     defaultConfig {
-        applicationId "com.example.holvi"
+        applicationId "com.tek.holvi"
         minSdk 23
         targetSdk 34
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "com.example.holvi.TestRunner"
+        testInstrumentationRunner "com.tek.holvi.TestRunner"
         vectorDrawables {
             useSupportLibrary true
         }
+
     }
 
     buildTypes {
@@ -46,7 +47,8 @@ android {
             excludes += '/META-INF/*'
         }
     }
-    namespace 'com.example.holvi'
+
+    namespace 'com.tek.holvi'
 }
 
 dependencies {
@@ -62,9 +64,9 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.8.2'
     implementation 'com.google.firebase:firebase-messaging-ktx:23.4.1'
     implementation 'com.google.firebase:firebase-firestore-ktx:24.10.3'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
     implementation 'androidx.navigation:navigation-runtime-ktx:2.7.7'
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
     implementation "androidx.navigation:navigation-compose:2.7.7"
@@ -73,13 +75,7 @@ dependencies {
     implementation "io.insert-koin:koin-android:$koin_version"
     implementation "io.insert-koin:koin-androidx-compose:$koin_version"
 
-    def room_version = "2.6.1"
-
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-    ksp "androidx.room:room-compiler:$room_version"
-    implementation "androidx.room:room-paging:$room_version"
-    implementation "net.zetetic:android-database-sqlcipher:4.5.0"
+    implementation(project(":core:database"))
 
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
@@ -88,6 +84,9 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.5.2'
 
     testImplementation "io.insert-koin:koin-test:$koin_version"
-    testImplementation "androidx.room:room-testing:$room_version"
     testImplementation 'org.mockito:mockito-core:3.10.0'
+    testImplementation "com.google.truth:truth:1.4.2"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
+    testImplementation "app.cash.turbine:turbine:1.0.0"
+
 }
