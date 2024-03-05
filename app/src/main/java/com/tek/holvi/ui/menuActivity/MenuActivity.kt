@@ -6,11 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.tek.holvi.theme.HolviTheme
+
 import com.tek.holvi.ui.all_screen.AllScreen
 import com.tek.holvi.ui.generate_screen.GenerateScreen
 import com.tek.holvi.ui.port_screen.PortScreen
 import com.tek.holvi.utils.Screen
+import com.tek.ui.HolviTheme
 
 class MenuActivity : ComponentActivity() {
 

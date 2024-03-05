@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 
 @Composable
-fun HolviTheme(content: @Composable () -> Unit) {
+fun MaterialHolviTheme(content: @Composable () -> Unit) {
     val colors = MaterialTheme.colorScheme.copy(
         primary = PrimaryGreen,
         onBackground = SecondPrimary,

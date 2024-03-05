@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tek.holvi.R
-import com.tek.holvi.theme.HolviTheme
 import com.tek.holvi.theme.OnBackgroundTextColor
 import com.tek.holvi.theme.PoppinsRegular
 import com.tek.holvi.theme.PoppinsSemiBold
@@ -34,6 +33,7 @@ import com.tek.holvi.theme.PrimaryTextColor
 import com.tek.holvi.ui.common.TopAppBarOnlyIcon
 import com.tek.holvi.utils.MenuType
 import com.tek.holvi.utils.Screen
+import com.tek.ui.HolviTheme
 
 @Composable
 fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {

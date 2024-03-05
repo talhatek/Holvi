@@ -9,6 +9,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -17,11 +18,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.FragmentActivity
 import com.tek.holvi.BuildConfig
 import com.tek.holvi.R
-import com.tek.holvi.theme.HolviTheme
 import com.tek.holvi.ui.menuActivity.MenuActivity
+import com.tek.ui.HolviTheme
 import kotlinx.coroutines.launch
 
 class AuthenticationActivity : FragmentActivity() {
@@ -75,14 +77,17 @@ class AuthenticationActivity : FragmentActivity() {
                         AuthenticationMainScreen(
                             modifier = Modifier
                                 .fillMaxSize()
+                                .background(Color(red = 28, green = 27, blue = 31))
                                 .padding(top = it.calculateTopPadding()),
                             onClick = {
-                                if (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS)
+                                if (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS) {
                                     biometricPrompt.authenticate(biometricInfo)
-                                else {
-                                    if (BuildConfig.DEBUG)
+
+                                } else {
+                                    if (BuildConfig.DEBUG) {
                                         startActivity(Intent(this, MenuActivity::class.java))
-                                    else {
+
+                                    } else {
                                         scope.launch {
                                             snackbarHostState.showSnackbar(
                                                 message = "You can not login! Your device does not support fingerprint, iris, face, PIN, pattern, or password kind of authentication."

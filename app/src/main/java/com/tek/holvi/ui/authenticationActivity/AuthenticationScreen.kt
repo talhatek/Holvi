@@ -11,7 +11,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,10 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.tek.holvi.R
-import com.tek.holvi.theme.OnBackgroundTextColor
-import com.tek.holvi.theme.PoppinsRegular
-import com.tek.holvi.theme.PoppinsSemiBold
-import com.tek.holvi.theme.PrimaryTextColor
+import com.tek.ui.HolviTheme
 import org.koin.androidx.compose.get
 
 @Composable
@@ -68,16 +64,13 @@ fun AuthenticationMainScreen(
     ) {
         Text(
             text = "Welcome Back!",
-            color = OnBackgroundTextColor,
-            style = MaterialTheme.typography.titleLarge,
-            fontFamily = PoppinsRegular
+            color = HolviTheme.colors.primaryTextColor,
+            style = HolviTheme.typography.largestHeader,
         )
         Text(
             text = "Please authenticate to continue...",
-            color = OnBackgroundTextColor,
-            style = MaterialTheme.typography.bodyLarge,
-            fontFamily = PoppinsRegular
-
+            color = HolviTheme.colors.primaryTextColor,
+            style = HolviTheme.typography.title,
         )
         Button(
             modifier = Modifier
@@ -88,27 +81,25 @@ fun AuthenticationMainScreen(
             }, enabled = buttonEnabledState,
             shape = RoundedCornerShape(8.dp),
             colors = ButtonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = PrimaryTextColor,
-                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(.4f),
-                disabledContentColor = PrimaryTextColor.copy(alpha = .2f)
+                containerColor = HolviTheme.colors.primaryBackgroundColor,
+                contentColor = HolviTheme.colors.primaryTextColor,
+                disabledContainerColor = HolviTheme.colors.primaryBackgroundColor.copy(.4f),
+                disabledContentColor = HolviTheme.colors.primaryTextColor.copy(alpha = .2f)
             )
         ) {
             if (buttonEnabledState) {
                 Text(
                     text = "Authenticate",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = PrimaryTextColor,
-                    fontFamily = PoppinsSemiBold
+                    style = HolviTheme.typography.title,
+                    color = HolviTheme.colors.primaryTextColor,
 
-                )
+                    )
             } else {
                 CircularProgressIndicator(
                     Modifier
                         .size(16.dp),
                     strokeWidth = 4.dp,
-                    color = PrimaryTextColor
-
+                    color = HolviTheme.colors.primaryTextColor,
                 )
             }
         }
@@ -118,7 +109,7 @@ fun AuthenticationMainScreen(
             Modifier
                 .fillMaxWidth(.6f)
                 .fillMaxHeight(.4f),
-            tint = OnBackgroundTextColor
+            tint = HolviTheme.colors.primaryTextColor
         )
     }
 }
