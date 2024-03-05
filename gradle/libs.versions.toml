@@ -24,7 +24,7 @@ runner = "1.5.2"
 truth = "1.4.2"
 turbine = "1.0.0"
 kotlinCompiler = "1.5.10"
-
+ksp = "1.9.0-1.0.13"
 
 
 [libraries]
@@ -67,3 +67,6 @@ mockito-android = { module = "org.mockito:mockito-android", version.ref = "mocki
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoAndroid" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+
+[plugins]
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
