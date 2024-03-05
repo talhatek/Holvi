@@ -26,13 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tek.holvi.R
-import com.tek.holvi.di.getViewModelScope
 import com.tek.holvi.theme.PoppinsRegular
 import com.tek.holvi.theme.PrimaryTextColor
 import com.tek.holvi.theme.SecondPrimary
 import com.tek.holvi.ui.common.BottomButton
 import com.tek.holvi.ui.common.CircleIconButton
 import com.tek.holvi.ui.common.TopAppBarBackWithLogo
+import com.tek.password.di.getViewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

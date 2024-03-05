@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 rootProject.name = "Holvi"
 include ':app'
 include ':core:database'
+include ':feature:password'

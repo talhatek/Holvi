@@ -124,12 +124,12 @@ import com.tek.holvi.theme.PrimaryGreen
 import com.tek.holvi.theme.PrimaryTextColor
 import com.tek.holvi.theme.SecondPrimaryDark
 import com.tek.holvi.theme.Shapes
-import com.tek.holvi.ui.add_screen.AddPasswordState
-import com.tek.holvi.ui.add_screen.AddViewModel
-import com.tek.holvi.ui.add_screen.InputView
-import com.tek.holvi.ui.add_screen.PasswordInputView
 import com.tek.holvi.ui.common.TopAppBarBackWithLogo
 import com.tek.holvi.utils.SnackbarController
+import com.tek.password.presentation.AddPasswordState
+import com.tek.password.presentation.AddViewModel
+import com.tek.password.ui.InputView
+import com.tek.password.ui.PasswordInputView
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 import kotlin.math.abs

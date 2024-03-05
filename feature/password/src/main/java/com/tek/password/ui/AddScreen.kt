@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.add_screen
+package com.tek.password.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,14 +30,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tek.holvi.theme.PoppinsRegular
-import com.tek.holvi.theme.PrimaryTextColor
+import com.tek.password.presentation.AddViewModel
+import com.tek.password.presentation.ClearFocus
 import kotlinx.coroutines.flow.collectLatest
 
+val PoppinsRegular = FontFamily.Default
+val PrimaryTextColor = Color.Blue
 
 @Composable
 fun InputView(
