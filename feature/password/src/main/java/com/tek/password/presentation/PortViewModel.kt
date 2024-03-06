@@ -1,22 +1,23 @@
-package com.tek.holvi.ui.port_screen
+package com.tek.password.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.FirebaseFirestore
 import com.tek.database.dao.PasswordDao
+import com.tek.database.domain.ExportPasswordUseCase
+import com.tek.database.domain.ImportPasswordUseCase
 import com.tek.database.model.Password
-import com.tek.holvi.utils.PasswordManager.Companion.decrypt
-import com.tek.holvi.utils.PasswordManager.Companion.encrypt
+import com.tek.password.domain.PasswordGeneratorUseCase.Companion.decrypt
+import com.tek.password.domain.PasswordGeneratorUseCase.Companion.encrypt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
 class PortViewModel(
     private val passwordDao: PasswordDao,
-    private val db: FirebaseFirestore
+    private val importPassword: ImportPasswordUseCase,
+    private val exportPassword: ExportPasswordUseCase,
 ) : ViewModel() {
     private val _portResult = MutableSharedFlow<PortResult>()
     val portResult
@@ -43,13 +44,7 @@ class PortViewModel(
             }
             val pathId = UUID.randomUUID().toString().take(4)
             data.forEachIndexed addEach@{ index, password ->
-                db.collection("port$pathId").document(index.toString())
-                    .set(password.encrypt(pathId)).isSuccessful.let {
-                        if (it.not()) {
-                            _portResult.emit(PortResult.Error("Could not import data."))
-                            return@addEach
-                        }
-                    }
+                importPassword.invoke("port$pathId", index.toString(), password.encrypt(pathId))
             }
             _portResult.emit(PortResult.ImportSuccess(pathId))
         }
@@ -57,7 +52,7 @@ class PortViewModel(
 
     private fun export(pathId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            db.collection("port$pathId").get().await().let { data ->
+            exportPassword.invoke("port$pathId").let { data ->
                 if (data.documents.isEmpty()) {
                     _portResult.emit(PortResult.Error("Such key does not exist!"))
                 } else {

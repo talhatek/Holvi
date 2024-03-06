@@ -1,4 +1,4 @@
-package com.tek.holvi.utils
+package com.tek.password.domain
 
 import android.util.Base64
 import java.security.SecureRandom
@@ -6,14 +6,14 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-class PasswordManager {
+class PasswordGeneratorUseCase {
 
     private var lowerCaseLetters: String = "abcdefghijklmnopqrstuvwxyz"
     private var uppercaseLetters: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     private var numbers: String = "0123456789"
     private var symbol: String = "@#=+!£$%&?/*-"
 
-    fun generatePassword(
+    operator fun invoke(
         isWithLetters: Boolean = true,
         isWithUppercase: Boolean = true,
         isWithNumbers: Boolean = true,

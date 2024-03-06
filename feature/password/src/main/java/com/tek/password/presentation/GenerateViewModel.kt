@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.generate_screen
+package com.tek.password.presentation
 
 
 import android.content.ClipData
@@ -6,7 +6,7 @@ import android.content.ClipboardManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tek.holvi.utils.PasswordManager
+import com.tek.password.domain.PasswordGeneratorUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class GenerateViewModel : ViewModel() {
+class GenerateViewModel(private val passwordGenerator: PasswordGeneratorUseCase) : ViewModel() {
     val symbolState = mutableStateOf(true)
     val numberState = mutableStateOf(true)
     val upperCaseState = mutableStateOf(true)
@@ -23,7 +23,7 @@ class GenerateViewModel : ViewModel() {
     private val _activeCount = MutableStateFlow(4)
     val activeCount = _activeCount.asStateFlow()
     val currentPassword = mutableStateOf("")
-    private val passwordManager = PasswordManager()
+
     val currentSelectedLength = mutableStateOf(0)
     val forbiddenLetters = mutableStateOf("")
     val lengthSelectorText = mutableStateOf("Password length")
@@ -54,7 +54,7 @@ class GenerateViewModel : ViewModel() {
 
     fun generatePassword() {
         if (isProducible()) {
-            currentPassword.value = passwordManager.generatePassword(
+            currentPassword.value = passwordGenerator.invoke(
                 lowerCaseState.value,
                 upperCaseState.value,
                 numberState.value,

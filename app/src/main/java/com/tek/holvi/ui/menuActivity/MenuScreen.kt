@@ -30,10 +30,10 @@ import com.tek.holvi.theme.OnBackgroundTextColor
 import com.tek.holvi.theme.PoppinsRegular
 import com.tek.holvi.theme.PoppinsSemiBold
 import com.tek.holvi.theme.PrimaryTextColor
-import com.tek.holvi.ui.common.TopAppBarOnlyIcon
 import com.tek.holvi.utils.MenuType
 import com.tek.holvi.utils.Screen
 import com.tek.ui.HolviTheme
+import com.tek.ui.TopAppBarOnlyIcon
 
 @Composable
 fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {

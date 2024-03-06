@@ -1,4 +1,4 @@
-package com.tek.holvi.utils
+package com.tek.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration

@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.all_screen
+package com.tek.password.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

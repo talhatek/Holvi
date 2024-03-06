@@ -21,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.tek.holvi.R
@@ -37,8 +36,6 @@ fun AuthenticationMainScreen(
 
     val viewModel = get<AuthenticationViewModel>()
     val sqState = viewModel.sqState.collectAsState().value
-
-    val context = LocalContext.current
 
     var buttonEnabledState by remember {
         mutableStateOf(false)

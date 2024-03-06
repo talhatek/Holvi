@@ -1,5 +1,6 @@
-package com.tek.holvi.ui.common
+package com.tek.ui
 
+import android.content.res.Resources
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.tek.holvi.ui.extension.toPx
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -155,3 +155,4 @@ fun AppBar(
         )
     }
 }
+val Float.toPx get() = this * Resources.getSystem().displayMetrics.density

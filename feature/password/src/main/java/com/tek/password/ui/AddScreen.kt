@@ -30,17 +30,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tek.password.presentation.AddViewModel
 import com.tek.password.presentation.ClearFocus
+import com.tek.ui.HolviTheme
 import kotlinx.coroutines.flow.collectLatest
-
-val PoppinsRegular = FontFamily.Default
-val PrimaryTextColor = Color.Blue
 
 @Composable
 fun InputView(
@@ -72,30 +68,19 @@ fun InputView(
                 modifier = Modifier
                     .alpha(.5f)
                     .fillMaxWidth(),
-                style = TextStyle(
-                    fontFamily = PoppinsRegular,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Start,
-                    color = PrimaryTextColor
-                )
+                style = HolviTheme.typography.body
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedTextColor = PrimaryTextColor,
-            unfocusedTextColor = PrimaryTextColor,
-            focusedIndicatorColor = PrimaryTextColor,
-            unfocusedIndicatorColor = PrimaryTextColor,
+            focusedTextColor = HolviTheme.colors.primaryTextColor,
+            unfocusedTextColor = HolviTheme.colors.primaryTextColor,
+            focusedIndicatorColor = HolviTheme.colors.primaryTextColor,
+            unfocusedIndicatorColor = HolviTheme.colors.primaryTextColor,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent
         ),
-        textStyle = TextStyle(
-            fontFamily = PoppinsRegular,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Start,
-            color = PrimaryTextColor
-        ),
+
+        textStyle = HolviTheme.typography.body,
         modifier = Modifier
             .testTag(hintParam)
             .fillMaxWidth(.7f)
@@ -157,31 +142,19 @@ fun PasswordInputView(
                     .alpha(.5f)
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
-                style = TextStyle(
-                    fontFamily = PoppinsRegular,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Start,
-
-                    ),
-                color = PrimaryTextColor
+                style = HolviTheme.typography.body,
+                color = HolviTheme.colors.primaryTextColor,
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedTextColor = PrimaryTextColor,
-            unfocusedTextColor = PrimaryTextColor,
-            focusedIndicatorColor = PrimaryTextColor,
-            unfocusedIndicatorColor = PrimaryTextColor,
+            focusedTextColor = HolviTheme.colors.primaryTextColor,
+            unfocusedTextColor = HolviTheme.colors.primaryTextColor,
+            focusedIndicatorColor = HolviTheme.colors.primaryTextColor,
+            unfocusedIndicatorColor = HolviTheme.colors.primaryTextColor,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent
         ),
-        textStyle = TextStyle(
-            fontFamily = PoppinsRegular,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Start,
-            color = PrimaryTextColor
-        ),
+        textStyle = HolviTheme.typography.title,
         modifier = Modifier
             .fillMaxWidth(.7f)
             .onFocusEvent {

@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.port_screen
+package com.tek.password.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -49,8 +49,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.tek.holvi.theme.PrimaryTextColor
-import com.tek.holvi.ui.common.TopAppBarBackWithLogo
+import com.tek.password.presentation.PortViewModel
+import com.tek.ui.HolviTheme
+import com.tek.ui.TopAppBarBackWithLogo
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
@@ -104,14 +105,18 @@ fun PortScreen(navController: NavController) {
         ) {
 
             Button(onClick = { viewModel.onEvent(PortViewModel.PortEvent.Import) }) {
-                Text(text = "Import", color = PrimaryTextColor)
+                Text(
+                    text = "Import", color = HolviTheme.colors.primaryTextColor
+                )
 
             }
             Button(onClick = {
                 exportDialogVisible = true
 
             }) {
-                Text(text = "Export", color = PrimaryTextColor)
+                Text(
+                    text = "Export", color = HolviTheme.colors.primaryTextColor
+                )
             }
         }
         if (exportDialogVisible) {
@@ -235,7 +240,9 @@ fun CodeBox(itemWidth: Dp, onValueChanged: (value: String) -> Unit) {
             onValueChanged(value)
 
         },
-        textStyle = TextStyle(color = PrimaryTextColor, textAlign = TextAlign.Center),
+        textStyle = TextStyle(
+            color = HolviTheme.colors.primaryTextColor, textAlign = TextAlign.Center
+        ),
         colors = OutlinedTextFieldDefaults.colors(
             cursorColor = Color.Transparent,
             selectionColors = TextSelectionColors(Color.Transparent, Color.Transparent)

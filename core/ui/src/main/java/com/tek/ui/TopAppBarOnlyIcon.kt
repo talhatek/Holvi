@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.common
+package com.tek.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
@@ -9,7 +9,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import com.tek.holvi.theme.PrimaryTextColor
+
 
 
 @Composable
@@ -25,7 +25,7 @@ fun TopAppBarOnlyIcon(@DrawableRes res: Int, onIconClicked: () -> Unit) {
                     Icon(
                         painter = painterResource(id = res),
                         contentDescription = "Back",
-                        tint = PrimaryTextColor
+                        tint = HolviTheme.colors.primaryTextColor
                     )
                 }
             }

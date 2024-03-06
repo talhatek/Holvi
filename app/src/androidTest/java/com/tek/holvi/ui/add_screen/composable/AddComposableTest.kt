@@ -11,10 +11,10 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.tek.holvi.theme.HolviTheme
-import com.tek.holvi.ui.all_screen.AllScreen
 import com.tek.holvi.ui.menuActivity.MenuActivity
 import com.tek.holvi.utils.Screen
+import com.tek.password.ui.AllScreen
+import com.tek.ui.HolviTheme
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

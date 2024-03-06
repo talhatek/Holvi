@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.all_screen
+package com.tek.password.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -44,8 +44,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -104,7 +104,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -114,22 +113,17 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tek.database.model.Password
-import com.tek.holvi.R
-import com.tek.holvi.theme.PoppinsRegular
-import com.tek.holvi.theme.PoppinsSemiBold
-import com.tek.holvi.theme.PrimaryGreen
-import com.tek.holvi.theme.PrimaryTextColor
-import com.tek.holvi.theme.SecondPrimaryDark
-import com.tek.holvi.theme.Shapes
-import com.tek.holvi.ui.common.TopAppBarBackWithLogo
-import com.tek.holvi.utils.SnackbarController
+import com.tek.password.R
 import com.tek.password.presentation.AddPasswordState
 import com.tek.password.presentation.AddViewModel
-import com.tek.password.ui.InputView
-import com.tek.password.ui.PasswordInputView
+import com.tek.password.presentation.AllViewModel
+import com.tek.password.presentation.DeletePasswordState
+import com.tek.password.presentation.PasswordsState
+import com.tek.ui.HolviTheme
+import com.tek.ui.SnackbarController
+import com.tek.ui.TopAppBarBackWithLogo
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 import kotlin.math.abs
@@ -224,7 +218,7 @@ fun AllScreen(navController: NavController) {
                 Icon(
                     imageVector = Icons.Filled.Create,
                     contentDescription = "add",
-                    tint = PrimaryTextColor,
+                    tint = HolviTheme.colors.primaryTextColor,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -266,7 +260,7 @@ fun AllScreen(navController: NavController) {
                         content = {
                             items(
                                 passwordsState.data,
-                                key = { password -> password.id }
+                                key = { password -> password }
                             ) { item ->
                                 PasswordItem(
                                     modifier = Modifier,
@@ -305,7 +299,7 @@ fun AllScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "You don't have any saved password.",
-                        color = PrimaryTextColor,
+                        color = HolviTheme.colors.primaryTextColor,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -581,7 +575,7 @@ fun Search(viewModel: AllViewModel) {
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        cursorColor = PrimaryTextColor,
+                        cursorColor = HolviTheme.colors.primaryTextColor,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
@@ -602,9 +596,10 @@ fun Search(viewModel: AllViewModel) {
                             isExpanded = isExpanded.not()
 
                         },
-                    painter = painterResource(id = if (state) R.drawable.ic_close else R.drawable.ic_search_24),
+                    painter = painterResource(id = if (state) R.drawable.ic_close else R.drawable.ic_search),
                     contentDescription = "search",
-                    tint = PrimaryTextColor
+                    tint = HolviTheme.colors.primaryTextColor
+
                 )
             }
         }
@@ -631,6 +626,8 @@ fun PasswordItem(
     var passwordText by remember { mutableStateOf("*".repeat(password.password.length)) }
     var resId by remember { mutableIntStateOf(R.drawable.ic_invisible) }
     var visible by remember { mutableStateOf(false) }
+    val primaryLightBackground = HolviTheme.colors.primaryBackgroundColor
+    val primaryDarkBackground = HolviTheme.colors.primaryDarkBackgroundColor
 
     val animatedCardOffset =
         animateIntOffsetAsState(
@@ -660,8 +657,12 @@ fun PasswordItem(
                         cardSize.value.height
                     )
                 ) {
-
-                    onUpdateFabColor.invoke(if (password.id % 2 != 0) SecondPrimaryDark else PrimaryGreen)
+                    val color = if (password.id % 2 != 0) {
+                        primaryDarkBackground
+                    } else {
+                        primaryLightBackground
+                    }
+                    onUpdateFabColor.invoke(color)
                 }
             }
     ) {
@@ -702,7 +703,7 @@ fun PasswordItem(
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "update",
-                    tint = PrimaryTextColor,
+                    tint = HolviTheme.colors.primaryTextColor,
                     modifier = Modifier
                         .size(24.dp)
                 )
@@ -710,7 +711,7 @@ fun PasswordItem(
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "delete",
-                    tint = PrimaryTextColor,
+                    tint = HolviTheme.colors.primaryTextColor,
                     modifier = Modifier
                         .size(24.dp)
                 )
@@ -747,18 +748,13 @@ fun PasswordItem(
                         })
                 },
             elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
-            colors = CardDefaults.cardColors(containerColor = if (password.id % 2 == 0) SecondPrimaryDark else PrimaryGreen)
+            colors = CardDefaults.cardColors(containerColor = if (password.id % 2 == 0) HolviTheme.colors.primaryDarkBackgroundColor else HolviTheme.colors.primaryBackgroundColor)
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Text(
                     text = password.siteName,
-                    style = TextStyle(
-                        fontFamily = PoppinsSemiBold,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
-                    ),
-                    color = PrimaryTextColor,
+                    style = HolviTheme.typography.body,
+                    color = HolviTheme.colors.primaryTextColor,
                     maxLines = 1,
                 )
                 Box(
@@ -773,13 +769,8 @@ fun PasswordItem(
                         Text(
                             modifier = Modifier.fillMaxWidth(.45f),
                             text = passwordText,
-                            style = TextStyle(
-                                fontFamily = PoppinsRegular,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 12.sp,
-                                textAlign = TextAlign.Center,
-                            ),
-                            color = PrimaryTextColor,
+                            style = HolviTheme.typography.body,
+                            color = HolviTheme.colors.primaryTextColor,
                             maxLines = 1
                         )
                         Spacer(Modifier.fillMaxWidth(.05f))
@@ -807,7 +798,7 @@ fun PasswordItem(
                                 Icon(
                                     painter = painterResource(id = resId),
                                     contentDescription = "hiddenOrShown",
-                                    tint = PrimaryTextColor,
+                                    tint = HolviTheme.colors.primaryTextColor,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -842,7 +833,7 @@ fun PasswordItem(
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_copy),
                                     contentDescription = "hiddenOrShown",
-                                    tint = PrimaryTextColor,
+                                    tint = HolviTheme.colors.primaryTextColor,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -851,13 +842,8 @@ fun PasswordItem(
                 }
                 Text(
                     text = password.userName,
-                    style = TextStyle(
-                        fontFamily = PoppinsRegular,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
-                    ),
-                    color = PrimaryTextColor,
+                    style = HolviTheme.typography.body,
+                    color = HolviTheme.colors.primaryTextColor,
                     maxLines = 1,
                 )
 
@@ -882,17 +868,16 @@ fun PasswordItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = {
-            onDismiss.invoke()
-        }
+    BasicAlertDialog(onDismissRequest = {
+        onDismiss.invoke()
+    }
     ) {
         Surface(
             modifier = Modifier
                 .wrapContentSize()
                 .wrapContentHeight(),
             tonalElevation = AlertDialogDefaults.TonalElevation,
-            shape = Shapes.extraLarge,
+            shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.background,
         ) {
             Column(
@@ -905,7 +890,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = PrimaryTextColor,
+                                color = HolviTheme.colors.primaryTextColor,
                                 fontWeight = FontWeight.Light
                             ),
                         ) {
@@ -914,17 +899,21 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                         append(" ")
                         withStyle(
                             style = SpanStyle(
-                                color = PrimaryTextColor,
+                                color = HolviTheme.colors.primaryTextColor,
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
                             append(siteName)
                         }
-                        withStyle(style = SpanStyle(color = PrimaryTextColor)) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = HolviTheme.colors.primaryTextColor
+                            )
+                        ) {
                             append("?")
                         }
                     },
-                    color = PrimaryTextColor,
+                    color = HolviTheme.colors.primaryTextColor,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -942,7 +931,8 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                                 .9f
                             )
                         ),
-                        shape = Shapes.medium,
+                        shape = MaterialTheme.shapes.medium,
+
                         onClick = {
                             onConfirm.invoke()
                         },
@@ -950,7 +940,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                         Text(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Yes",
-                            color = PrimaryTextColor,
+                            color = HolviTheme.colors.primaryTextColor,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Bold
                         )
@@ -962,7 +952,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                                 alpha = .2f
                             )
                         ),
-                        shape = Shapes.medium,
+                        shape = MaterialTheme.shapes.medium,
                         onClick = {
                             onDismiss.invoke()
                         },
@@ -970,7 +960,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                         Text(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Cancel",
-                            color = PrimaryTextColor,
+                            color = HolviTheme.colors.primaryTextColor,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -1051,7 +1041,7 @@ private class RippleCustomTheme(private val isOdd: Boolean) : RippleTheme {
     @Composable
     override fun defaultColor() =
         RippleTheme.defaultRippleColor(
-            if (isOdd) SecondPrimaryDark else PrimaryGreen,
+            if (isOdd) HolviTheme.colors.primaryDarkBackgroundColor else HolviTheme.colors.primaryBackgroundColor,
             lightTheme = true
         )
 

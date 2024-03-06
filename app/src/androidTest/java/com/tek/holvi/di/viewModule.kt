@@ -1,16 +1,17 @@
-package com.example.holvi.di
+package com.tek.holvi.di
 
-import com.tek.holvi.ui.add_screen.AddViewModel
-import com.tek.holvi.ui.all_screen.AllViewModel
 import com.tek.holvi.ui.authenticationActivity.AuthenticationViewModel
-
-import com.tek.holvi.ui.generate_screen.GenerateViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import com.tek.password.presentation.AddViewModel
+import com.tek.password.presentation.AllViewModel
+import com.tek.password.presentation.GenerateViewModel
+import com.tek.password.presentation.PortViewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 val viewModuleTest = module {
-    viewModel { AddViewModel(get()) }
-    viewModel { AllViewModel(get()) }
-    viewModel { GenerateViewModel() }
-    viewModel { AuthenticationViewModel(get(), get()) }
+    viewModelOf(::AddViewModel)
+    viewModelOf(::AllViewModel)
+    viewModelOf(::GenerateViewModel)
+    viewModelOf(::PortViewModel)
+    viewModelOf(::AuthenticationViewModel)
 }

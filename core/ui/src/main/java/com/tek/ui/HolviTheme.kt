@@ -18,13 +18,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 class HolviColors(
+    mainBackground: Color,
     primaryBackgroundColor: Color,
+    primaryDarkBackgroundColor: Color,
     primaryTextColor: Color,
     bottomBackground: Color,
     error: Color,
     isLight: Boolean
 ) {
+    var mainBackground by mutableStateOf(mainBackground)
+        private set
     var primaryBackgroundColor by mutableStateOf(primaryBackgroundColor)
+        private set
+    var primaryDarkBackgroundColor by mutableStateOf(primaryDarkBackgroundColor)
         private set
     var primaryTextColor by mutableStateOf(primaryTextColor)
         private set
@@ -36,13 +42,17 @@ class HolviColors(
         internal set
 
     fun copy(
+        mainBackground: Color = this.mainBackground,
         primaryBackgroundColor: Color = this.primaryBackgroundColor,
+        primaryDarkBackgroundColor: Color = this.primaryDarkBackgroundColor,
         primaryTextColor: Color = this.primaryTextColor,
         bottomBackground: Color = this.bottomBackground,
         error: Color = this.error,
         isLight: Boolean = this.isLight
     ): HolviColors = HolviColors(
+        mainBackground,
         primaryBackgroundColor,
+        primaryDarkBackgroundColor,
         primaryTextColor,
         bottomBackground,
         error,
@@ -51,25 +61,32 @@ class HolviColors(
 
     fun updateColorsFrom(other: HolviColors) {
         primaryBackgroundColor = other.primaryBackgroundColor
+        primaryDarkBackgroundColor = other.primaryDarkBackgroundColor
         primaryTextColor = other.primaryTextColor
         bottomBackground = other.bottomBackground
         error = other.error
     }
 }
 
+private val colorBackground = Color(red = 28, green = 27, blue = 31)
 private val colorPrimaryBackgroundColor = Color(0xFF084227)
+private val colorPrimaryDarkBackgroundColor = Color(0xFF2F2A34)
 private val colorPrimaryTextColor = Color(0xFFced9bf)
 private val colorBottomBackground = Color(0xFF25202B)
 private val colorError = Color(0xFFD62222)
 
 
 fun lightColors(
+    mainBackground: Color = colorBackground,
     primaryBackgroundColor: Color = colorPrimaryBackgroundColor,
+    primaryDarkBackgroundColor: Color = colorPrimaryDarkBackgroundColor,
     primaryTextColor: Color = colorPrimaryTextColor,
     bottomBackground: Color = colorBottomBackground,
     error: Color = colorError
 ): HolviColors = HolviColors(
+    mainBackground = mainBackground,
     primaryBackgroundColor = primaryBackgroundColor,
+    primaryDarkBackgroundColor = primaryDarkBackgroundColor,
     primaryTextColor = primaryTextColor,
     bottomBackground = bottomBackground,
     error = error,

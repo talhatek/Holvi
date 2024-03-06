@@ -1,4 +1,4 @@
-package com.tek.holvi.utils
+package com.tek.ui
 
 
 import androidx.compose.material3.SnackbarHostState

@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.generate_screen
+package com.tek.password.ui
 
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
@@ -18,21 +18,17 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.tek.holvi.R
-import com.tek.holvi.theme.PoppinsRegular
-import com.tek.holvi.theme.PrimaryTextColor
-import com.tek.holvi.theme.SecondPrimary
-import com.tek.holvi.ui.common.BottomButton
-import com.tek.holvi.ui.common.CircleIconButton
-import com.tek.holvi.ui.common.TopAppBarBackWithLogo
+import com.tek.password.R
 import com.tek.password.di.getViewModelScope
+import com.tek.password.presentation.GenerateViewModel
+import com.tek.ui.BottomButton
+import com.tek.ui.CircleIconButton
+import com.tek.ui.HolviTheme
+import com.tek.ui.TopAppBarBackWithLogo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -43,14 +39,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun GenerateScreen(navController: NavController) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-    val scope = rememberCoroutineScope()
     val viewModel = koinViewModel<GenerateViewModel>(
         scope = getKoin()
             .getViewModelScope(GenerateViewModel.SCOPE_NAME)
     )
-    val forbiddenHint = mutableStateOf("Forbidden")
+
     val blurDp = remember {
         mutableStateOf(0.dp)
     }
@@ -97,10 +91,12 @@ fun GenerateScreen(navController: NavController) {
                         modifier = Modifier
                             .padding(vertical = 4.dp),
                         text = viewModel.currentPassword.value,
-                        color = PrimaryTextColor,
+                        color = HolviTheme.colors.primaryTextColor,
                         style = TextStyle(textAlign = TextAlign.Center)
                     )
-                    Divider(Modifier.fillMaxWidth(.7f), color = PrimaryTextColor)
+                    HorizontalDivider(
+                        Modifier.fillMaxWidth(.7f), color = HolviTheme.colors.primaryTextColor
+                    )
                 }
             }
             Spacer(
@@ -188,20 +184,16 @@ fun SimpleInputView(
                     .alpha(.7f)
 
                     .fillMaxWidth(),
-                style = TextStyle(
-                    fontFamily = PoppinsRegular,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 24.sp,
-                    textAlign = TextAlign.Center,
-                ),
-                color = PrimaryTextColor
+                style = HolviTheme.typography.body,
+                color =
+                HolviTheme.colors.primaryTextColor
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedTextColor = PrimaryTextColor,
-            unfocusedTextColor = PrimaryTextColor,
-            focusedIndicatorColor = PrimaryTextColor,
-            unfocusedIndicatorColor = PrimaryTextColor,
+            focusedTextColor = HolviTheme.colors.primaryTextColor,
+            unfocusedTextColor = HolviTheme.colors.primaryTextColor,
+            focusedIndicatorColor = HolviTheme.colors.primaryTextColor,
+            unfocusedIndicatorColor = HolviTheme.colors.primaryTextColor,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent
         ),
@@ -283,23 +275,18 @@ fun HolviDropdown(
     }) {
         Text(
             text = selectedTmpData,
-            style = TextStyle(
-                fontFamily = PoppinsRegular,
-                fontWeight = FontWeight.Normal,
-                fontSize = 24.sp,
-                color = PrimaryTextColor
-            )
+            style = HolviTheme.typography.body,
         )
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = "Expand collapse",
-            tint = PrimaryTextColor,
+            tint = HolviTheme.colors.primaryTextColor,
             modifier = Modifier
                 .size(24.dp)
                 .align(alignment = CenterVertically)
         )
         MaterialTheme(
-            colorScheme = MaterialTheme.colorScheme.copy(surface = SecondPrimary),
+            colorScheme = MaterialTheme.colorScheme.copy(surface = HolviTheme.colors.primaryBackgroundColor),
         ) {
             DropdownMenu(
                 expanded = expanded,
@@ -320,12 +307,7 @@ fun HolviDropdown(
                             text = {
                                 Text(
                                     text = it.toString(),
-                                    style = TextStyle(
-                                        fontFamily = PoppinsRegular,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 24.sp,
-                                        color = PrimaryTextColor
-                                    ),
+                                    style = HolviTheme.typography.body,
                                     modifier = Modifier.padding(horizontal = 24.dp)
                                 )
                             }

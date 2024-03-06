@@ -30,6 +30,9 @@ dependencies {
     implementation(libs.material)
     testImplementation(libs.junit)
 
+    implementation(libs.firebase.messaging.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
