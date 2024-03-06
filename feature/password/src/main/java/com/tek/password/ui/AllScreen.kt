@@ -260,7 +260,7 @@ fun AllScreen(navController: NavController) {
                         content = {
                             items(
                                 passwordsState.data,
-                                key = { password -> password }
+                                key = { password -> password.id }
                             ) { item ->
                                 PasswordItem(
                                     modifier = Modifier,

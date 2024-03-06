@@ -5,15 +5,18 @@ import androidx.lifecycle.viewModelScope
 import com.tek.database.dao.PasswordDao
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class AddViewModel(
     private val passwordDao: PasswordDao,
-    private val passwordGenerator: PasswordGeneratorUseCase
+    private val passwordGenerator: PasswordGeneratorUseCase,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
     private val _clearInputsSharedFlow = MutableSharedFlow<ClearFocus>()
     val clearInputsSharedFlow = _clearInputsSharedFlow.asSharedFlow()
@@ -23,7 +26,7 @@ class AddViewModel(
     val passwordAddState = _passwordAddState.asSharedFlow()
 
     fun addPassword(password: Password) {
-        viewModelScope.launch {
+        viewModelScope.launch(appDispatchers.IO) {
             val controlPassword = controlPassword(password = password)
             if (controlPassword) {
                 try {
@@ -65,4 +68,27 @@ sealed class AddPasswordState {
     data object Success : AddPasswordState()
     class Failure(val message: String) : AddPasswordState()
     data object Empty : AddPasswordState()
+}
+
+interface AppDispatchers {
+
+    @Suppress("PropertyName")
+    val Default: CoroutineContext
+
+    @Suppress("PropertyName")
+    val Main: CoroutineContext
+
+    @Suppress("PropertyName")
+    val IO: CoroutineContext
+
+}
+
+class DefaultAppDispatchers : AppDispatchers {
+    override val Default: CoroutineContext
+        get() = Dispatchers.Default
+    override val Main: CoroutineContext
+        get() = Dispatchers.Main
+    override val IO: CoroutineContext
+        get() = Dispatchers.IO
+
 }

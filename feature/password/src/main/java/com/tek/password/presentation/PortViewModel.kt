@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tek.database.dao.PasswordDao
 import com.tek.database.domain.ExportPasswordUseCase
+import com.tek.database.domain.ExportResult
 import com.tek.database.domain.ImportPasswordUseCase
-import com.tek.database.model.Password
-import com.tek.password.domain.PasswordGeneratorUseCase.Companion.decrypt
 import com.tek.password.domain.PasswordGeneratorUseCase.Companion.encrypt
+import com.tek.password.domain.PasswordGeneratorUseCase.Companion.toPassword
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -52,45 +52,18 @@ class PortViewModel(
 
     private fun export(pathId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            exportPassword.invoke("port$pathId").let { data ->
-                if (data.documents.isEmpty()) {
-                    _portResult.emit(PortResult.Error("Such key does not exist!"))
-                } else {
-                    data.documents.forEach {
-                        it.data?.toPassword(pathId)
-                            ?.let { password -> passwordDao.addPassword(password) }
+            with(exportPassword.invoke("port$pathId")) {
+                when (this) {
+                    is ExportResult.Error ->
+                        _portResult.emit(PortResult.Error("Such key does not exist!"))
+
+                    is ExportResult.Success -> data.forEach {
+                        it.toPassword(pathId).let { password -> passwordDao.addPassword(password) }
                     }
-                    _portResult.emit(PortResult.ExportSuccess("All passwords successfully exported."))
                 }
             }
         }
     }
-
-    private fun Map<String, Any>.toPassword(key: String): Password {
-        return Password(
-            id = (this.getValue("id") as Long).toInt(),
-            password = this.getValue("password") as String,
-            userName = this.getValue("userName") as String,
-            siteName = this.getValue("siteName") as String,
-        ).decrypt(key)
-    }
-
-    private fun Password.encrypt(key: String): Password {
-        return this.copy(
-            siteName = this.siteName.encrypt(key),
-            password = this.password.encrypt(key),
-            userName = this.userName.encrypt(key)
-        )
-    }
-
-    private fun Password.decrypt(key: String): Password {
-        return this.copy(
-            siteName = this.siteName.decrypt(key),
-            password = this.password.decrypt(key),
-            userName = this.userName.decrypt(key)
-        )
-    }
-
 
     sealed class PortEvent {
 

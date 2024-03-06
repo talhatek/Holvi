@@ -1,6 +1,7 @@
 package com.tek.password.domain
 
 import android.util.Base64
+import com.tek.database.model.Password
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -151,6 +152,31 @@ class PasswordGeneratorUseCase {
 
             val decryptedByteValue = cipher.doFinal(Base64.decode(this, Base64.DEFAULT))
             return String(decryptedByteValue)
+        }
+
+        fun Map<String, Any>.toPassword(key: String): Password {
+            return Password(
+                id = (this.getValue("id") as Long).toInt(),
+                password = this.getValue("password") as String,
+                userName = this.getValue("userName") as String,
+                siteName = this.getValue("siteName") as String,
+            ).decrypt(key)
+        }
+
+        fun Password.encrypt(key: String): Password {
+            return this.copy(
+                siteName = this.siteName.encrypt(key),
+                password = this.password.encrypt(key),
+                userName = this.userName.encrypt(key)
+            )
+        }
+
+        fun Password.decrypt(key: String): Password {
+            return this.copy(
+                siteName = this.siteName.decrypt(key),
+                password = this.password.decrypt(key),
+                userName = this.userName.decrypt(key)
+            )
         }
     }
 }

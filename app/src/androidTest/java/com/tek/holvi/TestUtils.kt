@@ -1,4 +1,4 @@
-package com.example.holvi
+package com.tek.holvi
 
 import androidx.compose.ui.test.SemanticsNodeInteraction
 
