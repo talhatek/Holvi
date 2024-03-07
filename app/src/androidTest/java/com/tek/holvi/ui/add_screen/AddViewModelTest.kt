@@ -6,12 +6,11 @@ import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.password.presentation.AddPasswordState
 import com.tek.password.presentation.AddViewModel
-import com.tek.password.presentation.AppDispatchers
+import com.tek.test.HolviTestDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -19,7 +18,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
-import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddViewModelTest {
@@ -29,7 +27,7 @@ class AddViewModelTest {
     private val addViewModel = AddViewModel(
         passwordDao = mock(PasswordDao::class.java),
         passwordGenerator = PasswordGeneratorUseCase(),
-        appDispatchers = DefaultTestDispatchers(testDispatcher)
+        appDispatchers = HolviTestDispatchers(testDispatcher)
     )
 
     @Before
@@ -66,16 +64,6 @@ class AddViewModelTest {
             assertThat((state as AddPasswordState.Failure).message).isEqualTo("You must fill required fields.")
         }
     }
-}
-
-class DefaultTestDispatchers(private val testDispatcher: TestDispatcher) : AppDispatchers {
-    override val Default: CoroutineContext
-        get() = testDispatcher
-    override val Main: CoroutineContext
-        get() = testDispatcher
-    override val IO: CoroutineContext
-        get() = testDispatcher
-
 }
 
 

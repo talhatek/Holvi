@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tek.ui"
+    namespace = "com.tek.test"
     compileSdk = 34
 
     defaultConfig {
@@ -19,24 +19,19 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompiler.get()
-    }
 }
 
 dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.material3.android)
 
-
+    implementation(project(":core:util"))
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    implementation(libs.kotlinx.coroutines.test)
 }
