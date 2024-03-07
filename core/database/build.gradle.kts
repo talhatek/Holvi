@@ -36,7 +36,9 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.androidx.datastore.preferences)
 
+    implementation(project(":core:util"))
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

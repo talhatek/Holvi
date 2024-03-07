@@ -2,10 +2,16 @@ package com.tek.database.di
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.tek.database.HolviDb
+import com.tek.util.AppDispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
 import org.koin.android.ext.koin.androidApplication
@@ -21,21 +27,27 @@ val localDatabaseModule = module {
     }
 
     single<SupportSQLiteOpenHelper.Factory> {
-        val key = androidApplication().getSharedPreferences(
-            "openHelperPreferences",
-            Context.MODE_PRIVATE
-        ).getString("sq", "default") ?: "default"
+        val key = getSq(androidApplication(), get())
         val passphrase: ByteArray =
             SQLiteDatabase.getBytes(key.toCharArray())
         return@single SupportFactory(passphrase)
     }
 
     single {
-        getSharedPrefs(androidApplication()).edit()
+        getDataStore(androidApplication())
     }
 
 }
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "registration")
 
-fun getSharedPrefs(androidApplication: Application): SharedPreferences {
-    return androidApplication.getSharedPreferences("openHelperPreferences", Context.MODE_PRIVATE)
+fun getSq(androidApplication: Application, appDispatchers: AppDispatchers): String {
+    return runBlocking(appDispatchers.IO) {
+        androidApplication.dataStore.data.first()[stringPreferencesKey("sq")] ?: "empty"
+    }
 }
+
+fun getDataStore(androidApplication: Application): DataStore<Preferences> {
+    return androidApplication.dataStore
+
+}
+

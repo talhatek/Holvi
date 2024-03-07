@@ -4,6 +4,7 @@ androidDatabaseSqlcipher = "4.5.0"
 appcompat = "1.6.1"
 biometricKtx = "1.2.0-alpha05"
 compose = '1.6.2'
+datastore = "1.0.0"
 firebaseFirestoreKtx = "24.10.3"
 firebaseMessagingKtx = "23.4.1"
 googleServices = "4.4.1"
@@ -34,6 +35,7 @@ android-database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher"
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-biometric-ktx = { module = "androidx.biometric:biometric-ktx", version.ref = "biometricKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-material3-android = { module = "androidx.compose.material3:material3-android", version.ref = "material3" }
