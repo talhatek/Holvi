@@ -59,26 +59,28 @@ class PortViewModel(
 
                     is ExportResult.Success -> data.forEach {
                         it.toPassword(pathId).let { password -> passwordDao.addPassword(password) }
+                    }.also {
+                        PortResult.ExportSuccess("Export Completed!")
                     }
                 }
             }
         }
     }
+}
 
-    sealed class PortEvent {
+sealed class PortEvent {
 
-        data object Import : PortEvent()
+    data object Import : PortEvent()
 
-        class Export(val pathId: String) : PortEvent()
+    class Export(val pathId: String) : PortEvent()
 
-    }
+}
 
-    sealed class PortResult {
+sealed class PortResult {
 
-        class ImportSuccess(val id: String) : PortResult()
+    class ImportSuccess(val id: String) : PortResult()
 
-        class ExportSuccess(val message: String) : PortResult()
+    class ExportSuccess(val message: String) : PortResult()
 
-        class Error(val message: String) : PortResult()
-    }
+    class Error(val message: String) : PortResult()
 }

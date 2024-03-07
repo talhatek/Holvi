@@ -138,7 +138,7 @@ class PasswordGeneratorUseCase {
             return Base64.encodeToString(encryptedValue, Base64.DEFAULT)
         }
 
-        fun String.decrypt(password: String): String {
+        private fun String.decrypt(password: String): String {
             val secretKeySpec = SecretKeySpec(password.repeat(4).toByteArray(), "AES")
             val iv = ByteArray(16)
             val charArray = password.toCharArray()
@@ -171,7 +171,7 @@ class PasswordGeneratorUseCase {
             )
         }
 
-        fun Password.decrypt(key: String): Password {
+        private fun Password.decrypt(key: String): Password {
             return this.copy(
                 siteName = this.siteName.decrypt(key),
                 password = this.password.decrypt(key),

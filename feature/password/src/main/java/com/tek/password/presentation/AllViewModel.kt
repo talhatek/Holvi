@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tek.database.dao.PasswordDao
 import com.tek.database.model.Password
+import com.tek.util.AppDispatchers
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -22,8 +22,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
+
 @OptIn(FlowPreview::class)
-class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
+class AllViewModel(
+    private val passwordDao: PasswordDao,
+    private val appDispatchers: AppDispatchers
+) : ViewModel() {
 
     private val _allPasswords = MutableStateFlow<PasswordsState>(PasswordsState.Init)
     val allPasswords = _allPasswords.asStateFlow()
@@ -38,12 +42,12 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
 
     init {
         getAll()
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(appDispatchers.IO) {
             deletedItem.collectLatest {
                 if (it == null) clearDeletedItemJob = null
             }
         }
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(appDispatchers.IO) {
             searchQuery.debounce(250L).filter { it.isNotBlank() }.distinctUntilChanged()
                 .collectLatest {
                     try {
@@ -62,7 +66,7 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
     }
 
     fun getAll() {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(appDispatchers.IO) {
             _allPasswords.emit(PasswordsState.Loading)
             try {
                 passwordDao.observeAllPasswords().collectLatest { data ->
@@ -80,7 +84,7 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
 
 
     fun delete(siteName: String) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(appDispatchers.IO) {
             try {
                 val item = passwordDao.getPassword(siteName)
                 val effectedRowCount = passwordDao.deletePassword(password = item)
@@ -103,7 +107,7 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
     }
 
     fun undoDelete() {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(appDispatchers.IO) {
             deletedItem.value?.let {
                 passwordDao.addPassword(it)
                 deletedItem.value = null
@@ -115,7 +119,7 @@ class AllViewModel(private val passwordDao: PasswordDao) : ViewModel() {
     }
 
     private fun sortAndSet(data: List<Password>) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(appDispatchers.IO) {
             _allPasswords.emit(
                 PasswordsState.Success(
                     data = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.siteName })

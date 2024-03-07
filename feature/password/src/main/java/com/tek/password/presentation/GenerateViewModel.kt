@@ -3,7 +3,6 @@ package com.tek.password.presentation
 
 import android.content.ClipData
 import android.content.ClipboardManager
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tek.password.domain.PasswordGeneratorUseCase
@@ -15,18 +14,18 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class GenerateViewModel(private val passwordGenerator: PasswordGeneratorUseCase) : ViewModel() {
-    val symbolState = mutableStateOf(true)
-    val numberState = mutableStateOf(true)
-    val upperCaseState = mutableStateOf(true)
-    val lowerCaseState = mutableStateOf(true)
-    val dropdownItems = mutableListOf<Int>()
+    val symbolState = MutableStateFlow(true)
+    val numberState = MutableStateFlow(true)
+    val upperCaseState = MutableStateFlow(true)
+    val lowerCaseState = MutableStateFlow(true)
+    val dropdownItems = MutableStateFlow<List<Int>>(emptyList())
     private val _activeCount = MutableStateFlow(4)
     val activeCount = _activeCount.asStateFlow()
-    val currentPassword = mutableStateOf("")
+    val currentPassword = MutableStateFlow("")
 
-    val currentSelectedLength = mutableStateOf(0)
-    val forbiddenLetters = mutableStateOf("")
-    val lengthSelectorText = mutableStateOf("Password length")
+    val currentSelectedLength = MutableStateFlow(0)
+    val forbiddenLetters = MutableStateFlow("")
+    val lengthSelectorText = MutableStateFlow("Password length")
     private val _uiEvent = MutableSharedFlow<GenerateViewUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
@@ -35,11 +34,10 @@ class GenerateViewModel(private val passwordGenerator: PasswordGeneratorUseCase)
             _activeCount.collectLatest {
                 val tmp = mutableListOf<Int>()
                 for (i in 1..50) {
-                    if (i % _activeCount.value == 0 && !dropdownItems.contains(i) && i > it)
+                    if (i % _activeCount.value == 0 && !dropdownItems.value.contains(i) && i > it)
                         tmp.add(i)
                 }
-                dropdownItems.clear()
-                dropdownItems.addAll(tmp)
+                dropdownItems.value = tmp
             }
         }
     }
@@ -83,10 +81,6 @@ class GenerateViewModel(private val passwordGenerator: PasswordGeneratorUseCase)
 
     }
 
-    sealed class GenerateViewUiEvent {
-        class SnackbarEvent(val message: String) : GenerateViewUiEvent()
-    }
-
     private fun sendUiEvent(event: GenerateViewUiEvent) {
         viewModelScope.launch {
             _uiEvent.emit(event)
@@ -96,4 +90,8 @@ class GenerateViewModel(private val passwordGenerator: PasswordGeneratorUseCase)
     companion object {
         const val SCOPE_NAME = "GENERATE_VIEW_MODEL_SCOPE"
     }
+}
+
+sealed class GenerateViewUiEvent {
+    class SnackbarEvent(val message: String) : GenerateViewUiEvent()
 }

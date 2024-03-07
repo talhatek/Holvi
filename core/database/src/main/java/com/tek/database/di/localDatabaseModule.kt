@@ -1,15 +1,15 @@
 package com.tek.database.di
 
 import android.app.Application
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.tek.database.HolviDb
-import com.tek.util.AppDispatchers
+import com.tek.util.Constant
+import com.tek.util.Constant.DATA_STORE_REGISTRATION_DEFAULT_KEY
+import com.tek.util.dataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import net.sqlcipher.database.SQLiteDatabase
@@ -19,7 +19,7 @@ import org.koin.dsl.module
 
 val localDatabaseModule = module {
     single {
-        Room.databaseBuilder(androidApplication(), HolviDb::class.java, "holvi.db")
+        Room.databaseBuilder(androidApplication(), HolviDb::class.java, Constant.ROOM_DB_NAME)
             .openHelperFactory(get()).build()
     }
     single {
@@ -27,27 +27,22 @@ val localDatabaseModule = module {
     }
 
     single<SupportSQLiteOpenHelper.Factory> {
-        val key = getSq(androidApplication(), get())
-        val passphrase: ByteArray =
-            SQLiteDatabase.getBytes(key.toCharArray())
-        return@single SupportFactory(passphrase)
+        return@single SupportFactory(SQLiteDatabase.getBytes(getSq(androidApplication()).toCharArray()))
     }
 
     single {
         getDataStore(androidApplication())
     }
-
 }
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "registration")
 
-fun getSq(androidApplication: Application, appDispatchers: AppDispatchers): String {
-    return runBlocking(appDispatchers.IO) {
-        androidApplication.dataStore.data.first()[stringPreferencesKey("sq")] ?: "empty"
+fun getSq(androidApplication: Application): String {
+    return runBlocking {
+        androidApplication.dataStore.data.first()[stringPreferencesKey(Constant.DATA_STORE_REGISTRATION_KEY)]
+            ?: DATA_STORE_REGISTRATION_DEFAULT_KEY
     }
 }
 
 fun getDataStore(androidApplication: Application): DataStore<Preferences> {
     return androidApplication.dataStore
-
 }
 

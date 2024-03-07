@@ -6,7 +6,6 @@ import kotlinx.coroutines.tasks.await
 class ExportPasswordUseCase(
     private val db: FirebaseFirestore
 ) {
-
     suspend operator fun invoke(pathId: String): ExportResult {
         db.collection("port$pathId").get().await().let { querySnapshot ->
             if (querySnapshot.documents.isEmpty()) {
