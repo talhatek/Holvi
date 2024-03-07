@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.menuActivity
+package com.tek.holvi.ui
 
 
 import android.content.res.Configuration
@@ -8,14 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -26,27 +26,25 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tek.holvi.R
-import com.tek.holvi.theme.OnBackgroundTextColor
 import com.tek.holvi.theme.PoppinsRegular
-import com.tek.holvi.theme.PoppinsSemiBold
-import com.tek.holvi.theme.PrimaryTextColor
 import com.tek.holvi.utils.MenuType
 import com.tek.holvi.utils.Screen
+import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.TopAppBarOnlyIcon
 
 @Composable
 fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {
-    Scaffold(topBar = {
-        TopAppBarOnlyIcon(res = R.drawable.ic_power) {
-            onExitClick.invoke()
-        }
-    },
+    HolviScaffold(
+        topBar = {
+            TopAppBarOnlyIcon(res = R.drawable.ic_power) {
+                onExitClick.invoke()
+            }
+        },
         content = {
             MenuScreenContent(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(top = it.calculateTopPadding()),
                 itemList = mutableListOf<@MenuType String>(
                     MenuType.SEE_ALL,
@@ -86,8 +84,8 @@ fun MenuScreenContent(
 
         Text(
             text = "What you wanna do?",
-            style = MaterialTheme.typography.bodyLarge,
-            color = OnBackgroundTextColor,
+            style = HolviTheme.typography.body,
+            color = HolviTheme.colors.primaryTextColor,
             fontFamily = PoppinsRegular
         )
         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
@@ -121,19 +119,21 @@ fun MenuItem(
     @PreviewParameter(MenuItemProvider::class) @MenuType title: String,
     onClicked: (title: String) -> Unit
 ) {
-    HolviTheme {
-        Button(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            onClick = { onClicked.invoke(title) },
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text(
-                text = title,
-                modifier = Modifier.padding(all = 8.dp),
-                color = PrimaryTextColor,
-                fontFamily = PoppinsSemiBold
-            )
-        }
+    Button(
+        modifier = Modifier.fillMaxWidth(0.7f),
+        onClick = { onClicked.invoke(title) },
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonColors(
+            containerColor = HolviTheme.colors.primaryBackground,
+            contentColor = HolviTheme.colors.primaryTextColor,
+            disabledContainerColor = HolviTheme.colors.primaryBackground,
+            disabledContentColor = HolviTheme.colors.primaryTextColor,
+        )
+    ) {
+        Text(
+            text = title,
+            modifier = Modifier.padding(all = 8.dp),
+        )
     }
 }
 

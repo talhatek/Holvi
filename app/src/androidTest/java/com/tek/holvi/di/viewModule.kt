@@ -1,6 +1,6 @@
 package com.tek.holvi.di
 
-import com.tek.holvi.ui.authenticationActivity.AuthenticationViewModel
+import com.tek.holvi.presentation.AuthenticationViewModel
 import com.tek.password.presentation.AddViewModel
 import com.tek.password.presentation.AllViewModel
 import com.tek.password.presentation.GenerateViewModel

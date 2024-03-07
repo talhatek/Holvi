@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.menuActivity
+package com.tek.holvi.ui.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tek.holvi.ui.MenuScreen
 import com.tek.holvi.utils.Screen
 import com.tek.password.ui.AllScreen
 import com.tek.password.ui.GenerateScreen

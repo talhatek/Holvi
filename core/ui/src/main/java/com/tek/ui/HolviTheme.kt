@@ -28,9 +28,9 @@ class HolviColors(
 ) {
     var mainBackground by mutableStateOf(mainBackground)
         private set
-    var primaryBackgroundColor by mutableStateOf(primaryBackgroundColor)
+    var primaryBackground by mutableStateOf(primaryBackgroundColor)
         private set
-    var primaryDarkBackgroundColor by mutableStateOf(primaryDarkBackgroundColor)
+    var primaryDarkBackground by mutableStateOf(primaryDarkBackgroundColor)
         private set
     var primaryTextColor by mutableStateOf(primaryTextColor)
         private set
@@ -43,8 +43,8 @@ class HolviColors(
 
     fun copy(
         mainBackground: Color = this.mainBackground,
-        primaryBackgroundColor: Color = this.primaryBackgroundColor,
-        primaryDarkBackgroundColor: Color = this.primaryDarkBackgroundColor,
+        primaryBackgroundColor: Color = this.primaryBackground,
+        primaryDarkBackgroundColor: Color = this.primaryDarkBackground,
         primaryTextColor: Color = this.primaryTextColor,
         bottomBackground: Color = this.bottomBackground,
         error: Color = this.error,
@@ -60,8 +60,8 @@ class HolviColors(
     )
 
     fun updateColorsFrom(other: HolviColors) {
-        primaryBackgroundColor = other.primaryBackgroundColor
-        primaryDarkBackgroundColor = other.primaryDarkBackgroundColor
+        primaryBackground = other.primaryBackground
+        primaryDarkBackground = other.primaryDarkBackground
         primaryTextColor = other.primaryTextColor
         bottomBackground = other.bottomBackground
         error = other.error

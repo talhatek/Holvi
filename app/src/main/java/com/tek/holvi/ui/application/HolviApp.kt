@@ -1,4 +1,4 @@
-package com.tek.holvi.ui
+package com.tek.holvi.ui.application
 
 import android.app.Application
 import com.tek.database.di.fireStoreModule

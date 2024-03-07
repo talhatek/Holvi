@@ -8,7 +8,7 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
 import com.tek.holvi.R
-import com.tek.holvi.ui.menuActivity.MenuActivity
+import com.tek.holvi.ui.activity.MenuActivity
 
 val biometricInfo = BiometricPrompt.PromptInfo.Builder()
     .setTitle("Authenticate")

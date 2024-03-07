@@ -1,7 +1,9 @@
 package com.tek.password.ui
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
@@ -47,6 +49,7 @@ import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -58,7 +61,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -113,6 +115,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import com.tek.database.model.Password
 import com.tek.password.R
@@ -121,6 +124,7 @@ import com.tek.password.presentation.AddViewModel
 import com.tek.password.presentation.AllViewModel
 import com.tek.password.presentation.DeletePasswordState
 import com.tek.password.presentation.PasswordsState
+import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.SnackbarController
 import com.tek.ui.TopAppBarBackWithLogo
@@ -132,7 +136,7 @@ import kotlin.math.abs
 @Composable
 fun AllScreen(navController: NavController) {
 
-    val primaryColor = MaterialTheme.colorScheme.primary
+    val primaryColor = HolviTheme.colors.primaryBackground
     val allViewModel = get<AllViewModel>()
     val passwordsState = allViewModel.allPasswords.collectAsState().value
     val passwordDeleteState = allViewModel.passwordDeleteState.collectAsState(initial = null).value
@@ -194,7 +198,7 @@ fun AllScreen(navController: NavController) {
         fabYOffset = if (isScrollingUp) 0.dp else (screenHeight - fabPosition.y).dp
     }
 
-    Scaffold(
+    HolviScaffold(
         topBar = {
             TopAppBarBackWithLogo {
                 navController.popBackStack()
@@ -322,6 +326,11 @@ fun AllScreen(navController: NavController) {
 
         if (showAddBottomSheet) {
             AddModalSheet(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .imePadding()
+                    .testTag("addSheet"),
                 sheetState = modalSheet,
                 onDismiss = { isItemAdded ->
                     showAddBottomSheet = false
@@ -354,12 +363,23 @@ fun AllScreen(navController: NavController) {
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddModalSheet(
+    modifier: Modifier,
     sheetState: SheetState,
     onDismiss: (isNewItemAdded: Boolean) -> Unit,
 ) {
+    val phoneNavBar = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        (LocalContext.current as Activity).windowManager.currentWindowMetrics.windowInsets.getInsets(
+            WindowInsetsCompat.Type.navigationBars()
+        ).bottom
+    } else {
+        64
+    }
+
+
     val myAddViewModel = get<AddViewModel>()
     val passwordState =
         myAddViewModel.passwordAddState.collectAsState(initial = AddPasswordState.Empty).value
@@ -389,19 +409,15 @@ fun AddModalSheet(
         }
     }
     ModalBottomSheet(
+        modifier = modifier,
         onDismissRequest = { onDismiss.invoke(false) },
         sheetState = sheetState,
-        modifier = Modifier
-            .wrapContentHeight()
-            .fillMaxWidth()
-            .testTag("addSheet")
-            .imePadding(),
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = HolviTheme.colors.mainBackground
     ) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 InputView(
                     hintParam = "Site Name",
@@ -417,21 +433,31 @@ fun AddModalSheet(
                     onValueChanged = { password = it })
 
                 Button(modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .testTag("addButton"), onClick = {
-                    myAddViewModel.addPassword(
-                        Password(
-                            id = 0,
-                            siteName = siteName,
-                            password = password,
-                            userName = userName
+                    .testTag("addButton"),
+                    colors = ButtonColors(
+                        containerColor = HolviTheme.colors.primaryBackground,
+                        contentColor = HolviTheme.colors.primaryTextColor,
+                        disabledContainerColor = HolviTheme.colors.primaryBackground,
+                        disabledContentColor = HolviTheme.colors.primaryTextColor,
+                    ),
+                    onClick = {
+                        myAddViewModel.addPassword(
+                            Password(
+                                id = 0,
+                                siteName = siteName,
+                                password = password,
+                                userName = userName
+                            )
                         )
-                    )
-                }) {
+                    }) {
                     Text(text = "Add")
                 }
-
-
+                Spacer(
+                    modifier = Modifier
+                        .height(with(LocalDensity.current) { phoneNavBar.toDp() })
+                        .fillMaxWidth()
+                        .background(Color.Gray)
+                )
                 SnackbarHost(hostState = snackState, Modifier)
             }
         }
@@ -481,7 +507,7 @@ fun UpdateModalSheet(
             .wrapContentHeight()
             .fillMaxWidth()
             .imePadding(),
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = HolviTheme.colors.mainBackground
     ) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             Column(
@@ -497,7 +523,8 @@ fun UpdateModalSheet(
                     hintParam = "User Name",
                     defaultValue = userName,
                     viewModel = myAddViewModel,
-                    onValueChanged = { userName = it })
+                    onValueChanged = { userName = it },
+                )
                 PasswordInputView(
                     hintParam = "Password",
                     viewModel = myAddViewModel,
@@ -559,7 +586,7 @@ fun Search(viewModel: AllViewModel) {
         modifier = Modifier
             .size(searchSize.width.dp, searchSize.height.dp)
             .clip(CircleShape)
-            .background(color = MaterialTheme.colorScheme.primary),
+            .background(color = HolviTheme.colors.primaryBackground),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -626,8 +653,8 @@ fun PasswordItem(
     var passwordText by remember { mutableStateOf("*".repeat(password.password.length)) }
     var resId by remember { mutableIntStateOf(R.drawable.ic_invisible) }
     var visible by remember { mutableStateOf(false) }
-    val primaryLightBackground = HolviTheme.colors.primaryBackgroundColor
-    val primaryDarkBackground = HolviTheme.colors.primaryDarkBackgroundColor
+    val primaryLightBackground = HolviTheme.colors.primaryBackground
+    val primaryDarkBackground = HolviTheme.colors.primaryDarkBackground
 
     val animatedCardOffset =
         animateIntOffsetAsState(
@@ -748,7 +775,7 @@ fun PasswordItem(
                         })
                 },
             elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
-            colors = CardDefaults.cardColors(containerColor = if (password.id % 2 == 0) HolviTheme.colors.primaryDarkBackgroundColor else HolviTheme.colors.primaryBackgroundColor)
+            colors = CardDefaults.cardColors(containerColor = if (password.id % 2 == 0) HolviTheme.colors.primaryDarkBackground else HolviTheme.colors.primaryBackground)
         ) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Text(
@@ -948,7 +975,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
 
                     TextButton(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary.copy(
+                            containerColor = HolviTheme.colors.primaryBackground.copy(
                                 alpha = .2f
                             )
                         ),
@@ -1041,7 +1068,7 @@ private class RippleCustomTheme(private val isOdd: Boolean) : RippleTheme {
     @Composable
     override fun defaultColor() =
         RippleTheme.defaultRippleColor(
-            if (isOdd) HolviTheme.colors.primaryDarkBackgroundColor else HolviTheme.colors.primaryBackgroundColor,
+            if (isOdd) HolviTheme.colors.primaryDarkBackground else HolviTheme.colors.primaryBackground,
             lightTheme = true
         )
 

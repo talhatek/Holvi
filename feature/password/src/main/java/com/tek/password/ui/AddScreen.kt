@@ -4,11 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -56,45 +56,45 @@ fun InputView(
             hint = hintParam
         }
     })
-    TextField(
-        value = value,
-        onValueChange = {
-            value = it
-            onValueChanged.invoke(it)
-        },
-        placeholder = {
-            Text(
-                text = hint,
-                modifier = Modifier
-                    .alpha(.5f)
-                    .fillMaxWidth(),
-                style = HolviTheme.typography.body
-            )
-        },
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = HolviTheme.colors.primaryTextColor,
-            unfocusedTextColor = HolviTheme.colors.primaryTextColor,
-            focusedIndicatorColor = HolviTheme.colors.primaryTextColor,
-            unfocusedIndicatorColor = HolviTheme.colors.primaryTextColor,
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
-        ),
-
-        textStyle = HolviTheme.typography.body,
-        modifier = Modifier
-            .testTag(hintParam)
-            .fillMaxWidth(.7f)
-            .onFocusEvent {
-                if (it.isFocused) {
-                    if (value.isEmpty())
-                        hint = ""
-                } else
-                    if (value.isEmpty())
-                        hint = hintParam
+    Column {
+        TextField(
+            value = value,
+            onValueChange = {
+                value = it
+                onValueChanged.invoke(it)
             },
-        singleLine = true
-    )
+            placeholder = {
+                Text(
+                    text = hint,
+                    modifier = Modifier
+                        .alpha(.75f)
+                        .fillMaxWidth(),
+                    style = HolviTheme.typography.body
+                )
+            },
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = HolviTheme.colors.primaryTextColor,
+                unfocusedTextColor = HolviTheme.colors.primaryTextColor,
+                focusedIndicatorColor = HolviTheme.colors.primaryTextColor,
+                unfocusedIndicatorColor = HolviTheme.colors.primaryTextColor,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            ),
 
+            textStyle = HolviTheme.typography.body,
+            modifier = Modifier
+                .testTag(hintParam)
+                .fillMaxWidth(.7f)
+                .onFocusEvent {
+                    if (it.isFocused) {
+                        if (value.isEmpty()) hint = ""
+                    } else {
+                        if (value.isEmpty()) hint = hintParam
+                    }
+                },
+            singleLine = true
+        )
+    }
 }
 
 @Composable
@@ -104,7 +104,7 @@ fun PasswordInputView(
     defaultValue: String? = null,
     onValueChanged: (input: String) -> Unit,
 ) {
-    val color = MaterialTheme.colorScheme.primary
+    val color = HolviTheme.colors.primaryBackground
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -139,11 +139,10 @@ fun PasswordInputView(
             Text(
                 text = hint,
                 modifier = Modifier
-                    .alpha(.5f)
+                    .alpha(.75f)
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                 style = HolviTheme.typography.body,
-                color = HolviTheme.colors.primaryTextColor,
             )
         },
         colors = TextFieldDefaults.colors(

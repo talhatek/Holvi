@@ -11,9 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 
 
-
 @Composable
-fun TopAppBarOnlyIcon(@DrawableRes res: Int, onIconClicked: () -> Unit) {
+fun TopAppBarOnlyIcon(
+    @DrawableRes res: Int,
+    onIconClicked: () -> Unit
+) {
     CenterTopAppBar(
         title = {
             Box(modifier = Modifier.fillMaxSize()) {

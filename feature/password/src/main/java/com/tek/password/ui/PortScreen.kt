@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -50,6 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tek.password.presentation.PortViewModel
+import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.TopAppBarBackWithLogo
 import kotlinx.coroutines.flow.collectLatest
@@ -88,7 +88,7 @@ fun PortScreen(navController: NavController) {
             }
         }
     })
-    Scaffold(
+    HolviScaffold(
         topBar = {
             TopAppBarBackWithLogo {
                 navController.popBackStack()

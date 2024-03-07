@@ -12,13 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,15 +45,15 @@ fun CenterTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = contentColorFor(backgroundColor),
+    backgroundColor: Color = HolviTheme.colors.primaryBackground,
+    contentColor: Color = HolviTheme.colors.primaryTextColor,
     elevation: Dp = 12.dp
 
 ) {
     val defLeftSectionWidth = if (navigationIcon == null) withoutIconWidth else iconWidth
     var leftSectionWidth by remember { mutableStateOf(defLeftSectionWidth) }
-    var rightSectionWidth by remember { mutableStateOf(-1f) }
-    var rightSectionPadding by remember { mutableStateOf(0f) }
+    var rightSectionWidth by remember { mutableFloatStateOf(-1f) }
+    var rightSectionPadding by remember { mutableFloatStateOf(0f) }
 
     AppBar(
         backgroundColor,
@@ -88,7 +87,7 @@ fun CenterTopAppBar(
             if (leftSectionWidth != defLeftSectionWidth
                 || rightSectionPadding != 0f
             ) {
-                ProvideTextStyle(value = MaterialTheme.typography.titleSmall) {
+                ProvideTextStyle(value = HolviTheme.typography.body) {
                     CompositionLocalProvider(
                         LocalContentColor provides (LocalContentColor.current.copy(alpha = 0.4f)),
 

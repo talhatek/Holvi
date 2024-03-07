@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -39,7 +38,7 @@ fun CircleIconButton(@DrawableRes iconIdRes: Int, onClicked: () -> Unit) {
             modifier = Modifier
                 .size(windowInfo.minDimension.div(10f))
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(HolviTheme.colors.primaryBackground)
                 .testTag("Renew"),
             onClick = {
                 degree.floatValue = degree.floatValue + 180f % 360

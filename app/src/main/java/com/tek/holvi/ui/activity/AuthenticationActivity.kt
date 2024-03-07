@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.authenticationActivity
+package com.tek.holvi.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,10 +7,8 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
@@ -18,9 +16,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
 import com.tek.holvi.BuildConfig
-import com.tek.holvi.ui.menuActivity.MenuActivity
+import com.tek.holvi.ui.AuthenticationMainScreen
 import com.tek.holvi.utils.biometricInfo
 import com.tek.holvi.utils.getBiometricPrompt
+import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import kotlinx.coroutines.launch
 
@@ -35,13 +34,12 @@ class AuthenticationActivity : FragmentActivity() {
             HolviTheme {
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
-                Scaffold(
+                HolviScaffold(
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     content = {
                         AuthenticationMainScreen(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(HolviTheme.colors.mainBackground)
                                 .padding(top = it.calculateTopPadding()),
                             onClick = {
                                 if (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS) {

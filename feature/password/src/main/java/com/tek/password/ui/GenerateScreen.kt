@@ -27,6 +27,7 @@ import com.tek.password.di.getViewModelScope
 import com.tek.password.presentation.GenerateViewModel
 import com.tek.ui.BottomButton
 import com.tek.ui.CircleIconButton
+import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.TopAppBarBackWithLogo
 import kotlinx.coroutines.delay
@@ -59,7 +60,7 @@ fun GenerateScreen(navController: NavController) {
             }
         }
     }
-    Scaffold(
+    HolviScaffold(
         modifier = Modifier.blur(blurAnimate.value, blurAnimate.value),
         topBar = {
             TopAppBarBackWithLogo {
@@ -286,7 +287,7 @@ fun HolviDropdown(
                 .align(alignment = CenterVertically)
         )
         MaterialTheme(
-            colorScheme = MaterialTheme.colorScheme.copy(surface = HolviTheme.colors.primaryBackgroundColor),
+            colorScheme = MaterialTheme.colorScheme.copy(surface = HolviTheme.colors.primaryBackground),
         ) {
             DropdownMenu(
                 expanded = expanded,

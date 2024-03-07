@@ -1,4 +1,4 @@
-package com.tek.holvi.ui.authenticationActivity
+package com.tek.holvi.ui
 
 import androidx.compose.foundation.layout.Arrangement.SpaceAround
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.tek.holvi.R
+import com.tek.holvi.presentation.AuthenticationViewModel
+import com.tek.holvi.presentation.SQState
 import com.tek.ui.HolviTheme
 import org.koin.androidx.compose.get
 
@@ -78,9 +80,9 @@ fun AuthenticationMainScreen(
             }, enabled = buttonEnabledState,
             shape = RoundedCornerShape(8.dp),
             colors = ButtonColors(
-                containerColor = HolviTheme.colors.primaryBackgroundColor,
+                containerColor = HolviTheme.colors.primaryBackground,
                 contentColor = HolviTheme.colors.primaryTextColor,
-                disabledContainerColor = HolviTheme.colors.primaryBackgroundColor.copy(.4f),
+                disabledContainerColor = HolviTheme.colors.primaryBackground.copy(.4f),
                 disabledContentColor = HolviTheme.colors.primaryTextColor.copy(alpha = .2f)
             )
         ) {
