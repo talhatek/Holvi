@@ -46,7 +46,7 @@ fun CenterTopAppBar(
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
     backgroundColor: Color = HolviTheme.colors.primaryBackground,
-    contentColor: Color = HolviTheme.colors.primaryTextColor,
+    contentColor: Color = HolviTheme.colors.primaryForeground,
     elevation: Dp = 12.dp
 
 ) {

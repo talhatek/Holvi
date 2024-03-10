@@ -69,16 +69,18 @@ fun InputView(
                     modifier = Modifier
                         .alpha(.75f)
                         .fillMaxWidth(),
-                    style = HolviTheme.typography.body
+                    style = HolviTheme.typography.body,
+                    color = HolviTheme.colors.appForeground,
                 )
             },
             colors = TextFieldDefaults.colors(
-                focusedTextColor = HolviTheme.colors.primaryTextColor,
-                unfocusedTextColor = HolviTheme.colors.primaryTextColor,
-                focusedIndicatorColor = HolviTheme.colors.primaryTextColor,
-                unfocusedIndicatorColor = HolviTheme.colors.primaryTextColor,
+                focusedTextColor = HolviTheme.colors.appForeground,
+                unfocusedTextColor = HolviTheme.colors.appForeground,
+                focusedIndicatorColor = HolviTheme.colors.appForeground,
+                unfocusedIndicatorColor = HolviTheme.colors.appForeground,
                 focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent
+                unfocusedContainerColor = Color.Transparent,
+                cursorColor = HolviTheme.colors.primaryBackground
             ),
 
             textStyle = HolviTheme.typography.body,
@@ -143,15 +145,17 @@ fun PasswordInputView(
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                 style = HolviTheme.typography.body,
+                color = HolviTheme.colors.appForeground,
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedTextColor = HolviTheme.colors.primaryTextColor,
-            unfocusedTextColor = HolviTheme.colors.primaryTextColor,
-            focusedIndicatorColor = HolviTheme.colors.primaryTextColor,
-            unfocusedIndicatorColor = HolviTheme.colors.primaryTextColor,
+            focusedTextColor = HolviTheme.colors.appForeground,
+            unfocusedTextColor = HolviTheme.colors.appForeground,
+            focusedIndicatorColor = HolviTheme.colors.appForeground,
+            unfocusedIndicatorColor = HolviTheme.colors.appForeground,
             focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
+            unfocusedContainerColor = Color.Transparent,
+            cursorColor = HolviTheme.colors.primaryBackground
         ),
         textStyle = HolviTheme.typography.title,
         modifier = Modifier

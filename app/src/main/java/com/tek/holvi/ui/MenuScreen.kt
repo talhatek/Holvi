@@ -85,7 +85,7 @@ fun MenuScreenContent(
         Text(
             text = "What you wanna do?",
             style = HolviTheme.typography.body,
-            color = HolviTheme.colors.primaryTextColor,
+            color = HolviTheme.colors.primaryForeground,
             fontFamily = PoppinsRegular
         )
         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
@@ -125,9 +125,9 @@ fun MenuItem(
         shape = RoundedCornerShape(16.dp),
         colors = ButtonColors(
             containerColor = HolviTheme.colors.primaryBackground,
-            contentColor = HolviTheme.colors.primaryTextColor,
+            contentColor = HolviTheme.colors.primaryForeground,
             disabledContainerColor = HolviTheme.colors.primaryBackground,
-            disabledContentColor = HolviTheme.colors.primaryTextColor,
+            disabledContentColor = HolviTheme.colors.primaryForeground,
         )
     ) {
         Text(

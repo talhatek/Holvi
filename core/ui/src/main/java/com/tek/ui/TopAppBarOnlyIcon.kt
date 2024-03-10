@@ -27,7 +27,7 @@ fun TopAppBarOnlyIcon(
                     Icon(
                         painter = painterResource(id = res),
                         contentDescription = "Back",
-                        tint = HolviTheme.colors.primaryTextColor
+                        tint = HolviTheme.colors.primaryForeground
                     )
                 }
             }

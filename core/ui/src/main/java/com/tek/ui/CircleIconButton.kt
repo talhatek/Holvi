@@ -49,7 +49,7 @@ fun CircleIconButton(@DrawableRes iconIdRes: Int, onClicked: () -> Unit) {
                     .rotate(angle),
                 painter = painterResource(id = iconIdRes),
                 contentDescription = "Renew",
-                tint = HolviTheme.colors.primaryTextColor
+                tint = HolviTheme.colors.primaryForeground
             )
         }
     }

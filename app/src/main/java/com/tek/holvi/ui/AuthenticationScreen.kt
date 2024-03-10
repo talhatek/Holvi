@@ -63,12 +63,12 @@ fun AuthenticationMainScreen(
     ) {
         Text(
             text = "Welcome Back!",
-            color = HolviTheme.colors.primaryTextColor,
+            color = HolviTheme.colors.appForeground,
             style = HolviTheme.typography.largestHeader,
         )
         Text(
             text = "Please authenticate to continue...",
-            color = HolviTheme.colors.primaryTextColor,
+            color = HolviTheme.colors.appForeground,
             style = HolviTheme.typography.title,
         )
         Button(
@@ -81,16 +81,16 @@ fun AuthenticationMainScreen(
             shape = RoundedCornerShape(8.dp),
             colors = ButtonColors(
                 containerColor = HolviTheme.colors.primaryBackground,
-                contentColor = HolviTheme.colors.primaryTextColor,
+                contentColor = HolviTheme.colors.primaryForeground,
                 disabledContainerColor = HolviTheme.colors.primaryBackground.copy(.4f),
-                disabledContentColor = HolviTheme.colors.primaryTextColor.copy(alpha = .2f)
+                disabledContentColor = HolviTheme.colors.primaryForeground.copy(alpha = .2f)
             )
         ) {
             if (buttonEnabledState) {
                 Text(
                     text = "Authenticate",
                     style = HolviTheme.typography.title,
-                    color = HolviTheme.colors.primaryTextColor,
+                    color = HolviTheme.colors.primaryForeground,
 
                     )
             } else {
@@ -98,7 +98,7 @@ fun AuthenticationMainScreen(
                     Modifier
                         .size(16.dp),
                     strokeWidth = 4.dp,
-                    color = HolviTheme.colors.primaryTextColor,
+                    color = HolviTheme.colors.primaryForeground,
                 )
             }
         }
@@ -108,7 +108,7 @@ fun AuthenticationMainScreen(
             Modifier
                 .fillMaxWidth(.6f)
                 .fillMaxHeight(.4f),
-            tint = HolviTheme.colors.primaryTextColor
+            tint = HolviTheme.colors.primaryBackground
         )
     }
 }

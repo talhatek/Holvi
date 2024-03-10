@@ -96,11 +96,11 @@ fun GenerateScreen(navController: NavController) {
                         modifier = Modifier
                             .padding(vertical = 4.dp),
                         text = currentPassword,
-                        color = HolviTheme.colors.primaryTextColor,
+                        color = HolviTheme.colors.appForeground,
                         style = TextStyle(textAlign = TextAlign.Center)
                     )
                     HorizontalDivider(
-                        Modifier.fillMaxWidth(.7f), color = HolviTheme.colors.primaryTextColor
+                        Modifier.fillMaxWidth(.7f), color = HolviTheme.colors.appForeground
                     )
                 }
             }
@@ -187,20 +187,20 @@ fun SimpleInputView(
                 text = hint,
                 modifier = Modifier
                     .alpha(.7f)
-
                     .fillMaxWidth(),
                 style = HolviTheme.typography.body,
-                color =
-                HolviTheme.colors.primaryTextColor
+                color = HolviTheme.colors.appForeground,
+                textAlign = TextAlign.Center
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedTextColor = HolviTheme.colors.primaryTextColor,
-            unfocusedTextColor = HolviTheme.colors.primaryTextColor,
-            focusedIndicatorColor = HolviTheme.colors.primaryTextColor,
-            unfocusedIndicatorColor = HolviTheme.colors.primaryTextColor,
+            focusedTextColor = HolviTheme.colors.appForeground,
+            unfocusedTextColor = HolviTheme.colors.appForeground,
+            focusedIndicatorColor = HolviTheme.colors.appForeground,
+            unfocusedIndicatorColor = HolviTheme.colors.appForeground,
             focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
+            unfocusedContainerColor = Color.Transparent,
+            cursorColor = HolviTheme.colors.primaryBackground
         ),
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         modifier = Modifier
@@ -239,11 +239,15 @@ fun HolviGenerateSwitch(
             text = switchText,
             Modifier
                 .fillMaxWidth(.5f),
+            color = HolviTheme.colors.appForeground,
+            style = HolviTheme.typography.body,
         )
         Switch(
             colors = SwitchDefaults.colors(
                 uncheckedBorderColor = Color.Transparent,
                 checkedBorderColor = Color.Transparent,
+                checkedTrackColor = HolviTheme.colors.primaryBackground,
+                checkedThumbColor = HolviTheme.colors.primaryForeground
             ),
             checked = checkedState.value,
             onCheckedChange = {
@@ -281,17 +285,18 @@ fun HolviDropdown(
         Text(
             text = selectedTmpData,
             style = HolviTheme.typography.body,
+            color = HolviTheme.colors.appForeground
         )
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = "Expand collapse",
-            tint = HolviTheme.colors.primaryTextColor,
+            tint = HolviTheme.colors.primaryForeground,
             modifier = Modifier
                 .size(24.dp)
                 .align(alignment = CenterVertically)
         )
         MaterialTheme(
-            colorScheme = MaterialTheme.colorScheme.copy(surface = HolviTheme.colors.primaryBackground),
+            colorScheme = MaterialTheme.colorScheme.copy(surface = HolviTheme.colors.appBackground),
         ) {
             DropdownMenu(
                 expanded = expanded,
@@ -313,7 +318,8 @@ fun HolviDropdown(
                                 Text(
                                     text = it.toString(),
                                     style = HolviTheme.typography.body,
-                                    modifier = Modifier.padding(horizontal = 24.dp)
+                                    modifier = Modifier.padding(horizontal = 24.dp),
+                                    color = HolviTheme.colors.appForeground
                                 )
                             }
                         )

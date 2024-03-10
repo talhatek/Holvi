@@ -108,7 +108,7 @@ fun PortScreen(navController: NavController) {
 
             Button(onClick = { viewModel.onEvent(PortEvent.Import) }) {
                 Text(
-                    text = "Import", color = HolviTheme.colors.primaryTextColor
+                    text = "Import", color = HolviTheme.colors.primaryForeground
                 )
 
             }
@@ -117,7 +117,7 @@ fun PortScreen(navController: NavController) {
 
             }) {
                 Text(
-                    text = "Export", color = HolviTheme.colors.primaryTextColor
+                    text = "Export", color = HolviTheme.colors.primaryForeground
                 )
             }
         }
@@ -243,7 +243,7 @@ fun CodeBox(itemWidth: Dp, onValueChanged: (value: String) -> Unit) {
 
         },
         textStyle = TextStyle(
-            color = HolviTheme.colors.primaryTextColor, textAlign = TextAlign.Center
+            color = HolviTheme.colors.primaryForeground, textAlign = TextAlign.Center
         ),
         colors = OutlinedTextFieldDefaults.colors(
             cursorColor = Color.Transparent,

@@ -42,12 +42,12 @@ class AuthenticationActivity : FragmentActivity() {
                                 .fillMaxSize()
                                 .padding(top = it.calculateTopPadding()),
                             onClick = {
-                                if (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS) {
-                                    biometricPrompt.authenticate(biometricInfo)
+                                if (BuildConfig.DEBUG) {
+                                    startActivity(Intent(this, MenuActivity::class.java))
 
                                 } else {
-                                    if (BuildConfig.DEBUG) {
-                                        startActivity(Intent(this, MenuActivity::class.java))
+                                    if (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS) {
+                                        biometricPrompt.authenticate(biometricInfo)
 
                                     } else {
                                         scope.launch {

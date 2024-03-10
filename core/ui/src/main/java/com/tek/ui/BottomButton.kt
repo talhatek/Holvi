@@ -3,6 +3,7 @@ package com.tek.ui
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,12 +16,18 @@ fun BottomButton(text: String, onClicked: () -> Unit) {
             .fillMaxWidth()
             .fillMaxHeight(.1f), onClick = {
             onClicked.invoke()
-        }, shape = RectangleShape
+        }, shape = RectangleShape,
+        colors = ButtonColors(
+            containerColor = HolviTheme.colors.primaryBackground,
+            contentColor = HolviTheme.colors.primaryForeground,
+            disabledContainerColor = HolviTheme.colors.primaryBackground,
+            disabledContentColor = HolviTheme.colors.primaryForeground,
+        )
     ) {
         Text(
             text = text,
             style = HolviTheme.typography.title,
-            color = HolviTheme.colors.primaryTextColor
+            color = HolviTheme.colors.primaryForeground
         )
 
     }

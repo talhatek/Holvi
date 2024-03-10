@@ -18,79 +18,74 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 class HolviColors(
-    mainBackground: Color,
-    primaryBackgroundColor: Color,
-    primaryDarkBackgroundColor: Color,
-    primaryTextColor: Color,
-    bottomBackground: Color,
-    error: Color,
-    isLight: Boolean
+    appBackground: Color,
+    appForeground: Color,
+    primaryBackground: Color,
+    primaryForeground: Color,
+    primaryDarkBackground: Color,
+    error: Color
 ) {
-    var mainBackground by mutableStateOf(mainBackground)
+    var appBackground by mutableStateOf(appBackground)
         private set
-    var primaryBackground by mutableStateOf(primaryBackgroundColor)
+
+    var appForeground by mutableStateOf(appForeground)
         private set
-    var primaryDarkBackground by mutableStateOf(primaryDarkBackgroundColor)
+    var primaryBackground by mutableStateOf(primaryBackground)
         private set
-    var primaryTextColor by mutableStateOf(primaryTextColor)
+    var primaryForeground by mutableStateOf(primaryForeground)
         private set
-    var bottomBackground by mutableStateOf(bottomBackground)
+    var primaryDarkBackground by mutableStateOf(primaryDarkBackground)
         private set
     var error by mutableStateOf(error)
         private set
-    var isLight by mutableStateOf(isLight)
-        internal set
 
     fun copy(
-        mainBackground: Color = this.mainBackground,
-        primaryBackgroundColor: Color = this.primaryBackground,
-        primaryDarkBackgroundColor: Color = this.primaryDarkBackground,
-        primaryTextColor: Color = this.primaryTextColor,
-        bottomBackground: Color = this.bottomBackground,
+        appBackground: Color = this.appBackground,
+        appForeground: Color = this.appForeground,
+        primaryBackground: Color = this.primaryBackground,
+        primaryForeground: Color = this.primaryDarkBackground,
+        primaryDarkBackground: Color = this.primaryDarkBackground,
         error: Color = this.error,
-        isLight: Boolean = this.isLight
     ): HolviColors = HolviColors(
-        mainBackground,
-        primaryBackgroundColor,
-        primaryDarkBackgroundColor,
-        primaryTextColor,
-        bottomBackground,
+        appBackground,
+        appForeground,
+        primaryBackground,
+        primaryForeground,
+        primaryDarkBackground,
         error,
-        isLight
     )
 
     fun updateColorsFrom(other: HolviColors) {
         primaryBackground = other.primaryBackground
+        primaryForeground = other.primaryForeground
         primaryDarkBackground = other.primaryDarkBackground
-        primaryTextColor = other.primaryTextColor
-        bottomBackground = other.bottomBackground
+        appBackground = other.appBackground
+        appForeground = other.appForeground
         error = other.error
     }
 }
 
-private val colorBackground = Color(red = 28, green = 27, blue = 31)
-private val colorPrimaryBackgroundColor = Color(0xFF084227)
-private val colorPrimaryDarkBackgroundColor = Color(0xFF2F2A34)
-private val colorPrimaryTextColor = Color(0xFFced9bf)
-private val colorBottomBackground = Color(0xFF25202B)
+private val colorAppBackground = Color(0xff4A5759)
+private val colorAppForeground = Color(0xffffffff)
+private val colorPrimaryBackground = Color(0xffDCDCDD)
+private val colorPrimaryForeground = Color(0xff495057)
+private val colorPrimaryDarkBackground = Color(0xFF2F2A34)
 private val colorError = Color(0xFFD62222)
 
-
 fun lightColors(
-    mainBackground: Color = colorBackground,
-    primaryBackgroundColor: Color = colorPrimaryBackgroundColor,
-    primaryDarkBackgroundColor: Color = colorPrimaryDarkBackgroundColor,
-    primaryTextColor: Color = colorPrimaryTextColor,
-    bottomBackground: Color = colorBottomBackground,
+    appBackground: Color = colorAppBackground,
+    appForeground: Color = colorAppForeground,
+    primaryBackground: Color = colorPrimaryBackground,
+    primaryForeground: Color = colorPrimaryForeground,
+    primaryDarkBackground: Color = colorPrimaryDarkBackground,
     error: Color = colorError
 ): HolviColors = HolviColors(
-    mainBackground = mainBackground,
-    primaryBackgroundColor = primaryBackgroundColor,
-    primaryDarkBackgroundColor = primaryDarkBackgroundColor,
-    primaryTextColor = primaryTextColor,
-    bottomBackground = bottomBackground,
-    error = error,
-    isLight = true
+    appBackground = appBackground,
+    appForeground = appForeground,
+    primaryBackground = primaryBackground,
+    primaryForeground = primaryForeground,
+    primaryDarkBackground = primaryDarkBackground,
+    error = error
 )
 
 

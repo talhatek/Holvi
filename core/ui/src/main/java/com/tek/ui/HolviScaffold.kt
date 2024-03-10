@@ -24,7 +24,7 @@ fun HolviScaffold(
         floatingActionButton = floatingActionButton,
         snackbarHost = snackbarHost,
         floatingActionButtonPosition = floatingActionButtonPosition,
-        containerColor = HolviTheme.colors.mainBackground,
+        containerColor = HolviTheme.colors.appBackground,
         content = content
     )
 }

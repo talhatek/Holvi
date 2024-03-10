@@ -15,7 +15,7 @@ fun TopAppBarBackWithLogo(onBackClicked: () -> Unit) {
         title = {
             Text(
                 text = "Holvi",
-                color = HolviTheme.colors.primaryTextColor,
+                color = HolviTheme.colors.primaryForeground,
                 style = HolviTheme.typography.title
             )
         },
@@ -28,7 +28,7 @@ fun TopAppBarBackWithLogo(onBackClicked: () -> Unit) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_back),
                     contentDescription = "Back",
-                    tint = HolviTheme.colors.primaryTextColor,
+                    tint = HolviTheme.colors.primaryForeground,
                 )
             }
         }
