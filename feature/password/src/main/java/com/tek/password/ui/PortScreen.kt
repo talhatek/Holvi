@@ -48,6 +48,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.tek.password.presentation.PortEvent
+import com.tek.password.presentation.PortResult
 import com.tek.password.presentation.PortViewModel
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
@@ -75,7 +77,7 @@ fun PortScreen(navController: NavController) {
     LaunchedEffect(key1 = true, block = {
         viewModel.portResult.collectLatest {
             when (it) {
-                is PortViewModel.PortResult.ImportSuccess -> {
+                is PortResult.ImportSuccess -> {
                     val clipData =
                         ClipData.newPlainText("label", it.id)
                     (context.getSystemService(ComponentActivity.CLIPBOARD_SERVICE) as ClipboardManager)
@@ -83,8 +85,8 @@ fun PortScreen(navController: NavController) {
                     snackbarHostState.showSnackbar(it.id + " is your key to export again. Copied to clipboard!")
                 }
 
-                is PortViewModel.PortResult.ExportSuccess -> snackbarHostState.showSnackbar(it.message)
-                is PortViewModel.PortResult.Error -> snackbarHostState.showSnackbar(it.message)
+                is PortResult.ExportSuccess -> snackbarHostState.showSnackbar(it.message)
+                is PortResult.Error -> snackbarHostState.showSnackbar(it.message)
             }
         }
     })
@@ -104,7 +106,7 @@ fun PortScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Button(onClick = { viewModel.onEvent(PortViewModel.PortEvent.Import) }) {
+            Button(onClick = { viewModel.onEvent(PortEvent.Import) }) {
                 Text(
                     text = "Import", color = HolviTheme.colors.primaryTextColor
                 )
@@ -126,7 +128,7 @@ fun PortScreen(navController: NavController) {
                 onDismiss = { exportDialogVisible = false },
                 onExport = { path ->
                     exportDialogVisible = false
-                    viewModel.onEvent(PortViewModel.PortEvent.Export(pathId = path))
+                    viewModel.onEvent(PortEvent.Export(pathId = path))
                 }
             )
         }

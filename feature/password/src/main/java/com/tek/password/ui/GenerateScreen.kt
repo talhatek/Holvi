@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import com.tek.password.R
 import com.tek.password.di.getViewModelScope
 import com.tek.password.presentation.GenerateViewModel
+import com.tek.password.presentation.GenerateViewUiEvent
 import com.tek.ui.BottomButton
 import com.tek.ui.CircleIconButton
 import com.tek.ui.HolviScaffold
@@ -45,7 +46,9 @@ fun GenerateScreen(navController: NavController) {
         scope = getKoin()
             .getViewModelScope(GenerateViewModel.SCOPE_NAME)
     )
-
+    val currentPassword = viewModel.currentPassword.collectAsState().value
+    val dropdownItems = viewModel.dropdownItems.collectAsState().value
+    val lengthSelectorText = viewModel.lengthSelectorText.collectAsState().value
     val blurDp = remember {
         mutableStateOf(0.dp)
     }
@@ -54,7 +57,7 @@ fun GenerateScreen(navController: NavController) {
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collectLatest {
             when (it) {
-                is GenerateViewModel.GenerateViewUiEvent.SnackbarEvent -> {
+                is GenerateViewUiEvent.SnackbarEvent -> {
                     snackbarHostState.showSnackbar(it.message)
                 }
             }
@@ -74,12 +77,12 @@ fun GenerateScreen(navController: NavController) {
             }
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-    ) {
+    ) { paddingValues ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = it.calculateTopPadding()),
+                .padding(top = paddingValues.calculateTopPadding()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -87,11 +90,12 @@ fun GenerateScreen(navController: NavController) {
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
+
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         modifier = Modifier
                             .padding(vertical = 4.dp),
-                        text = viewModel.currentPassword.value,
+                        text = currentPassword,
                         color = HolviTheme.colors.primaryTextColor,
                         style = TextStyle(textAlign = TextAlign.Center)
                     )
@@ -117,8 +121,8 @@ fun GenerateScreen(navController: NavController) {
                 viewModel.forbiddenLetters.value = it
             }
             HolviDropdown(
-                data = viewModel.dropdownItems,
-                defaultHint = viewModel.lengthSelectorText,
+                data = dropdownItems,
+                defaultHint = lengthSelectorText,
                 onExpanded = { expanded ->
                     blurDp.value = if (expanded) {
                         4.dp
@@ -260,12 +264,12 @@ fun HolviGenerateSwitch(
 @Composable
 fun HolviDropdown(
     data: List<Int>,
-    defaultHint: MutableState<String>,
+    defaultHint: String,
     onItemSelected: (length: Int) -> Unit,
     onExpanded: (isExpanded: Boolean) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedTmpData by remember { defaultHint }
+    var selectedTmpData by remember { mutableStateOf(defaultHint) }
 
     LaunchedEffect(expanded) {
         onExpanded.invoke(expanded)

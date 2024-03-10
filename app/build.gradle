@@ -24,10 +24,17 @@ android {
     }
 
     buildTypes {
-        release {
-            minifyEnabled false
+        named("release") {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders["app_name"] = "Holvi"
         }
+
+        named("debug") {
+            applicationIdSuffix = ".debug"
+            manifestPlaceholders["app_name"] = "Holvi-Debug"
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

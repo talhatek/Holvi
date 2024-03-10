@@ -1,6 +1,7 @@
 package com.tek.database.di
 
 import android.app.Application
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -9,6 +10,7 @@ import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.tek.database.HolviDb
 import com.tek.util.Constant
 import com.tek.util.Constant.DATA_STORE_REGISTRATION_DEFAULT_KEY
+import com.tek.util.Constant.getRoomDbName
 import com.tek.util.dataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -19,7 +21,7 @@ import org.koin.dsl.module
 
 val localDatabaseModule = module {
     single {
-        Room.databaseBuilder(androidApplication(), HolviDb::class.java, Constant.ROOM_DB_NAME)
+        Room.databaseBuilder(androidApplication(), HolviDb::class.java, getRoomDbName())
             .openHelperFactory(get()).build()
     }
     single {
@@ -27,6 +29,7 @@ val localDatabaseModule = module {
     }
 
     single<SupportSQLiteOpenHelper.Factory> {
+        Log.e("db issue", "fetch " + getSq(androidApplication()))
         return@single SupportFactory(SQLiteDatabase.getBytes(getSq(androidApplication()).toCharArray()))
     }
 

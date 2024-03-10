@@ -7,10 +7,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.tek.holvi.domain.ControlRegistrationUseCase
 import com.tek.holvi.domain.RegisterPhoneUseCase
 import com.tek.holvi.domain.StoreRegistrationKeyUseCase
+import com.tek.holvi.model.Key
 import com.tek.util.AppDispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class AuthenticationViewModel(
     private val controlRegistration: ControlRegistrationUseCase,
@@ -33,7 +35,10 @@ class AuthenticationViewModel(
             controlRegistration.invoke()?.let {
                 storeRegistrationKey.invoke(it)
             } ?: run {
-                registerPhone.invoke()
+                Key(id = UUID.randomUUID().toString()).apply {
+                    registerPhone.invoke(this)
+                    storeRegistrationKey.invoke(this)
+                }
             }
             _sqState.emit(SQState.Success)
         } catch (e: FirebaseFirestoreException) {
