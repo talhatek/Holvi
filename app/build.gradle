@@ -86,6 +86,7 @@ dependencies {
     implementation(project(":core:test"))
     implementation(project(":core:util"))
     implementation(project(":feature:password"))
+    implementation(project(":feature:card"))
 
     androidTestImplementation libs.androidx.ui.test.junit4
     androidTestImplementation libs.kotlinx.coroutines.test
