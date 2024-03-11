@@ -11,12 +11,12 @@
 
 ### Screens
 
-Authenticate Screen                                                    |  Menu Screen
-:---------------------------------------------------------------------:|:----------------------------------------------------------------:
-<img src="/screenshot/auth_screen.png" width="270" height="480">       | <img src="/screenshot/menu_screen.png" width="270" height="480">
-All Screen                                                             |  Add Screen
-<img src="/screenshot/all_screen.png" width="270" height="480">        | <img src="/screenshot/add_screen.png" width="270" height="480">
-Generate Screen                                                        
-<img src="/screenshot/generate_screen.png" width="270" height="480">   
+|                         Authenticate Screen                          |                                  Menu Screen                                   |
+|:--------------------------------------------------------------------:|:------------------------------------------------------------------------------:|
+|   <img src="/screenshot/auth_screen.jpg" width="270" height="480">   |        <img src="/screenshot/menu_screen.jpg" width="270" height="480">        |
+|                              All Screen                              |                               Add Password Sheet                               |
+|   <img src="/screenshot/all_screen.jpg" width="270" height="480">    |         <img src="/screenshot/add_sheet.jpg" width="270" height="480">         |
+|                           Generate Screen                            |                     Update Delete Password Functionalities                     |
+| <img src="/screenshot/generate_screen.jpg" width="270" height="480"> | <img src="/screenshot/all_with_functions_screen.jpg" width="270" height="480"> |
 
 
