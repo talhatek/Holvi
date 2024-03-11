@@ -18,7 +18,6 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -94,10 +93,11 @@ fun GenerateScreen(navController: NavController) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         modifier = Modifier
-                            .padding(vertical = 4.dp),
-                        text = currentPassword,
+                            .padding(vertical = 4.dp)
+                            .alpha(if (currentPassword.isBlank()) .4f else 1f),
+                        text = currentPassword.ifBlank { "Your password will be displayed here." },
                         color = HolviTheme.colors.appForeground,
-                        style = TextStyle(textAlign = TextAlign.Center)
+                        style = HolviTheme.typography.body,
                     )
                     HorizontalDivider(
                         Modifier.fillMaxWidth(.7f), color = HolviTheme.colors.appForeground
@@ -117,9 +117,11 @@ fun GenerateScreen(navController: NavController) {
                     .fillMaxHeight(.05f)
                     .fillMaxWidth()
             )
-            SimpleInputView(hintParam = "Forbidden") {
+            SimpleInputView(hintParam = "Please enter your forbidden chars.") {
                 viewModel.forbiddenLetters.value = it
             }
+            Spacer(modifier = Modifier.height(16.dp))
+
             HolviDropdown(
                 data = dropdownItems,
                 defaultHint = lengthSelectorText,
@@ -189,8 +191,7 @@ fun SimpleInputView(
                     .alpha(.7f)
                     .fillMaxWidth(),
                 style = HolviTheme.typography.body,
-                color = HolviTheme.colors.appForeground,
-                textAlign = TextAlign.Center
+                color = HolviTheme.colors.appForeground
             )
         },
         colors = TextFieldDefaults.colors(
@@ -290,7 +291,7 @@ fun HolviDropdown(
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = "Expand collapse",
-            tint = HolviTheme.colors.primaryForeground,
+            tint = HolviTheme.colors.appForeground,
             modifier = Modifier
                 .size(24.dp)
                 .align(alignment = CenterVertically)

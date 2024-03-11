@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -27,6 +26,7 @@ import com.tek.holvi.R
 import com.tek.holvi.presentation.AuthenticationViewModel
 import com.tek.holvi.presentation.SQState
 import com.tek.ui.HolviTheme
+import com.tek.ui.holviButtonColors
 import org.koin.androidx.compose.get
 
 @Composable
@@ -79,12 +79,7 @@ fun AuthenticationMainScreen(
                 onClick()
             }, enabled = buttonEnabledState,
             shape = RoundedCornerShape(8.dp),
-            colors = ButtonColors(
-                containerColor = HolviTheme.colors.primaryBackground,
-                contentColor = HolviTheme.colors.primaryForeground,
-                disabledContainerColor = HolviTheme.colors.primaryBackground.copy(.4f),
-                disabledContentColor = HolviTheme.colors.primaryForeground.copy(alpha = .2f)
-            )
+            colors = holviButtonColors()
         ) {
             if (buttonEnabledState) {
                 Text(

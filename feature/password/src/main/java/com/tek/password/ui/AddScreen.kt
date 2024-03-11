@@ -29,10 +29,7 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.tek.password.presentation.AddViewModel
 import com.tek.password.presentation.ClearFocus
 import com.tek.ui.HolviTheme
@@ -106,7 +103,7 @@ fun PasswordInputView(
     defaultValue: String? = null,
     onValueChanged: (input: String) -> Unit,
 ) {
-    val color = HolviTheme.colors.primaryBackground
+    val color = HolviTheme.colors.primaryDarkBackground
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -197,11 +194,8 @@ fun PasswordInputView(
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     text = "G",
-                    color = Color.Black,
-                    style = TextStyle.Default.copy(
-                        fontSize = 12.dp.value.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    color = HolviTheme.colors.appForeground,
+                    style = HolviTheme.typography.body
                 )
             }
         }

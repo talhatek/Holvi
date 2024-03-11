@@ -49,7 +49,6 @@ import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -128,6 +127,7 @@ import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.SnackbarController
 import com.tek.ui.TopAppBarBackWithLogo
+import com.tek.ui.holviButtonColors
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 import kotlin.math.abs
@@ -304,7 +304,7 @@ fun AllScreen(navController: NavController) {
                     Text(
                         text = "You don't have any saved password.",
                         color = HolviTheme.colors.appForeground,
-                        textAlign = TextAlign.Center
+                        style = HolviTheme.typography.body
                     )
                 }
             }
@@ -316,7 +316,7 @@ fun AllScreen(navController: NavController) {
                 ) {
                     Text(
                         text = passwordsState.message,
-                        textAlign = TextAlign.Center
+                        style = HolviTheme.typography.body
                     )
                 }
             }
@@ -434,12 +434,7 @@ fun AddModalSheet(
 
                 Button(modifier = Modifier
                     .testTag("addButton"),
-                    colors = ButtonColors(
-                        containerColor = HolviTheme.colors.primaryBackground,
-                        contentColor = HolviTheme.colors.primaryForeground,
-                        disabledContainerColor = HolviTheme.colors.primaryBackground,
-                        disabledContentColor = HolviTheme.colors.primaryForeground,
-                    ),
+                    colors = holviButtonColors(),
                     onClick = {
                         myAddViewModel.addPassword(
                             Password(
@@ -450,7 +445,7 @@ fun AddModalSheet(
                             )
                         )
                     }) {
-                    Text(text = "Add")
+                    Text(text = "Add", style = HolviTheme.typography.body)
                 }
                 Spacer(
                     modifier = Modifier
@@ -540,8 +535,11 @@ fun UpdateModalSheet(
                             userName = userName
                         )
                     )
-                }) {
-                    Text(text = "Update")
+                }, colors = holviButtonColors()) {
+                    Text(
+                        text = "Update",
+                        style = HolviTheme.typography.body
+                    )
                 }
 
                 SnackbarHost(hostState = snackState, Modifier)
@@ -920,7 +918,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                 .wrapContentHeight(),
             tonalElevation = AlertDialogDefaults.TonalElevation,
             shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.background,
+            color = HolviTheme.colors.appBackground,
         ) {
             Column(
                 modifier = Modifier
@@ -932,7 +930,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = HolviTheme.colors.primaryForeground,
+                                color = HolviTheme.colors.appForeground,
                                 fontWeight = FontWeight.Light
                             ),
                         ) {
@@ -941,7 +939,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                         append(" ")
                         withStyle(
                             style = SpanStyle(
-                                color = HolviTheme.colors.primaryForeground,
+                                color = HolviTheme.colors.appForeground,
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
@@ -949,13 +947,13 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                         }
                         withStyle(
                             style = SpanStyle(
-                                color = HolviTheme.colors.primaryForeground
+                                color = HolviTheme.colors.appForeground
                             )
                         ) {
                             append("?")
                         }
                     },
-                    color = HolviTheme.colors.primaryForeground,
+                    color = HolviTheme.colors.appForeground,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -980,9 +978,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                         Text(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Yes",
-                            color = HolviTheme.colors.primaryForeground,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold
+                            style = HolviTheme.typography.body
                         )
                     }
 
@@ -1000,8 +996,7 @@ fun ConfirmDeleteAlertDialog(siteName: String, onDismiss: () -> Unit, onConfirm:
                         Text(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Cancel",
-                            color = HolviTheme.colors.primaryForeground,
-                            textAlign = TextAlign.Center
+                            style = HolviTheme.typography.body
                         )
                     }
                 }

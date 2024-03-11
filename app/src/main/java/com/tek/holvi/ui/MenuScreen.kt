@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -26,12 +25,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tek.holvi.R
-import com.tek.holvi.theme.PoppinsRegular
 import com.tek.holvi.utils.MenuType
 import com.tek.holvi.utils.Screen
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.TopAppBarOnlyIcon
+import com.tek.ui.holviButtonColors
 
 @Composable
 fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {
@@ -86,7 +85,6 @@ fun MenuScreenContent(
             text = "What you wanna do?",
             style = HolviTheme.typography.body,
             color = HolviTheme.colors.primaryForeground,
-            fontFamily = PoppinsRegular
         )
         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
         BoxWithConstraints {
@@ -123,16 +121,12 @@ fun MenuItem(
         modifier = Modifier.fillMaxWidth(0.7f),
         onClick = { onClicked.invoke(title) },
         shape = RoundedCornerShape(16.dp),
-        colors = ButtonColors(
-            containerColor = HolviTheme.colors.primaryBackground,
-            contentColor = HolviTheme.colors.primaryForeground,
-            disabledContainerColor = HolviTheme.colors.primaryBackground,
-            disabledContentColor = HolviTheme.colors.primaryForeground,
-        )
+        colors = holviButtonColors()
     ) {
         Text(
             text = title,
             modifier = Modifier.padding(all = 8.dp),
+            style = HolviTheme.typography.body
         )
     }
 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -54,6 +53,7 @@ import com.tek.password.presentation.PortViewModel
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.TopAppBarBackWithLogo
+import com.tek.ui.holviButtonColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
@@ -106,18 +106,27 @@ fun PortScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Button(onClick = { viewModel.onEvent(PortEvent.Import) }) {
+            Button(
+                onClick = { viewModel.onEvent(PortEvent.Import) },
+                colors = holviButtonColors()
+            ) {
                 Text(
-                    text = "Import", color = HolviTheme.colors.primaryForeground
+                    text = "Import",
+                    color = HolviTheme.colors.primaryForeground,
+                    style = HolviTheme.typography.body
                 )
 
             }
-            Button(onClick = {
-                exportDialogVisible = true
+            Button(
+                onClick = {
+                    exportDialogVisible = true
 
-            }) {
+                }, colors = holviButtonColors()
+            ) {
                 Text(
-                    text = "Export", color = HolviTheme.colors.primaryForeground
+                    text = "Export",
+                    color = HolviTheme.colors.primaryForeground,
+                    style = HolviTheme.typography.body
                 )
             }
         }
@@ -157,7 +166,7 @@ fun ExportModelSheet(
         modifier = Modifier
             .wrapContentHeight()
             .fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = HolviTheme.colors.appBackground
     ) {
         Column(
             modifier = Modifier.wrapContentHeight(),
@@ -207,8 +216,14 @@ fun ExportModelSheet(
                         onExport.invoke(path)
                     }
 
-                }) {
-                Text(text = "Export")
+                },
+                colors = holviButtonColors()
+            ) {
+                Text(
+                    text = "Export",
+                    style = HolviTheme.typography.body,
+                    color = HolviTheme.colors.primaryForeground
+                )
             }
 
             SnackbarHost(hostState = snackState, Modifier)
@@ -243,11 +258,13 @@ fun CodeBox(itemWidth: Dp, onValueChanged: (value: String) -> Unit) {
 
         },
         textStyle = TextStyle(
-            color = HolviTheme.colors.primaryForeground, textAlign = TextAlign.Center
+            color = HolviTheme.colors.appForeground, textAlign = TextAlign.Center
         ),
         colors = OutlinedTextFieldDefaults.colors(
             cursorColor = Color.Transparent,
-            selectionColors = TextSelectionColors(Color.Transparent, Color.Transparent)
+            selectionColors = TextSelectionColors(Color.Transparent, Color.Transparent),
+            focusedBorderColor = HolviTheme.colors.appForeground,
+            unfocusedBorderColor = HolviTheme.colors.appForeground.copy(alpha = 0.4f)
         ),
         singleLine = true,
     )
