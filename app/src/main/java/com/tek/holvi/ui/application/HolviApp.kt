@@ -1,11 +1,13 @@
 package com.tek.holvi.ui.application
 
 import android.app.Application
+import com.tek.card.di.cardModule
 import com.tek.database.di.fireStoreModule
 import com.tek.database.di.localDatabaseModule
 
 import com.tek.holvi.BuildConfig
 import com.tek.holvi.di.authenticationModule
+import com.tek.network.di.networkModule
 import com.tek.password.di.passwordModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -24,7 +26,9 @@ class HolviApp : Application() {
                     authenticationModule,
                     localDatabaseModule,
                     passwordModule,
-                    fireStoreModule
+                    cardModule,
+                    fireStoreModule,
+                    networkModule,
                 )
             )
         }

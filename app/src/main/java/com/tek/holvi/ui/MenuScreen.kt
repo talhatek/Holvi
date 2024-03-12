@@ -20,8 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tek.holvi.R
@@ -46,23 +44,19 @@ fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {
                     .fillMaxSize()
                     .padding(top = it.calculateTopPadding()),
                 itemList = mutableListOf<@MenuType String>(
-                    MenuType.SEE_ALL,
-                    MenuType.GENERATE,
-                    MenuType.PORT
+                    MenuType.CARD,
+                    MenuType.PASSWORD,
                 )
             ) { menuType ->
                 when (menuType) {
-                    MenuType.SEE_ALL -> {
-                        navController.navigate(Screen.AllScreen.route)
+                    MenuType.CARD -> {
+                        navController.navigate(Screen.CardScreen.route)
                     }
 
-                    MenuType.GENERATE -> {
-                        navController.navigate(Screen.GenerateScreen.route)
+                    MenuType.PASSWORD -> {
+                        navController.navigate(Screen.PasswordScreen.route)
                     }
 
-                    MenuType.PORT -> {
-                        navController.navigate(Screen.PortScreen.route)
-                    }
                 }
             }
         }
@@ -72,7 +66,7 @@ fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {
 @Composable
 fun MenuScreenContent(
     modifier: Modifier,
-    @PreviewParameter(MenuProvider::class) @MenuType itemList: List<String>,
+    @MenuType itemList: List<String>,
     onItemSelected: (title: String) -> Unit
 ) {
     Column(
@@ -82,9 +76,9 @@ fun MenuScreenContent(
         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
 
         Text(
-            text = "What you wanna do?",
+            text = "What do you need to see?",
             style = HolviTheme.typography.body,
-            color = HolviTheme.colors.primaryForeground,
+            color = HolviTheme.colors.appForeground,
         )
         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
         BoxWithConstraints {
@@ -114,7 +108,7 @@ fun MenuScreenContent(
 
 @Composable
 fun MenuItem(
-    @PreviewParameter(MenuItemProvider::class) @MenuType title: String,
+    @MenuType title: String,
     onClicked: (title: String) -> Unit
 ) {
     Button(
@@ -129,14 +123,4 @@ fun MenuItem(
             style = HolviTheme.typography.body
         )
     }
-}
-
-class MenuItemProvider : PreviewParameterProvider<String> {
-    override val values: Sequence<String> = sequenceOf("Add")
-}
-
-class MenuProvider : PreviewParameterProvider<List<String>> {
-    override val values: Sequence<List<String>>
-        get() = sequenceOf(listOf("Add", "Update", "See All", "Generate"))
-
 }

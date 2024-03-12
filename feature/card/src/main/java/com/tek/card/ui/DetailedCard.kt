@@ -38,14 +38,13 @@ import com.tek.ui.HolviTheme
 import kotlin.math.abs
 
 @Composable
-fun BankCard() {
+fun DetailedCard() {
 
     var axisY by remember { mutableFloatStateOf(0f) }
 
     var isCompletingAnimationActive by remember { mutableStateOf(false) }
     var isQuickDragAnimationActive by remember { mutableStateOf(false) }
 
-    // Follow drag amount to manage QuickDragAnimation.
     var animationDragAmount by remember { mutableFloatStateOf(0f) }
 
     CardContent(

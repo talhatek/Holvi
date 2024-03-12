@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.tek.card.ui.CardScreen
 import com.tek.holvi.ui.MenuScreen
 import com.tek.holvi.utils.Screen
 import com.tek.password.ui.AllScreen
@@ -28,6 +29,9 @@ class MenuActivity : ComponentActivity() {
                             MenuScreen(navController = navController) {
                                 this@MenuActivity.finish()
                             }
+                        }
+                        composable(Screen.CardScreen.route) {
+                            CardScreen(navController = navController)
                         }
                         composable(Screen.AllScreen.route) {
                             AllScreen(navController = navController)

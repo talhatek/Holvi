@@ -36,12 +36,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(libs.androidx.navigation.compose)
 
-
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.material3.android)
 
     implementation(project(":core:database"))
     implementation(project(":core:ui"))
     implementation(project(":core:util"))
+    implementation(project(":core:network"))
+
 }
