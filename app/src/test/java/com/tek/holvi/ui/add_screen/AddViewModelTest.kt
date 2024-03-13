@@ -3,8 +3,12 @@ package com.tek.holvi.ui.add_screen
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.tek.database.dao.PasswordDao
-import com.tek.database.data.Password
+import com.tek.database.domain.AddPasswordUseCase
+import com.tek.database.model.Password
+import com.tek.password.domain.PasswordGeneratorUseCase
+import com.tek.password.presentation.AddPasswordState
+import com.tek.password.presentation.AddViewModel
+import com.tek.test.HolviTestDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -20,9 +24,12 @@ import org.mockito.Mockito.mock
 class AddViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
+    private val testDispatcher = StandardTestDispatcher()
 
     private val addViewModel = AddViewModel(
-        passwordDao = mock(PasswordDao::class.java)
+        addPassword = mock(AddPasswordUseCase::class.java),
+        passwordGenerator = PasswordGeneratorUseCase(),
+        appDispatchers = HolviTestDispatchers(testDispatcher)
     )
 
     @Before
@@ -36,7 +43,6 @@ class AddViewModelTest {
     }
 
     private fun generatePassword() = Password(
-        id = 0,
         siteName = "Site Name",
         password = "Password",
         userName = "User Name"
