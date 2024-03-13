@@ -4,7 +4,7 @@ package com.tek.holvi.ui.add_screen
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.tek.database.dao.PasswordDao
-import com.tek.database.model.Password
+import com.tek.database.data.Password
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

@@ -2,7 +2,7 @@ package com.tek.password.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tek.database.dao.PasswordDao
+import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.util.AppDispatchers
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AddViewModel(
-    private val passwordDao: PasswordDao,
+    private val addPassword: AddPasswordUseCase,
     private val passwordGenerator: PasswordGeneratorUseCase,
     private val appDispatchers: AppDispatchers
 ) : ViewModel() {
@@ -29,7 +29,7 @@ class AddViewModel(
             val controlPassword = controlPassword(password = password)
             if (controlPassword) {
                 try {
-                    passwordDao.addPassword(password = password)
+                    addPassword.invoke(password)
                     _passwordAddState.emit(AddPasswordState.Success)
                     _clearInputsSharedFlow.emit(ClearFocus.Clear)
                 } catch (ex: Exception) {

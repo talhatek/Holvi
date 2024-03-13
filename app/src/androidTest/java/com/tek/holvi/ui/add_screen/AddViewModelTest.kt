@@ -1,7 +1,7 @@
 package com.tek.holvi.ui.add_screen
 
 import com.google.common.truth.Truth.assertThat
-import com.tek.database.dao.PasswordDao
+import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.password.presentation.AddPasswordState
@@ -25,7 +25,7 @@ class AddViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private val addViewModel = AddViewModel(
-        passwordDao = mock(PasswordDao::class.java),
+        addPassword = mock(AddPasswordUseCase::class.java),
         passwordGenerator = PasswordGeneratorUseCase(),
         appDispatchers = HolviTestDispatchers(testDispatcher)
     )
@@ -41,7 +41,6 @@ class AddViewModelTest {
     }
 
     private fun generatePassword() = Password(
-        id = 0,
         siteName = "Site Name",
         password = "Password",
         userName = "User Name"

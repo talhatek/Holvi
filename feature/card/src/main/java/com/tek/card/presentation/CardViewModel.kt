@@ -8,11 +8,10 @@ import kotlinx.coroutines.launch
 
 class CardViewModel(
     private val getCardInformation: GetCardInformationUseCase,
-    appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
-
-    init {
+    fun getBinInfo(bin: String) {
         viewModelScope.launch(appDispatchers.IO) {
             getCardInformation.invoke("456933")
 

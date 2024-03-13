@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.tek.database.HolviDb
+import com.tek.database.domain.AddPasswordUseCase
 import com.tek.util.Constant
 import com.tek.util.Constant.DATA_STORE_REGISTRATION_DEFAULT_KEY
 import com.tek.util.Constant.getRoomDbName
@@ -17,6 +18,7 @@ import kotlinx.coroutines.runBlocking
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
 import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val localDatabaseModule = module {
@@ -36,6 +38,9 @@ val localDatabaseModule = module {
     single {
         getDataStore(androidApplication())
     }
+
+    factoryOf(::AddPasswordUseCase)
+
 }
 
 fun getSq(androidApplication: Application): String {

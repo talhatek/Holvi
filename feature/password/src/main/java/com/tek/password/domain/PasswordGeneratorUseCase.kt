@@ -1,7 +1,7 @@
 package com.tek.password.domain
 
 import android.util.Base64
-import com.tek.database.model.Password
+import com.tek.database.data.Password
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec

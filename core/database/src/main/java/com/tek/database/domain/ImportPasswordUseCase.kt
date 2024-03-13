@@ -1,7 +1,7 @@
 package com.tek.database.domain
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.tek.database.model.Password
+import com.tek.database.data.Password
 import kotlinx.coroutines.tasks.await
 
 class ImportPasswordUseCase(private val db: FirebaseFirestore) {

@@ -116,7 +116,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
-import com.tek.database.model.Password
+import com.tek.database.data.Password
 import com.tek.password.R
 import com.tek.password.presentation.AddPasswordState
 import com.tek.password.presentation.AddViewModel
