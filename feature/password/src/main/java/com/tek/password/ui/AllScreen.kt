@@ -116,7 +116,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
-import com.tek.database.data.Password
+import com.tek.database.model.Password
 import com.tek.password.R
 import com.tek.password.presentation.AddPasswordState
 import com.tek.password.presentation.AddViewModel
@@ -125,6 +125,7 @@ import com.tek.password.presentation.DeletePasswordState
 import com.tek.password.presentation.PasswordsState
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
+import com.tek.ui.Screen
 import com.tek.ui.SnackbarController
 import com.tek.ui.TopAppBarBackWithLogo
 import com.tek.ui.holviButtonColors
@@ -215,7 +216,7 @@ fun AllScreen(navController: NavController) {
                             fabPosition = it.positionInWindow()
                         }
                     },
-                onClick = { showAddBottomSheet = true },
+                onClick = { navController.navigate(Screen.AddScreen.route) },
                 shape = CircleShape,
                 containerColor = fabColorState.value
             ) {

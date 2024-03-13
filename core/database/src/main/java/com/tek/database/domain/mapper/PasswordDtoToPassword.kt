@@ -6,7 +6,7 @@ import com.tek.database.model.Password
 class PasswordDtoToPasswordMapper {
 
     operator fun invoke(dto: PasswordDto) = with(dto) {
-        Password(siteName = siteName, password = password, userName = userName)
+        Password(id = id, siteName = siteName, password = password, userName = userName)
     }
 
 }

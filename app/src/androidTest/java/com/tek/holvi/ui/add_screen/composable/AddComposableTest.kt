@@ -13,9 +13,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tek.holvi.ui.activity.MenuActivity
-import com.tek.holvi.utils.Screen
 import com.tek.password.ui.AllScreen
 import com.tek.ui.HolviTheme
+import com.tek.ui.Screen
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

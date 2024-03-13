@@ -9,6 +9,12 @@ import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.tek.database.HolviDb
 import com.tek.database.domain.AddPasswordUseCase
+import com.tek.database.domain.DeletePasswordUseCase
+import com.tek.database.domain.GetAllPasswordsUseCase
+import com.tek.database.domain.GetPasswordBySiteNameUseCase
+import com.tek.database.domain.ObservePasswordUseCase
+import com.tek.database.domain.SearchPasswordUseCase
+import com.tek.database.domain.mapper.PasswordDtoToPasswordMapper
 import com.tek.util.Constant
 import com.tek.util.Constant.DATA_STORE_REGISTRATION_DEFAULT_KEY
 import com.tek.util.Constant.getRoomDbName
@@ -40,6 +46,12 @@ val localDatabaseModule = module {
     }
 
     factoryOf(::AddPasswordUseCase)
+    factoryOf(::DeletePasswordUseCase)
+    factoryOf(::GetAllPasswordsUseCase)
+    factoryOf(::GetPasswordBySiteNameUseCase)
+    factoryOf(::ObservePasswordUseCase)
+    factoryOf(::SearchPasswordUseCase)
+    factoryOf(::PasswordDtoToPasswordMapper)
 
 }
 

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -30,10 +31,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.tek.password.presentation.AddViewModel
 import com.tek.password.presentation.ClearFocus
+import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
+import com.tek.ui.TopAppBarBackWithLogo
 import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun AddScreen(navController: NavController) {
+    HolviScaffold(
+        topBar = {
+            TopAppBarBackWithLogo {
+                navController.popBackStack()
+            }
+        },
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+
+        }
+    }
+}
 
 @Composable
 fun InputView(

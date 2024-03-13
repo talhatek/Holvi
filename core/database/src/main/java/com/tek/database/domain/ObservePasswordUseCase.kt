@@ -12,6 +12,13 @@ class ObservePasswordUseCase(private val passwordDao: PasswordDao) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke() = passwordDao.observeAllPasswords()
         .flatMapConcat { passwords ->
-            flowOf(passwords.map { Password(it.siteName, it.password, it.userName) })
+            flowOf(passwords.map {
+                Password(
+                    id = it.id,
+                    siteName = it.siteName,
+                    password = it.password,
+                    userName = it.userName
+                )
+            })
         }
 }

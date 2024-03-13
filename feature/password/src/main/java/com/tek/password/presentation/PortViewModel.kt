@@ -2,9 +2,10 @@ package com.tek.password.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tek.database.dao.PasswordDao
+import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.ExportPasswordUseCase
 import com.tek.database.domain.ExportResult
+import com.tek.database.domain.GetAllPasswordsUseCase
 import com.tek.database.domain.ImportPasswordUseCase
 import com.tek.password.domain.PasswordGeneratorUseCase.Companion.encrypt
 import com.tek.password.domain.PasswordGeneratorUseCase.Companion.toPassword
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class PortViewModel(
-    private val passwordDao: PasswordDao,
+    private val getAllPasswords: GetAllPasswordsUseCase,
+    private val addPassword: AddPasswordUseCase,
     private val importPassword: ImportPasswordUseCase,
     private val exportPassword: ExportPasswordUseCase,
 ) : ViewModel() {
@@ -37,7 +39,7 @@ class PortViewModel(
 
     private fun import() {
         viewModelScope.launch(Dispatchers.IO) {
-            val data = passwordDao.getAllPasswords()
+            val data = getAllPasswords()
             if (data.isEmpty()) {
                 _portResult.emit(PortResult.Error("You do not have any password to import!"))
                 return@launch
@@ -58,7 +60,7 @@ class PortViewModel(
                         _portResult.emit(PortResult.Error("Such key does not exist!"))
 
                     is ExportResult.Success -> data.forEach {
-                        it.toPassword(pathId).let { password -> passwordDao.addPassword(password) }
+                        it.toPassword(pathId).let { password -> addPassword.invoke(password) }
                     }.also {
                         PortResult.ExportSuccess("Export Completed!")
                     }

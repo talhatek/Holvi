@@ -1,23 +1,22 @@
-package com.tek.holvi.ui
-
+package com.tek.password.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.tek.holvi.R
 import com.tek.ui.HolviScaffold
 import com.tek.ui.MenuScreenContent
 import com.tek.ui.Screen
-import com.tek.ui.TopAppBarOnlyIcon
+import com.tek.ui.TopAppBarBackWithLogo
+
 
 @Composable
-fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {
+fun PasswordMenuScreen(navController: NavController) {
     HolviScaffold(
         topBar = {
-            TopAppBarOnlyIcon(res = R.drawable.ic_power) {
-                onExitClick.invoke()
+            TopAppBarBackWithLogo {
+                navController.popBackStack()
             }
         },
         content = {
@@ -26,8 +25,9 @@ fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {
                     .fillMaxSize()
                     .padding(top = it.calculateTopPadding()),
                 itemList = listOf(
-                    Screen.CardScreen,
-                    Screen.PasswordScreen,
+                    Screen.AllScreen,
+                    Screen.GenerateScreen,
+                    Screen.PortScreen,
                 )
             ) { menuType ->
                 navController.navigate(menuType)
