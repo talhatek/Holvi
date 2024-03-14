@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 23
+        minSdk = 24
 
     }
 
@@ -46,6 +46,7 @@ dependencies {
 
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.material3.android)
+    implementation(libs.rebugger)
 
     implementation(project(":core:database"))
     implementation(project(":core:ui"))

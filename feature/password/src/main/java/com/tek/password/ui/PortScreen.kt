@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -92,9 +91,7 @@ fun PortScreen(navController: NavController) {
     })
     HolviScaffold(
         topBar = {
-            TopAppBarBackWithLogo {
-                navController.popBackStack()
-            }
+            TopAppBarBackWithLogo(navController = navController)
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) {
@@ -232,7 +229,6 @@ fun ExportModelSheet(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CodeBox(itemWidth: Dp, onValueChanged: (value: String) -> Unit) {
     var value by remember {

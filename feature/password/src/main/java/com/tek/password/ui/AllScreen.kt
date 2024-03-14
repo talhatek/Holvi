@@ -1,9 +1,8 @@
 package com.tek.password.ui
 
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.os.Build
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
@@ -28,7 +27,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -48,7 +46,6 @@ import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -59,8 +56,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -70,7 +65,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -114,12 +108,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import com.tek.database.model.Password
 import com.tek.password.R
-import com.tek.password.presentation.AddPasswordState
-import com.tek.password.presentation.AddViewModel
 import com.tek.password.presentation.AllViewModel
 import com.tek.password.presentation.DeletePasswordState
 import com.tek.password.presentation.PasswordsState
@@ -128,7 +119,7 @@ import com.tek.ui.HolviTheme
 import com.tek.ui.Screen
 import com.tek.ui.SnackbarController
 import com.tek.ui.TopAppBarBackWithLogo
-import com.tek.ui.holviButtonColors
+import com.theapache64.rebugger.Rebugger
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 import kotlin.math.abs
@@ -150,25 +141,22 @@ fun AllScreen(navController: NavController) {
 
     val state = rememberLazyListState()
 
-    var showAddBottomSheet by remember { mutableStateOf(false) }
     var showUpdateBottomSheet by remember { mutableStateOf<UpdateAction>(UpdateAction.Null) }
 
     var fabPosition by remember {
         mutableStateOf(Offset.Zero)
+
     }
     var fabColor by remember {
         mutableStateOf(primaryColor)
     }
+
     var fabYOffset by remember {
         mutableStateOf(0.dp)
     }
     val fabColorState = animateColorAsState(targetValue = fabColor, label = "fabColor")
     val fabYOffsetState = animateDpAsState(targetValue = fabYOffset, label = "fabYOffset")
 
-    val modalSheet = rememberModalBottomSheetState(
-        confirmValueChange = { true },
-        skipPartiallyExpanded = true,
-    )
     val isScrollingUp = state.isScrollingUp()
 
     LaunchedEffect(passwordDeleteState) {
@@ -201,9 +189,8 @@ fun AllScreen(navController: NavController) {
 
     HolviScaffold(
         topBar = {
-            TopAppBarBackWithLogo {
-                navController.popBackStack()
-            }
+            TopAppBarBackWithLogo(navController = navController)
+
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
@@ -267,6 +254,8 @@ fun AllScreen(navController: NavController) {
                                 passwordsState.data,
                                 key = { password -> password.id }
                             ) { item ->
+                                Log.e("noluyooo", "lazy item scope")
+
                                 PasswordItem(
                                     modifier = Modifier,
                                     fabPosition = fabPosition,
@@ -325,226 +314,9 @@ fun AllScreen(navController: NavController) {
             else -> Unit
         }
 
-        if (showAddBottomSheet) {
-            AddModalSheet(
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .imePadding()
-                    .testTag("addSheet"),
-                sheetState = modalSheet,
-                onDismiss = { isItemAdded ->
-                    showAddBottomSheet = false
-                    if (isItemAdded) {
-                        snackbarController.showSnackbar(
-                            snackbarHostState,
-                            "Password inserted successfully!"
-                        )
-                    }
-                },
-            )
-        }
 
         if (showUpdateBottomSheet is UpdateAction.Loaded) {
-            UpdateModalSheet(
-                sheetState = modalSheet,
-                onDismiss = { isItemUpdated ->
-                    if (isItemUpdated) {
-                        snackbarController.showSnackbar(
-                            snackbarHostState,
-                            "Password updated successfully!"
-                        )
-                    }
-                    showUpdateBottomSheet = UpdateAction.Null
 
-                },
-                item = (showUpdateBottomSheet as UpdateAction.Loaded).password
-            )
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddModalSheet(
-    modifier: Modifier,
-    sheetState: SheetState,
-    onDismiss: (isNewItemAdded: Boolean) -> Unit,
-) {
-    val phoneNavBar = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        (LocalContext.current as Activity).windowManager.currentWindowMetrics.windowInsets.getInsets(
-            WindowInsetsCompat.Type.navigationBars()
-        ).bottom
-    } else {
-        64
-    }
-
-
-    val myAddViewModel = get<AddViewModel>()
-    val passwordState =
-        myAddViewModel.passwordAddState.collectAsState(initial = AddPasswordState.Empty).value
-
-    val snackState = remember { SnackbarHostState() }
-    val snackScope = rememberCoroutineScope()
-
-    var siteName by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var userName by remember { mutableStateOf("") }
-
-    LaunchedEffect(passwordState) {
-        when (passwordState) {
-            is AddPasswordState.Success -> {
-                onDismiss.invoke(true)
-            }
-
-            is AddPasswordState.Failure -> {
-                snackScope.launch {
-                    snackState.showSnackbar(
-                        passwordState.message
-                    )
-                }
-            }
-
-            else -> Unit
-        }
-    }
-    ModalBottomSheet(
-        modifier = modifier,
-        onDismissRequest = { onDismiss.invoke(false) },
-        sheetState = sheetState,
-        containerColor = HolviTheme.colors.appBackground
-    ) {
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                InputView(
-                    hintParam = "Site Name",
-                    viewModel = myAddViewModel,
-                    onValueChanged = { siteName = it })
-                InputView(
-                    hintParam = "User Name",
-                    viewModel = myAddViewModel,
-                    onValueChanged = { userName = it })
-                PasswordInputView(
-                    hintParam = "Password",
-                    viewModel = myAddViewModel,
-                    onValueChanged = { password = it })
-
-                Button(modifier = Modifier
-                    .testTag("addButton"),
-                    colors = holviButtonColors(),
-                    onClick = {
-                        myAddViewModel.addPassword(
-                            Password(
-                                id = 0,
-                                siteName = siteName,
-                                password = password,
-                                userName = userName
-                            )
-                        )
-                    }) {
-                    Text(text = "Add", style = HolviTheme.typography.body)
-                }
-                Spacer(
-                    modifier = Modifier
-                        .height(with(LocalDensity.current) { phoneNavBar.toDp() })
-                        .fillMaxWidth()
-                        .background(Color.Gray)
-                )
-                SnackbarHost(hostState = snackState, Modifier)
-            }
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun UpdateModalSheet(
-    sheetState: SheetState,
-    onDismiss: (isItemUpdated: Boolean) -> Unit,
-    item: Password
-) {
-    val myAddViewModel = get<AddViewModel>()
-    val passwordState =
-        myAddViewModel.passwordAddState.collectAsState(initial = AddPasswordState.Empty).value
-
-    val snackState = remember { SnackbarHostState() }
-    val snackScope = rememberCoroutineScope()
-
-    var siteName by remember { mutableStateOf(item.siteName) }
-    var password by remember { mutableStateOf(item.password) }
-    var userName by remember { mutableStateOf(item.userName) }
-
-    LaunchedEffect(passwordState) {
-        when (passwordState) {
-            is AddPasswordState.Success -> {
-                onDismiss.invoke(true)
-            }
-
-            is AddPasswordState.Failure -> {
-                snackScope.launch {
-                    snackState.showSnackbar(
-                        passwordState.message
-                    )
-                }
-            }
-
-            else -> Unit
-        }
-    }
-    ModalBottomSheet(
-        onDismissRequest = { onDismiss.invoke(false) },
-        sheetState = sheetState,
-        modifier = Modifier
-            .wrapContentHeight()
-            .fillMaxWidth()
-            .imePadding(),
-        containerColor = HolviTheme.colors.appBackground
-    ) {
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                InputView(
-                    hintParam = "Site Name",
-                    defaultValue = siteName,
-                    viewModel = myAddViewModel,
-                    onValueChanged = { siteName = it })
-                InputView(
-                    hintParam = "User Name",
-                    defaultValue = userName,
-                    viewModel = myAddViewModel,
-                    onValueChanged = { userName = it },
-                )
-                PasswordInputView(
-                    hintParam = "Password",
-                    viewModel = myAddViewModel,
-                    defaultValue = password,
-                    onValueChanged = { password = it })
-
-                Button(modifier = Modifier.padding(bottom = 16.dp), onClick = {
-                    myAddViewModel.addPassword(
-                        Password(
-                            id = item.id,
-                            siteName = siteName,
-                            password = password,
-                            userName = userName
-                        )
-                    )
-                }, colors = holviButtonColors()) {
-                    Text(
-                        text = "Update",
-                        style = HolviTheme.typography.body
-                    )
-                }
-
-                SnackbarHost(hostState = snackState, Modifier)
-            }
         }
     }
 }
@@ -675,6 +447,22 @@ fun PasswordItem(
     val itemColors = getItemColors(id = password.id)
     val oppositeColor = getOppositeBackgroundColor(itemColors.first)
 
+    Rebugger(
+        trackMap = mapOf(
+            "modifier" to modifier,
+            "threshold" to threshold,
+            "password" to password,
+            "cardOffset" to cardOffset,
+            "invokeDeleteOnAnimationFinish" to invokeDeleteOnAnimationFinish,
+            "anchorThreshold" to anchorThreshold,
+            "openDialog" to openDialog,
+            "cardSize" to cardSize,
+            "passwordText" to passwordText,
+            "visible" to visible,
+            "itemColors" to itemColors,
+            "oppositeColor" to oppositeColor,
+        ),
+    )
     val animatedCardOffset =
         animateIntOffsetAsState(
             targetValue = IntOffset(cardOffset, 0),

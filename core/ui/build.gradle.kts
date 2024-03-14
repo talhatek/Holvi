@@ -9,7 +9,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 23
+        minSdk = 24
     }
 
     compileOptions {
@@ -37,6 +37,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.material3.android)
-
+    implementation(libs.androidx.navigation.compose)
 
 }

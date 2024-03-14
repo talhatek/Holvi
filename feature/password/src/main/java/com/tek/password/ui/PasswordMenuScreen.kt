@@ -15,9 +15,7 @@ import com.tek.ui.TopAppBarBackWithLogo
 fun PasswordMenuScreen(navController: NavController) {
     HolviScaffold(
         topBar = {
-            TopAppBarBackWithLogo {
-                navController.popBackStack()
-            }
+            TopAppBarBackWithLogo(navController)
         },
         content = {
             MenuScreenContent(
@@ -31,7 +29,6 @@ fun PasswordMenuScreen(navController: NavController) {
                 )
             ) { menuType ->
                 navController.navigate(menuType)
-
             }
         }
     )

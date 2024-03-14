@@ -13,9 +13,8 @@ import org.koin.androidx.compose.get
 fun CardScreen(navController: NavController) {
     HolviScaffold(
         topBar = {
-            TopAppBarBackWithLogo {
-                navController.popBackStack()
-            }
+            TopAppBarBackWithLogo(navController = navController)
+
         },
     ) {
         val viewModel = get<CardViewModel>()
