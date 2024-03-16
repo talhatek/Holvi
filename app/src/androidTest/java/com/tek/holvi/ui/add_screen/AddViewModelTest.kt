@@ -1,5 +1,6 @@
 package com.tek.holvi.ui.add_screen
 
+import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.model.Password
@@ -18,6 +19,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
+import kotlin.jvm.internal.Ref.IntRef
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddViewModelTest {
@@ -41,6 +43,7 @@ class AddViewModelTest {
     }
 
     private fun generatePassword() = Password(
+        id = 0,
         siteName = "Site Name",
         password = "Password",
         userName = "User Name"
@@ -48,6 +51,17 @@ class AddViewModelTest {
 
     @Test
     fun addPassword() {
+        "Str".groupingBy { it }.foldTo(
+            destination = mutableMapOf(),
+            initialValueSelector = { key, item ->
+                Log.e("initialValueSelector", "$key $item")
+                IntRef()
+            },
+            operation = { key, accumulator, element ->
+                accumulator.apply { this.element += 1 }
+
+            }
+        )
         runTest {
             addViewModel.addPassword(generatePassword())
             assertThat(addViewModel.passwordAddState.first()).isEqualTo(AddPasswordState.Success)

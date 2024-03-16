@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement.SpaceAround
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -20,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.tek.holvi.R
 import com.tek.holvi.presentation.AuthenticationViewModel
@@ -71,32 +73,23 @@ fun AuthenticationMainScreen(
             color = HolviTheme.colors.appForeground,
             style = HolviTheme.typography.title,
         )
-        Button(
-            modifier = Modifier
-                .fillMaxWidth(.52f)
-                .height(52.dp),
-            onClick = {
-                onClick()
-            }, enabled = buttonEnabledState,
-            shape = RoundedCornerShape(8.dp),
-            colors = holviButtonColors()
-        ) {
-            if (buttonEnabledState) {
-                Text(
-                    text = "Authenticate",
-                    style = HolviTheme.typography.title,
-                    color = HolviTheme.colors.primaryForeground,
-
+        LayoutWithMeasuredInnerContent(
+            innerContent = {
+                Button(onClick = { }) {
+                    Text(
+                        text = "Authenticate",
+                        style = HolviTheme.typography.title,
+                        color = HolviTheme.colors.primaryForeground,
                     )
-            } else {
-                CircularProgressIndicator(
-                    Modifier
-                        .size(16.dp),
-                    strokeWidth = 4.dp,
-                    color = HolviTheme.colors.primaryForeground,
+                }
+            },
+            content = {
+                LoadableButtonContent(
+                    buttonEnabled = buttonEnabledState,
+                    onClick = onClick
                 )
             }
-        }
+        )
         Icon(
             painter = painterResource(R.drawable.ic_lock),
             contentDescription = "lock",
@@ -105,5 +98,52 @@ fun AuthenticationMainScreen(
                 .fillMaxHeight(.4f),
             tint = HolviTheme.colors.primaryBackground
         )
+    }
+}
+
+@Composable
+fun LoadableButtonContent(buttonEnabled: Boolean, onClick: () -> Unit) {
+    Button(
+        modifier = Modifier.heightIn(min = 42.dp),
+        onClick = {
+            onClick()
+        }, enabled = buttonEnabled,
+        shape = RoundedCornerShape(8.dp),
+        colors = holviButtonColors()
+    ) {
+        if (buttonEnabled) {
+            Text(
+                text = "Authenticate",
+                style = HolviTheme.typography.title,
+                color = HolviTheme.colors.primaryForeground,
+            )
+        } else {
+            CircularProgressIndicator(
+                Modifier.size(16.dp),
+                strokeWidth = 4.dp,
+                color = HolviTheme.colors.primaryForeground,
+            )
+        }
+    }
+}
+
+
+@Composable
+fun LayoutWithMeasuredInnerContent(
+    innerContent: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    SubcomposeLayout { constraints ->
+        val measuredWidth = subcompose(slotId = "innerContent", content = innerContent).first()
+            .measure(Constraints()).width
+
+        val contentPlaceable =
+            subcompose(
+                slotId = "content",
+                content = content
+            ).first().measure(constraints.copy(minWidth = measuredWidth.plus(8)))
+        layout(contentPlaceable.width, contentPlaceable.height) {
+            contentPlaceable.place(0, 0)
+        }
     }
 }
