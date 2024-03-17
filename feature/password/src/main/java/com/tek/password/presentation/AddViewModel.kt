@@ -59,12 +59,10 @@ class AddViewModel(
 }
 
 sealed interface ClearFocus {
-    data object Init : ClearFocus
     data object Clear : ClearFocus
 }
 
 sealed class AddPasswordState {
     data object Success : AddPasswordState()
     class Failure(val message: String) : AddPasswordState()
-    data object Empty : AddPasswordState()
 }

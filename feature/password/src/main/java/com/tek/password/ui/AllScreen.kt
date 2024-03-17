@@ -2,7 +2,7 @@ package com.tek.password.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.util.Log
+import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
@@ -119,12 +119,14 @@ import com.tek.ui.HolviTheme
 import com.tek.ui.Screen
 import com.tek.ui.SnackbarController
 import com.tek.ui.TopAppBarBackWithLogo
+import com.tek.ui.navigateWithArgs
 import com.theapache64.rebugger.Rebugger
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.koin.androidx.compose.get
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllScreen(navController: NavController) {
 
@@ -140,8 +142,6 @@ fun AllScreen(navController: NavController) {
     val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels
 
     val state = rememberLazyListState()
-
-    var showUpdateBottomSheet by remember { mutableStateOf<UpdateAction>(UpdateAction.Null) }
 
     var fabPosition by remember {
         mutableStateOf(Offset.Zero)
@@ -176,9 +176,15 @@ fun AllScreen(navController: NavController) {
                     }
                 }
 
-                is DeletePasswordState.Undo -> snackbarHostState.showSnackbar(message = "Password recovered!")
+                is DeletePasswordState.Undo -> snackbarController.showSnackbar(
+                    snackbarHostState = snackbarHostState,
+                    message = "Password recovered!"
+                )
 
-                else -> snackbarHostState.showSnackbar("Something went wrong!")
+                else -> snackbarController.showSnackbar(
+                    snackbarHostState = snackbarHostState,
+                    message = "Something went wrong!"
+                )
             }
         }
     }
@@ -220,7 +226,7 @@ fun AllScreen(navController: NavController) {
         when (passwordsState) {
             is PasswordsState.Loading -> {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = HolviTheme.colors.appForeground)
                 }
             }
 
@@ -254,8 +260,6 @@ fun AllScreen(navController: NavController) {
                                 passwordsState.data,
                                 key = { password -> password.id }
                             ) { item ->
-                                Log.e("noluyooo", "lazy item scope")
-
                                 PasswordItem(
                                     modifier = Modifier,
                                     fabPosition = fabPosition,
@@ -272,13 +276,18 @@ fun AllScreen(navController: NavController) {
                                         allViewModel.delete(item.siteName)
                                     },
                                     onUpdate = {
-                                        showUpdateBottomSheet = UpdateAction.Loaded(item)
+                                        navController.navigateWithArgs(
+                                            route = Screen.UpdateScreen.route,
+                                            args = Bundle().apply {
+                                                putString("password", Json.encodeToString(item))
+                                            })
                                     },
                                     onUpdateFabColor = { color ->
                                         if (state.layoutInfo.visibleItemsInfo.any { visibleItem -> visibleItem.key == item.id }) {
                                             fabColor = color
                                         }
-                                    })
+                                    }
+                                )
                             }
                         },
                     )
@@ -312,11 +321,6 @@ fun AllScreen(navController: NavController) {
             }
 
             else -> Unit
-        }
-
-
-        if (showUpdateBottomSheet is UpdateAction.Loaded) {
-
         }
     }
 }
@@ -853,12 +857,6 @@ sealed class DragAction {
     data class Delete(override val value: Int) : DragAction()
     data class Update(override val value: Int) : DragAction()
     data class Still(override val value: Int = 0) : DragAction()
-}
-
-sealed class UpdateAction {
-
-    data object Null : UpdateAction()
-    data class Loaded(val password: Password) : UpdateAction()
 }
 
 private class RippleCustomTheme(private val isOdd: Boolean) : RippleTheme {

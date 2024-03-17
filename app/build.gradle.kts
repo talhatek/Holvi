@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
     implementation(project(":core:database"))
     implementation(project(":core:ui"))
     implementation(project(":core:test"))

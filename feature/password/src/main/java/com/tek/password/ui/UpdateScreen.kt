@@ -31,11 +31,11 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 @Composable
-fun AddScreen(navController: NavController) {
+fun UpdateScreen(navController: NavController, item: Password) {
     val addViewModel = get<AddViewModel>()
-    var siteName by remember { mutableStateOf("") }
-    var userName by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var siteName by remember { mutableStateOf(item.siteName) }
+    var userName by remember { mutableStateOf(item.userName) }
+    var password by remember { mutableStateOf(item.password) }
     val snackState = remember { SnackbarHostState() }
 
     val snackScope = rememberCoroutineScope()
@@ -47,9 +47,10 @@ fun AddScreen(navController: NavController) {
                 is AddPasswordState.Success -> {
                     snackScope.launch {
                         snackState.showSnackbar(
-                            "Password inserted successfully!"
+                            "Password updated successfully!"
                         )
                     }
+                    navController.popBackStack()
                 }
 
                 is AddPasswordState.Failure -> {
@@ -59,8 +60,6 @@ fun AddScreen(navController: NavController) {
                         )
                     }
                 }
-
-                else -> Unit
             }
         }
     }
@@ -77,35 +76,38 @@ fun AddScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Input(
+                defaultValue = siteName,
                 label = "Site Name",
                 viewModel = addViewModel,
                 onValueChanged = { value -> siteName = value }
             )
             Input(
+                defaultValue = userName,
                 label = "User Name",
                 viewModel = addViewModel,
                 onValueChanged = { value -> userName = value }
             )
             PasswordInput(
+                defaultValue = password,
                 label = "Password",
                 viewModel = addViewModel,
                 onValueChanged = { value -> password = value }
             )
 
             Button(modifier = Modifier
-                .testTag("addButton"),
+                .testTag("updateButton"),
                 colors = holviButtonColors(),
                 onClick = {
                     addViewModel.addPassword(
                         Password(
-                            id = 0,
+                            id = item.id,
                             siteName = siteName,
                             password = password,
                             userName = userName
                         )
                     )
                 }) {
-                Text(text = "Add", style = HolviTheme.typography.body)
+                Text(text = "Update", style = HolviTheme.typography.body)
             }
 
             SnackbarHost(hostState = snackState, Modifier)

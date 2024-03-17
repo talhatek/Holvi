@@ -15,12 +15,16 @@ androidxCore = '1.12.0'
 kotlinGradlePlugin = "1.9.22"
 kotlinxCollectionsImmutable = "0.3.5"
 kotlinxCoroutinesPlayServices = "1.7.3"
+kotlinxSerializationJson = "1.6.0"
 lifecycleRuntimeKtx = "2.7.0"
 material = "1.11.0"
 material3 = "1.2.0"
 mockitoAndroid = "3.10.0"
 navigationRuntimeKtx = "2.7.7"
+okhttp = "4.9.1"
 rebugger = "1.0.0-rc02"
+retrofit = "2.9.0"
+retrofit2KotlinxSerializationConverter = "1.0.0"
 room = "2.6.1"
 runner = "1.5.2"
 truth = "1.4.2"
@@ -67,10 +71,14 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesPlayServices" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesPlayServices" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoAndroid" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }

@@ -3,7 +3,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.ksp)
-
+    kotlin("plugin.serialization") version "1.9.23"
 }
 
 android {
@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":core:util"))
 
