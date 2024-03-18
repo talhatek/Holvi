@@ -111,7 +111,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tek.database.model.Password
 import com.tek.password.R
-import com.tek.password.presentation.AllViewModel
+import com.tek.password.presentation.CrudViewModel
 import com.tek.password.presentation.DeletePasswordState
 import com.tek.password.presentation.PasswordsState
 import com.tek.ui.HolviScaffold
@@ -120,7 +120,6 @@ import com.tek.ui.Screen
 import com.tek.ui.SnackbarController
 import com.tek.ui.TopAppBarBackWithLogo
 import com.tek.ui.navigateWithArgs
-import com.theapache64.rebugger.Rebugger
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -131,7 +130,7 @@ import kotlin.math.abs
 fun AllScreen(navController: NavController) {
 
     val primaryColor = HolviTheme.colors.primaryBackground
-    val allViewModel = get<AllViewModel>()
+    val allViewModel = get<CrudViewModel>()
     val passwordsState = allViewModel.allPasswords.collectAsState().value
     val passwordDeleteState = allViewModel.passwordDeleteState.collectAsState(initial = null).value
 
@@ -326,7 +325,7 @@ fun AllScreen(navController: NavController) {
 }
 
 @Composable
-fun Search(viewModel: AllViewModel) {
+fun Search(viewModel: CrudViewModel) {
     var isExpanded by remember {
         mutableStateOf(false)
     }
@@ -451,22 +450,6 @@ fun PasswordItem(
     val itemColors = getItemColors(id = password.id)
     val oppositeColor = getOppositeBackgroundColor(itemColors.first)
 
-    Rebugger(
-        trackMap = mapOf(
-            "modifier" to modifier,
-            "threshold" to threshold,
-            "password" to password,
-            "cardOffset" to cardOffset,
-            "invokeDeleteOnAnimationFinish" to invokeDeleteOnAnimationFinish,
-            "anchorThreshold" to anchorThreshold,
-            "openDialog" to openDialog,
-            "cardSize" to cardSize,
-            "passwordText" to passwordText,
-            "visible" to visible,
-            "itemColors" to itemColors,
-            "oppositeColor" to oppositeColor,
-        ),
-    )
     val animatedCardOffset =
         animateIntOffsetAsState(
             targetValue = IntOffset(cardOffset, 0),

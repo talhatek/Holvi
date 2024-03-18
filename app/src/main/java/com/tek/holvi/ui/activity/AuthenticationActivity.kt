@@ -28,6 +28,7 @@ class AuthenticationActivity : FragmentActivity() {
     private lateinit var biometricManager: BiometricManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.actionBar?.hide()
         biometricManager = BiometricManager.from(this)
         biometricPrompt = this.getBiometricPrompt
         setContent {

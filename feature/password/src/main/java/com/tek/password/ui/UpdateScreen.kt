@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import com.tek.database.model.Password
 import com.tek.password.presentation.AddPasswordState
-import com.tek.password.presentation.AddViewModel
+import com.tek.password.presentation.CrudViewModel
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.TopAppBarBackWithLogo
@@ -32,7 +32,7 @@ import org.koin.androidx.compose.get
 
 @Composable
 fun UpdateScreen(navController: NavController, item: Password) {
-    val addViewModel = get<AddViewModel>()
+    val crudViewModel = get<CrudViewModel>()
     var siteName by remember { mutableStateOf(item.siteName) }
     var userName by remember { mutableStateOf(item.userName) }
     var password by remember { mutableStateOf(item.password) }
@@ -42,7 +42,7 @@ fun UpdateScreen(navController: NavController, item: Password) {
 
 
     LaunchedEffect(Unit) {
-        addViewModel.passwordAddState.collectLatest {
+        crudViewModel.passwordAddState.collectLatest {
             when (it) {
                 is AddPasswordState.Success -> {
                     snackScope.launch {
@@ -78,19 +78,19 @@ fun UpdateScreen(navController: NavController, item: Password) {
             Input(
                 defaultValue = siteName,
                 label = "Site Name",
-                viewModel = addViewModel,
+                viewModel = crudViewModel,
                 onValueChanged = { value -> siteName = value }
             )
             Input(
                 defaultValue = userName,
                 label = "User Name",
-                viewModel = addViewModel,
+                viewModel = crudViewModel,
                 onValueChanged = { value -> userName = value }
             )
             PasswordInput(
                 defaultValue = password,
                 label = "Password",
-                viewModel = addViewModel,
+                viewModel = crudViewModel,
                 onValueChanged = { value -> password = value }
             )
 
@@ -98,7 +98,7 @@ fun UpdateScreen(navController: NavController, item: Password) {
                 .testTag("updateButton"),
                 colors = holviButtonColors(),
                 onClick = {
-                    addViewModel.addPassword(
+                    crudViewModel.add(
                         Password(
                             id = item.id,
                             siteName = siteName,

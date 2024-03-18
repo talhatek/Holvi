@@ -14,15 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import com.tek.password.presentation.AddViewModel
 import com.tek.password.presentation.ClearFocus
+import com.tek.password.presentation.CrudViewModel
 import com.tek.ui.HolviTheme
 
 @Composable
 fun Input(
     defaultValue: String = "",
     label: String,
-    viewModel: AddViewModel,
+    viewModel: CrudViewModel,
     onValueChanged: (input: String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current

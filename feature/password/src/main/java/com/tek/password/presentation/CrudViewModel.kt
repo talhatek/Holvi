@@ -7,7 +7,9 @@ import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
 import com.tek.database.domain.ObservePasswordUseCase
 import com.tek.database.domain.SearchPasswordUseCase
+import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.model.Password
+import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.util.AppDispatchers
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
@@ -28,9 +30,11 @@ import kotlin.time.Duration.Companion.seconds
 
 
 @OptIn(FlowPreview::class)
-class AllViewModel(
+class CrudViewModel(
     private val getPasswordBySiteName: GetPasswordBySiteNameUseCase,
     private val addPassword: AddPasswordUseCase,
+    private val updatePassword: UpdatePasswordUseCase,
+    private val passwordGenerator: PasswordGeneratorUseCase,
     private val searchPassword: SearchPasswordUseCase,
     private val deletePassword: DeletePasswordUseCase,
     private val observePassword: ObservePasswordUseCase,
@@ -43,12 +47,19 @@ class AllViewModel(
     private val _passwordDeleteState = MutableSharedFlow<DeletePasswordState>()
     val passwordDeleteState = _passwordDeleteState.asSharedFlow()
 
+    private val _clearInputsSharedFlow = MutableSharedFlow<ClearFocus>()
+    val clearInputsSharedFlow = _clearInputsSharedFlow.asSharedFlow()
+    private val password = MutableStateFlow("")
+    val passwordStateFlow = password.asStateFlow()
+    private val _passwordAddState = MutableSharedFlow<AddPasswordState>()
+    val passwordAddState = _passwordAddState.asSharedFlow()
     private val deletedItem = MutableStateFlow<Password?>(null)
     private var clearDeletedItemJob: Job? = null
 
     val searchQuery = MutableStateFlow("")
 
-    init {
+
+    fun observeData() {
         getAll()
         viewModelScope.launch(appDispatchers.IO) {
             deletedItem.collectLatest {
@@ -70,7 +81,6 @@ class AllViewModel(
                     }
                 }
         }
-
     }
 
     fun getAll() {
@@ -90,6 +100,35 @@ class AllViewModel(
         }
     }
 
+    fun add(password: Password) {
+        viewModelScope.launch(appDispatchers.IO) {
+            if (control(password = password)) {
+                try {
+                    addPassword.invoke(password)
+                    _passwordAddState.emit(AddPasswordState.Success)
+                    _clearInputsSharedFlow.emit(ClearFocus.Clear)
+                } catch (ex: Exception) {
+                    _passwordAddState.emit(AddPasswordState.Failure("Password could not added. ${ex.message}"))
+                }
+            } else
+                _passwordAddState.emit(AddPasswordState.Failure("You must fill required fields."))
+        }
+    }
+
+    fun update(password: Password) {
+        viewModelScope.launch(appDispatchers.IO) {
+            if (control(password = password)) {
+                try {
+                    updatePassword.invoke(password)
+                    _passwordAddState.emit(AddPasswordState.Success)
+                    _clearInputsSharedFlow.emit(ClearFocus.Clear)
+                } catch (ex: Exception) {
+                    _passwordAddState.emit(AddPasswordState.Failure("Password could not updated. ${ex.message}"))
+                }
+            } else
+                _passwordAddState.emit(AddPasswordState.Failure("You must fill required fields."))
+        }
+    }
 
     fun delete(siteName: String) {
         viewModelScope.launch(appDispatchers.IO) {
@@ -136,6 +175,23 @@ class AllViewModel(
             )
         }
     }
+
+    private fun control(password: Password): Boolean {
+        return listOf(
+            password.password,
+            password.siteName,
+            password.userName
+        ).all { it.isNotBlank() and it.isNotEmpty() }
+    }
+
+    fun generate(): String {
+        val data = passwordGenerator.invoke(length = 8)
+        viewModelScope.launch {
+            password.emit(data)
+        }
+        return data
+    }
+
 }
 
 sealed class PasswordsState {
@@ -153,3 +209,13 @@ sealed interface DeletePasswordState {
     data object Failure : DeletePasswordState
 
 }
+
+sealed interface ClearFocus {
+    data object Clear : ClearFocus
+}
+
+sealed class AddPasswordState {
+    data object Success : AddPasswordState()
+    class Failure(val message: String) : AddPasswordState()
+}
+

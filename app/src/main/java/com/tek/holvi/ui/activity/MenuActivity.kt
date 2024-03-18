@@ -25,6 +25,7 @@ class MenuActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.actionBar?.hide()
         setContent {
             HolviTheme {
                 val navController = rememberNavController()

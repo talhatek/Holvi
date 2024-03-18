@@ -18,11 +18,10 @@ kotlinxCoroutinesPlayServices = "1.7.3"
 kotlinxSerializationJson = "1.6.0"
 lifecycleRuntimeKtx = "2.7.0"
 material = "1.11.0"
-material3 = "1.2.0"
+material3 = "1.2.1"
 mockitoAndroid = "3.10.0"
 navigationRuntimeKtx = "2.7.7"
 okhttp = "4.9.1"
-rebugger = "1.0.0-rc02"
 retrofit = "2.9.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 room = "2.6.1"
@@ -42,7 +41,6 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 androidx-biometric-ktx = { module = "androidx.biometric:biometric-ktx", version.ref = "biometricKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-material3-android = { module = "androidx.compose.material3:material3-android", version.ref = "material3" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationRuntimeKtx" }
 androidx-navigation-runtime-ktx = { module = "androidx.navigation:navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
@@ -72,11 +70,10 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesPlayServices" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-material = { module = "com.google.android.material:material", version.ref = "material" }
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoAndroid" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
+
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }

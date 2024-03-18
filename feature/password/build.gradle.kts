@@ -32,7 +32,6 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     testImplementation(libs.junit)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.collections.immutable)
@@ -43,7 +42,7 @@ dependencies {
 
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.material3.android)
-    implementation(libs.rebugger)
+
 
     implementation(project(":core:database"))
     implementation(project(":core:ui"))

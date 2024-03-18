@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavController
 import com.tek.database.model.Password
 import com.tek.password.presentation.AddPasswordState
-import com.tek.password.presentation.AddViewModel
+import com.tek.password.presentation.CrudViewModel
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.TopAppBarBackWithLogo
@@ -32,7 +32,7 @@ import org.koin.androidx.compose.get
 
 @Composable
 fun AddScreen(navController: NavController) {
-    val addViewModel = get<AddViewModel>()
+    val crudViewModel = get<CrudViewModel>()
     var siteName by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -42,7 +42,7 @@ fun AddScreen(navController: NavController) {
 
 
     LaunchedEffect(Unit) {
-        addViewModel.passwordAddState.collectLatest {
+        crudViewModel.passwordAddState.collectLatest {
             when (it) {
                 is AddPasswordState.Success -> {
                     snackScope.launch {
@@ -78,17 +78,17 @@ fun AddScreen(navController: NavController) {
         ) {
             Input(
                 label = "Site Name",
-                viewModel = addViewModel,
+                viewModel = crudViewModel,
                 onValueChanged = { value -> siteName = value }
             )
             Input(
                 label = "User Name",
-                viewModel = addViewModel,
+                viewModel = crudViewModel,
                 onValueChanged = { value -> userName = value }
             )
             PasswordInput(
                 label = "Password",
-                viewModel = addViewModel,
+                viewModel = crudViewModel,
                 onValueChanged = { value -> password = value }
             )
 
@@ -96,7 +96,7 @@ fun AddScreen(navController: NavController) {
                 .testTag("addButton"),
                 colors = holviButtonColors(),
                 onClick = {
-                    addViewModel.addPassword(
+                    crudViewModel.add(
                         Password(
                             id = 0,
                             siteName = siteName,

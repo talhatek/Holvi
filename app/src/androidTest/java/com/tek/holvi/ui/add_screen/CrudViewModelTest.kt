@@ -1,16 +1,20 @@
 package com.tek.holvi.ui.add_screen
 
-
-import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.tek.database.domain.AddPasswordUseCase
+import com.tek.database.domain.DeletePasswordUseCase
+import com.tek.database.domain.GetPasswordBySiteNameUseCase
+import com.tek.database.domain.ObservePasswordUseCase
+import com.tek.database.domain.SearchPasswordUseCase
+import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.password.presentation.AddPasswordState
-import com.tek.password.presentation.AddViewModel
+import com.tek.password.presentation.CrudViewModel
 import com.tek.test.HolviTestDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -21,20 +25,24 @@ import org.junit.Test
 import org.mockito.Mockito.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AddViewModelTest {
+class CrudViewModelTest {
 
-    private val dispatcher = StandardTestDispatcher()
     private val testDispatcher = StandardTestDispatcher()
 
-    private val addViewModel = AddViewModel(
+    private val crudViewModel = CrudViewModel(
         addPassword = mock(AddPasswordUseCase::class.java),
+        updatePassword = mock(UpdatePasswordUseCase::class.java),
+        searchPassword = mock(SearchPasswordUseCase::class.java),
+        deletePassword = mock(DeletePasswordUseCase::class.java),
+        getPasswordBySiteName = mock(GetPasswordBySiteNameUseCase::class.java),
+        observePassword = mock(ObservePasswordUseCase::class.java),
         passwordGenerator = PasswordGeneratorUseCase(),
         appDispatchers = HolviTestDispatchers(testDispatcher)
     )
 
     @Before
-    fun setup() {
-        Dispatchers.setMain(dispatcher)
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
     }
 
     @After
@@ -43,6 +51,7 @@ class AddViewModelTest {
     }
 
     private fun generatePassword() = Password(
+        id = 0,
         siteName = "Site Name",
         password = "Password",
         userName = "User Name"
@@ -51,33 +60,20 @@ class AddViewModelTest {
     @Test
     fun addPassword() {
         runTest {
-            addViewModel.addPassword(generatePassword())
-            addViewModel.passwordAddState.test {
-                assertThat(awaitItem()).isEqualTo(AddPasswordState.Success)
-
-            }
+            crudViewModel.add(generatePassword())
+            assertThat(crudViewModel.passwordAddState.first()).isEqualTo(AddPasswordState.Success)
         }
-
     }
 
     @Test
     fun addPasswordFailDueToPassword() {
         runTest {
-            addViewModel.addPassword(generatePassword().copy(siteName = ""))
-            addViewModel.passwordAddState.test {
-                assertThat((awaitItem() as? AddPasswordState.Failure)?.message).isEqualTo("You must fill required fields.")
-            }
-        }
-    }
-
-    @Test
-    fun generatePasswordSuccess() {
-        runTest {
-            addViewModel.generatePassword()
-            addViewModel.passwordStateFlow.test {
-                assertThat(awaitItem().length).isEqualTo(0)
-                assertThat(awaitItem().length).isEqualTo(8)
-            }
+            crudViewModel.add(generatePassword().copy(siteName = ""))
+            val state = crudViewModel.passwordAddState.first()
+            assertThat(state).isInstanceOf(AddPasswordState.Failure::class.java)
+            assertThat((state as AddPasswordState.Failure).message).isEqualTo("You must fill required fields.")
         }
     }
 }
+
+

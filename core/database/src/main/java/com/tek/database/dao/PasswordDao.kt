@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.tek.database.data.PasswordDto
 import kotlinx.coroutines.flow.Flow
 
@@ -30,6 +31,9 @@ interface PasswordDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addPassword(password: PasswordDto)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updatePassword(password: PasswordDto)
 
     @Query("DELETE FROM passworddto WHERE site_name = :siteName and user_name = :userName")
     suspend fun deletePassword(siteName: String, userName: String): Int
