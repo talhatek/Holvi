@@ -13,7 +13,6 @@ import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetAllPasswordsUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
 import com.tek.database.domain.ObservePasswordUseCase
-import com.tek.database.domain.SearchPasswordUseCase
 import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.domain.mapper.PasswordDtoToPasswordMapper
 import com.tek.util.Constant
@@ -52,7 +51,6 @@ val localDatabaseModule = module {
     factoryOf(::GetAllPasswordsUseCase)
     factoryOf(::GetPasswordBySiteNameUseCase)
     factoryOf(::ObservePasswordUseCase)
-    factoryOf(::SearchPasswordUseCase)
     factoryOf(::PasswordDtoToPasswordMapper)
 
 }

@@ -130,17 +130,15 @@ import kotlin.math.abs
 fun AllScreen(navController: NavController) {
 
     val primaryColor = HolviTheme.colors.primaryBackground
-    val allViewModel = get<CrudViewModel>()
-    val passwordsState = allViewModel.allPasswords.collectAsState().value
-    val passwordDeleteState = allViewModel.passwordDeleteState.collectAsState(initial = null).value
-
+    val crudViewModel = get<CrudViewModel>()
+    val passwordDeleteState = crudViewModel.passwordDeleteState.collectAsState(initial = null).value
     val scope = rememberCoroutineScope()
     val snackbarController = SnackbarController(scope = scope)
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels
 
-    val state = rememberLazyListState()
+    val lazyListState = rememberLazyListState()
 
     var fabPosition by remember {
         mutableStateOf(Offset.Zero)
@@ -156,7 +154,7 @@ fun AllScreen(navController: NavController) {
     val fabColorState = animateColorAsState(targetValue = fabColor, label = "fabColor")
     val fabYOffsetState = animateDpAsState(targetValue = fabYOffset, label = "fabYOffset")
 
-    val isScrollingUp = state.isScrollingUp()
+    val isScrollingUp = lazyListState.isScrollingUp()
 
     LaunchedEffect(passwordDeleteState) {
         passwordDeleteState?.let {
@@ -169,7 +167,7 @@ fun AllScreen(navController: NavController) {
                             duration = SnackbarDuration.Short
                         ).also { result ->
                             if (result == SnackbarResult.ActionPerformed) {
-                                allViewModel.undoDelete()
+                                crudViewModel.undoDelete()
                             }
                         }
                     }
@@ -222,7 +220,8 @@ fun AllScreen(navController: NavController) {
         },
         floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
-        when (passwordsState) {
+        when (val passwordState =
+            crudViewModel.passwordsState.collectAsState(initial = PasswordsState.Empty).value) {
             is PasswordsState.Loading -> {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(color = HolviTheme.colors.appForeground)
@@ -239,7 +238,7 @@ fun AllScreen(navController: NavController) {
                             .padding(end = 16.dp, top = 16.dp, bottom = 16.dp),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        Search(viewModel = allViewModel)
+                        Search(viewModel = crudViewModel)
                     }
 
                     LazyColumn(
@@ -253,10 +252,10 @@ fun AllScreen(navController: NavController) {
                             Alignment.Top
                         ),
                         contentPadding = PaddingValues(top = 16.dp),
-                        state = state,
+                        state = lazyListState,
                         content = {
                             items(
-                                passwordsState.data,
+                                passwordState.data,
                                 key = { password -> password.id }
                             ) { item ->
                                 PasswordItem(
@@ -272,7 +271,7 @@ fun AllScreen(navController: NavController) {
                                         }
                                     },
                                     onDelete = {
-                                        allViewModel.delete(item.siteName)
+                                        crudViewModel.delete(item.siteName)
                                     },
                                     onUpdate = {
                                         navController.navigateWithArgs(
@@ -282,7 +281,7 @@ fun AllScreen(navController: NavController) {
                                             })
                                     },
                                     onUpdateFabColor = { color ->
-                                        if (state.layoutInfo.visibleItemsInfo.any { visibleItem -> visibleItem.key == item.id }) {
+                                        if (lazyListState.layoutInfo.visibleItemsInfo.any { visibleItem -> visibleItem.key == item.id }) {
                                             fabColor = color
                                         }
                                     }
@@ -313,7 +312,7 @@ fun AllScreen(navController: NavController) {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
-                        text = passwordsState.message,
+                        text = passwordState.message,
                         style = HolviTheme.typography.body
                     )
                 }
@@ -337,7 +336,7 @@ fun Search(viewModel: CrudViewModel) {
         mutableStateOf("")
     }
     LaunchedEffect(key1 = searchQuery) {
-        viewModel.searchQuery.emit(searchQuery)
+        viewModel.searchQuery.value = searchQuery
     }
 
     val screenSizeDp = DpSize(
@@ -390,9 +389,6 @@ fun Search(viewModel: CrudViewModel) {
                 Icon(
                     modifier = Modifier
                         .clickable {
-                            if (state) {
-                                viewModel.getAll()
-                            }
                             searchQuery = ""
                             isExpanded = isExpanded.not()
 

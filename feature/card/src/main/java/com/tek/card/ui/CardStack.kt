@@ -29,54 +29,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tek.card.R
-import com.tek.card.model.Card
+import com.tek.database.model.Card
 import com.tek.ui.HolviTheme
 
 @Composable
-fun CardStack(modifier: Modifier) {
+fun CardStack(modifier: Modifier, cards: List<Card>) {
     Box(
         modifier = modifier
             .padding(top = 16.dp, end = 16.dp, start = 16.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         CardStackContent(
-            cards = listOf(
-                Card(
-                    number = "1111 1111 1111 1111",
-                    exp = "04/24",
-                    cvv = "456",
-                    holderName = "Talha Tek",
-                    Color.Red
-                ),
-                Card(
-                    number = "1111 1111 1111 1111",
-                    exp = "04/24",
-                    cvv = "456",
-                    holderName = "Talha Tek",
-                    Color.Yellow
-                ),
-                Card(
-                    number = "1111 1111 1111 1111",
-                    exp = "04/24",
-                    cvv = "456",
-                    holderName = "Talha Tek",
-                    Color.Green
-                ),
-                Card(
-                    number = "1111 1111 1111 1111",
-                    exp = "04/24",
-                    cvv = "456",
-                    holderName = "Talha Tek",
-                    Color.Cyan
-                ),
-            )
+            cards = cards
         )
     }
 }
@@ -86,7 +57,8 @@ private fun CardStackContent(cards: List<Card>) {
     val cardCount by remember {
         mutableIntStateOf(cards.size)
     }
-    val screenHeightDp = 220.dp
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp.dp
+    val cardHeightDp = 200.dp
     val offsetListState = remember(cardCount) {
         mutableStateListOf<Dp>().apply {
             repeat(cardCount) { index ->
@@ -121,7 +93,7 @@ private fun CardStackContent(cards: List<Card>) {
                         if (index <= i) {
                             newOffsetList.add(16.dp.times(index))
                         } else {
-                            newOffsetList.add(screenHeightDp + 16.dp.times(index))
+                            newOffsetList.add(cardHeightDp + 16.dp.times(index))
                         }
                     }
                 }
@@ -175,8 +147,7 @@ fun CardContent(card: Card) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            Column(
-            ) {
+            Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.Start)

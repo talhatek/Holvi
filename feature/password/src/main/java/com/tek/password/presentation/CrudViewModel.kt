@@ -6,7 +6,6 @@ import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
 import com.tek.database.domain.ObservePasswordUseCase
-import com.tek.database.domain.SearchPasswordUseCase
 import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
@@ -23,7 +22,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -35,14 +33,10 @@ class CrudViewModel(
     private val addPassword: AddPasswordUseCase,
     private val updatePassword: UpdatePasswordUseCase,
     private val passwordGenerator: PasswordGeneratorUseCase,
-    private val searchPassword: SearchPasswordUseCase,
     private val deletePassword: DeletePasswordUseCase,
     private val observePassword: ObservePasswordUseCase,
     private val appDispatchers: AppDispatchers
 ) : ViewModel() {
-
-    private val _allPasswords = MutableStateFlow<PasswordsState>(PasswordsState.Init)
-    val allPasswords = _allPasswords.asStateFlow()
 
     private val _passwordDeleteState = MutableSharedFlow<DeletePasswordState>()
     val passwordDeleteState = _passwordDeleteState.asSharedFlow()
@@ -58,47 +52,35 @@ class CrudViewModel(
 
     val searchQuery = MutableStateFlow("")
 
+    private val _passwordsState = MutableStateFlow<PasswordsState>(PasswordsState.Init)
+    val passwordsState get() = _passwordsState.asStateFlow()
 
-    fun observeData() {
-        getAll()
+    init {
         viewModelScope.launch(appDispatchers.IO) {
             deletedItem.collectLatest {
                 if (it == null) clearDeletedItemJob = null
             }
         }
-        viewModelScope.launch(appDispatchers.IO) {
-            searchQuery.debounce(250L).filter { it.isNotBlank() }.distinctUntilChanged()
-                .collectLatest {
-                    try {
-                        val data = searchPassword.invoke(it)
-                        sortAndSet(data = data)
-                    } catch (ex: Exception) {
-                        _allPasswords.emit(
-                            PasswordsState.Error(
-                                message = ex.message ?: "Unknown Error"
-                            )
-                        )
-                    }
-                }
-        }
+        observePasswords()
     }
 
-    fun getAll() {
+    private fun observePasswords() {
         viewModelScope.launch(appDispatchers.IO) {
-            _allPasswords.emit(PasswordsState.Loading)
-            try {
-                observePassword().collectLatest { data ->
+            searchQuery.debounce(250).distinctUntilChanged().collectLatest { query ->
+                observePassword.invoke(query).collectLatest { data ->
                     if (data.isEmpty()) {
-                        _allPasswords.emit(PasswordsState.Empty)
+                        _passwordsState.value = (PasswordsState.Empty)
                     } else {
-                        sortAndSet(data)
+                        _passwordsState.value = (PasswordsState.Success(
+                            data = data.sortedBy { it.id }
+                                .toPersistentList()
+                        ))
                     }
                 }
-            } catch (ex: Exception) {
-                _allPasswords.emit(PasswordsState.Error(message = ex.message ?: "Unknown Error"))
             }
         }
     }
+
 
     fun add(password: Password) {
         viewModelScope.launch(appDispatchers.IO) {
@@ -165,16 +147,6 @@ class CrudViewModel(
         }
     }
 
-    private fun sortAndSet(data: List<Password>) {
-        viewModelScope.launch(appDispatchers.IO) {
-            _allPasswords.emit(
-                PasswordsState.Success(
-                    data = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.siteName })
-                        .toPersistentList()
-                )
-            )
-        }
-    }
 
     private fun control(password: Password): Boolean {
         return listOf(
@@ -218,4 +190,3 @@ sealed class AddPasswordState {
     data object Success : AddPasswordState()
     class Failure(val message: String) : AddPasswordState()
 }
-

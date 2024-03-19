@@ -11,8 +11,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PasswordDao {
 
-    @Query("SELECT * FROM passworddto")
-    fun observeAllPasswords(): Flow<List<PasswordDto>>
+    @Query(
+        " SELECT * FROM passworddto where passworddto.site_name  LIKE :query " +
+                " OR   passworddto.user_name  LIKE :query "
+    )
+    fun observeAllPasswords(query: String): Flow<List<PasswordDto>>
 
     @Query("SELECT * FROM passworddto")
     fun getAllPasswords(): List<PasswordDto>
@@ -20,11 +23,6 @@ interface PasswordDao {
     @Query("SELECT * FROM passworddto where passworddto.site_name = :siteName")
     suspend fun getPasswordBySiteName(siteName: String): PasswordDto
 
-    @Query(
-        " SELECT * FROM passworddto where passworddto.site_name  LIKE :query " +
-                " OR   passworddto.user_name  LIKE :query "
-    )
-    suspend fun searchThroughPasswords(query: String): List<PasswordDto>
 
     @Query("SELECT passworddto.site_name FROM passworddto")
     fun getAllSiteNames(): Flow<List<String>>

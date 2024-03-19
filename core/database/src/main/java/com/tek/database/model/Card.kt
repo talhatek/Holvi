@@ -1,8 +1,14 @@
 package com.tek.database.model
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
+
+@Immutable
 data class Card(
-    val cardNumber: String,
-    val cardHolder: String,
+    val id: Int,
+    val number: String,
+    val exp: String,
     val cvv: String,
-    val exp: String
+    val holderName: String,
+    val color: Color
 )

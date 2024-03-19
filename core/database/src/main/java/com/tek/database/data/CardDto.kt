@@ -10,5 +10,6 @@ data class CardDto(
     @ColumnInfo(name = "card_number") val cardNumber: String,
     @ColumnInfo(name = "card_holder") val cardHolder: String,
     @ColumnInfo(name = "expiration") val expiration: String,
-    @ColumnInfo(name = "cvv") val cvv: String
+    @ColumnInfo(name = "cvv") val cvv: String,
+    @ColumnInfo(name = "color") val color: ULong
 )

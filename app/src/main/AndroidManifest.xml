@@ -29,7 +29,6 @@
         <activity
             android:name=".ui.activity.MenuActivity"
             android:exported="true"
-            android:label="@string/title_activity_menu"
             android:theme="@style/Theme.Holvi.NoActionBar" />
 
     </application>

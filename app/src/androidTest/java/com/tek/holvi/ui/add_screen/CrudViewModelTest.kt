@@ -5,7 +5,6 @@ import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
 import com.tek.database.domain.ObservePasswordUseCase
-import com.tek.database.domain.SearchPasswordUseCase
 import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
@@ -32,7 +31,6 @@ class CrudViewModelTest {
     private val crudViewModel = CrudViewModel(
         addPassword = mock(AddPasswordUseCase::class.java),
         updatePassword = mock(UpdatePasswordUseCase::class.java),
-        searchPassword = mock(SearchPasswordUseCase::class.java),
         deletePassword = mock(DeletePasswordUseCase::class.java),
         getPasswordBySiteName = mock(GetPasswordBySiteNameUseCase::class.java),
         observePassword = mock(ObservePasswordUseCase::class.java),
