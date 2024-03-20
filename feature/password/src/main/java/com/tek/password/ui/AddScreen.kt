@@ -29,10 +29,11 @@ import com.tek.ui.holviButtonColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun AddScreen(navController: NavController) {
-    val crudViewModel = get<CrudViewModel>()
+    val crudViewModel = get<CrudViewModel>(parameters = { parametersOf(false) })
     var siteName by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

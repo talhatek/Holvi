@@ -110,7 +110,6 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tek.database.model.Password
-import com.tek.password.R
 import com.tek.password.presentation.CrudViewModel
 import com.tek.password.presentation.DeletePasswordState
 import com.tek.password.presentation.PasswordsState
@@ -124,13 +123,14 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.androidx.compose.get
+import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
 
 @Composable
 fun AllScreen(navController: NavController) {
 
     val primaryColor = HolviTheme.colors.primaryBackground
-    val crudViewModel = get<CrudViewModel>()
+    val crudViewModel = get<CrudViewModel>(parameters = { parametersOf(true) })
     val passwordDeleteState = crudViewModel.passwordDeleteState.collectAsState(initial = null).value
     val scope = rememberCoroutineScope()
     val snackbarController = SnackbarController(scope = scope)
@@ -221,7 +221,7 @@ fun AllScreen(navController: NavController) {
         floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
         when (val passwordState =
-            crudViewModel.passwordsState.collectAsState(initial = PasswordsState.Empty).value) {
+            crudViewModel.passwordsState.collectAsState(initial = PasswordsState.Init).value) {
             is PasswordsState.Loading -> {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(color = HolviTheme.colors.appForeground)
@@ -232,77 +232,78 @@ fun AllScreen(navController: NavController) {
                 Column(
                     modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 16.dp, top = 16.dp, bottom = 16.dp),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Search(viewModel = crudViewModel)
+                    if (passwordState.isEmpty and passwordState.isQueried or passwordState.isEmpty.not()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 16.dp, top = 16.dp, bottom = 16.dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Search(viewModel = crudViewModel)
+                        }
                     }
 
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(end = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(
-                            16.dp,
-                            Alignment.Top
-                        ),
-                        contentPadding = PaddingValues(top = 16.dp),
-                        state = lazyListState,
-                        content = {
-                            items(
-                                passwordState.data,
-                                key = { password -> password.id }
-                            ) { item ->
-                                PasswordItem(
-                                    modifier = Modifier,
-                                    fabPosition = fabPosition,
-                                    threshold = .3f,
-                                    password = item,
-                                    onCopied = {
-                                        coroutineScope.launch {
-                                            snackbarHostState.showSnackbar(
-                                                "Password copied to clipboard!"
-                                            )
+                    if (passwordState.isEmpty) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize(),
+                        ) {
+                            Text(
+                                text = "You don't have any saved password.",
+                                color = HolviTheme.colors.appForeground,
+                                style = HolviTheme.typography.body
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .padding(end = 8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(
+                                16.dp,
+                                Alignment.Top
+                            ),
+                            contentPadding = PaddingValues(top = 16.dp),
+                            state = lazyListState,
+                            content = {
+                                items(
+                                    passwordState.data,
+                                    key = { password -> password.id }
+                                ) { item ->
+                                    PasswordItem(
+                                        modifier = Modifier,
+                                        fabPosition = fabPosition,
+                                        threshold = .3f,
+                                        password = item,
+                                        onCopied = {
+                                            coroutineScope.launch {
+                                                snackbarHostState.showSnackbar(
+                                                    "Password copied to clipboard!"
+                                                )
+                                            }
+                                        },
+                                        onDelete = {
+                                            crudViewModel.delete(item.siteName)
+                                        },
+                                        onUpdate = {
+                                            navController.navigateWithArgs(
+                                                route = Screen.UpdateScreen.route,
+                                                args = Bundle().apply {
+                                                    putString("password", Json.encodeToString(item))
+                                                })
+                                        },
+                                        onUpdateFabColor = { color ->
+                                            if (lazyListState.layoutInfo.visibleItemsInfo.any { visibleItem -> visibleItem.key == item.id }) {
+                                                fabColor = color
+                                            }
                                         }
-                                    },
-                                    onDelete = {
-                                        crudViewModel.delete(item.siteName)
-                                    },
-                                    onUpdate = {
-                                        navController.navigateWithArgs(
-                                            route = Screen.UpdateScreen.route,
-                                            args = Bundle().apply {
-                                                putString("password", Json.encodeToString(item))
-                                            })
-                                    },
-                                    onUpdateFabColor = { color ->
-                                        if (lazyListState.layoutInfo.visibleItemsInfo.any { visibleItem -> visibleItem.key == item.id }) {
-                                            fabColor = color
-                                        }
-                                    }
-                                )
-                            }
-                        },
-                    )
-                }
-
-            }
-
-            is PasswordsState.Empty -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    Text(
-                        text = "You don't have any saved password.",
-                        color = HolviTheme.colors.appForeground,
-                        style = HolviTheme.typography.body
-                    )
+                                    )
+                                }
+                            },
+                        )
+                    }
                 }
             }
 
@@ -336,7 +337,7 @@ fun Search(viewModel: CrudViewModel) {
         mutableStateOf("")
     }
     LaunchedEffect(key1 = searchQuery) {
-        viewModel.searchQuery.value = searchQuery
+        viewModel.updateQuery(searchQuery)
     }
 
     val screenSizeDp = DpSize(
@@ -393,7 +394,7 @@ fun Search(viewModel: CrudViewModel) {
                             isExpanded = isExpanded.not()
 
                         },
-                    painter = painterResource(id = if (state) R.drawable.ic_close else R.drawable.ic_search),
+                    painter = painterResource(id = if (state) com.tek.ui.R.drawable.ic_close else com.tek.ui.R.drawable.ic_search),
                     contentDescription = "search",
                     tint = HolviTheme.colors.primaryForeground
 
@@ -441,7 +442,7 @@ fun PasswordItem(
     val openDialog = remember { mutableStateOf(false) }
     val cardSize = remember { mutableStateOf(IntSize.Zero) }
     var passwordText by remember { mutableStateOf("*".repeat(password.password.length)) }
-    var resId by remember { mutableIntStateOf(R.drawable.ic_invisible) }
+    var resId by remember { mutableIntStateOf(com.tek.ui.R.drawable.ic_invisible) }
     var visible by remember { mutableStateOf(false) }
     val itemColors = getItemColors(id = password.id)
     val oppositeColor = getOppositeBackgroundColor(itemColors.first)
@@ -595,10 +596,10 @@ fun PasswordItem(
                                 onClick = {
                                     if (visible) {
                                         passwordText = "*".repeat(password.password.length)
-                                        resId = R.drawable.ic_invisible
+                                        resId = com.tek.ui.R.drawable.ic_invisible
                                     } else {
                                         passwordText = password.password
-                                        resId = R.drawable.ic_visible
+                                        resId = com.tek.ui.R.drawable.ic_visible
                                     }
                                     visible = !visible
 
@@ -643,7 +644,7 @@ fun PasswordItem(
 
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_copy),
+                                    painter = painterResource(id = com.tek.ui.R.drawable.ic_copy),
                                     contentDescription = "hiddenOrShown",
                                     tint = itemColors.second,
                                     modifier = Modifier.size(24.dp)

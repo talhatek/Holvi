@@ -51,7 +51,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.tek.password.R
 import com.tek.password.di.getViewModelScope
 import com.tek.password.presentation.GenerateViewModel
 import com.tek.password.presentation.GenerateViewUiEvent
@@ -137,7 +136,7 @@ fun GenerateScreen(navController: NavController) {
                     .fillMaxHeight(.05f)
                     .fillMaxWidth()
             )
-            CircleIconButton(iconIdRes = R.drawable.ic_renew) {
+            CircleIconButton(iconIdRes = com.tek.ui.R.drawable.ic_renew) {
                 viewModel.generatePassword()
             }
             Spacer(

@@ -29,10 +29,12 @@ import com.tek.ui.holviButtonColors
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun UpdateScreen(navController: NavController, item: Password) {
-    val crudViewModel = get<CrudViewModel>()
+    val crudViewModel = get<CrudViewModel>(parameters = { parametersOf(true) })
+
     var siteName by remember { mutableStateOf(item.siteName) }
     var userName by remember { mutableStateOf(item.userName) }
     var password by remember { mutableStateOf(item.password) }

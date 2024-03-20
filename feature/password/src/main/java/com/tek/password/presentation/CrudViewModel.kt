@@ -35,12 +35,12 @@ class CrudViewModel(
     private val passwordGenerator: PasswordGeneratorUseCase,
     private val deletePassword: DeletePasswordUseCase,
     private val observePassword: ObservePasswordUseCase,
-    private val appDispatchers: AppDispatchers
+    private val appDispatchers: AppDispatchers,
+    observeOnStart: Boolean,
 ) : ViewModel() {
 
     private val _passwordDeleteState = MutableSharedFlow<DeletePasswordState>()
     val passwordDeleteState = _passwordDeleteState.asSharedFlow()
-
     private val _clearInputsSharedFlow = MutableSharedFlow<ClearFocus>()
     val clearInputsSharedFlow = _clearInputsSharedFlow.asSharedFlow()
     private val password = MutableStateFlow("")
@@ -50,32 +50,43 @@ class CrudViewModel(
     private val deletedItem = MutableStateFlow<Password?>(null)
     private var clearDeletedItemJob: Job? = null
 
-    val searchQuery = MutableStateFlow("")
+    private val queryInput = MutableStateFlow("")
 
-    private val _passwordsState = MutableStateFlow<PasswordsState>(PasswordsState.Init)
+    private val queryFlow = queryInput.debounce(250).distinctUntilChanged()
+
+
+    private val _passwordsState = MutableStateFlow<PasswordsState>(PasswordsState.Loading)
     val passwordsState get() = _passwordsState.asStateFlow()
 
     init {
+        if (observeOnStart) {
+            observeDeletedItem()
+            observePasswords()
+        }
+    }
+
+    fun updateQuery(query: String) {
+        queryInput.value = query
+    }
+
+    private fun observeDeletedItem() {
         viewModelScope.launch(appDispatchers.IO) {
             deletedItem.collectLatest {
                 if (it == null) clearDeletedItemJob = null
             }
         }
-        observePasswords()
     }
 
     private fun observePasswords() {
         viewModelScope.launch(appDispatchers.IO) {
-            searchQuery.debounce(250).distinctUntilChanged().collectLatest { query ->
+            queryFlow.collectLatest { query ->
                 observePassword.invoke(query).collectLatest { data ->
-                    if (data.isEmpty()) {
-                        _passwordsState.value = (PasswordsState.Empty)
-                    } else {
-                        _passwordsState.value = (PasswordsState.Success(
-                            data = data.sortedBy { it.id }
-                                .toPersistentList()
-                        ))
-                    }
+                    _passwordsState.value = (PasswordsState.Success(
+                        isEmpty = data.isEmpty(),
+                        data = data.sortedBy { it.id }
+                            .toPersistentList(),
+                        isQueried = query.isNotEmpty()
+                    ))
                 }
             }
         }
@@ -169,8 +180,12 @@ class CrudViewModel(
 sealed class PasswordsState {
     data object Loading : PasswordsState()
     data object Init : PasswordsState()
-    data object Empty : PasswordsState()
-    class Success(val data: PersistentList<Password>) : PasswordsState()
+    class Success(
+        val isEmpty: Boolean,
+        val data: PersistentList<Password>,
+        val isQueried: Boolean
+    ) : PasswordsState()
+
     class Error(val message: String) : PasswordsState()
 }
 
