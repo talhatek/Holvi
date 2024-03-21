@@ -9,4 +9,14 @@ class PasswordDtoToPasswordMapper {
         Password(id = id, siteName = siteName, password = password, userName = userName)
     }
 
+    operator fun invoke(dto: List<PasswordDto>) = with(dto) {
+        map {
+            Password(
+                id = it.id,
+                siteName = it.siteName,
+                password = it.password,
+                userName = it.userName
+            )
+        }
+    }
 }

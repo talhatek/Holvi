@@ -35,7 +35,8 @@ class CrudViewModelTest {
         getPasswordBySiteName = mock(GetPasswordBySiteNameUseCase::class.java),
         observePassword = mock(ObservePasswordUseCase::class.java),
         passwordGenerator = PasswordGeneratorUseCase(),
-        appDispatchers = HolviTestDispatchers(testDispatcher)
+        appDispatchers = HolviTestDispatchers(testDispatcher),
+        observeOnStart = true
     )
 
     @Before

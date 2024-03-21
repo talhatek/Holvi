@@ -26,7 +26,7 @@ class TestApp : Application() {
                     viewModuleTest,
                     authenticationModule,
                     passwordModule,
-                    fireStoreModule
+                    fireStoreModule,
                 )
             )
 

@@ -2,6 +2,7 @@ package com.tek.password.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tek.database.data.PasswordDto
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
@@ -55,7 +56,7 @@ class CrudViewModel(
     private val queryFlow = queryInput.debounce(250).distinctUntilChanged()
 
 
-    private val _passwordsState = MutableStateFlow<PasswordsState>(PasswordsState.Loading)
+    private val _passwordsState = MutableStateFlow<PasswordsState>(PasswordsState.Init)
     val passwordsState get() = _passwordsState.asStateFlow()
 
     init {
@@ -77,20 +78,23 @@ class CrudViewModel(
         }
     }
 
-    private fun observePasswords() {
+    fun observePasswords() {
         viewModelScope.launch(appDispatchers.IO) {
             queryFlow.collectLatest { query ->
                 observePassword.invoke(query).collectLatest { data ->
                     _passwordsState.value = (PasswordsState.Success(
                         isEmpty = data.isEmpty(),
-                        data = data.sortedBy { it.id }
-                            .toPersistentList(),
+                        data = convertData(data),
                         isQueried = query.isNotEmpty()
                     ))
                 }
             }
         }
     }
+
+    private fun convertData(data: List<PasswordDto>) = data.map {
+        Password(id = it.id, siteName = it.siteName, password = it.password, userName = it.userName)
+    }.sortedBy { it.id }.toPersistentList()
 
 
     fun add(password: Password) {
@@ -169,7 +173,7 @@ class CrudViewModel(
 
     fun generate(): String {
         val data = passwordGenerator.invoke(length = 8)
-        viewModelScope.launch {
+        viewModelScope.launch(appDispatchers.Default) {
             password.emit(data)
         }
         return data

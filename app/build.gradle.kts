@@ -94,6 +94,7 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(project(":core:database"))
     implementation(project(":core:ui"))
     implementation(project(":core:test"))
@@ -107,7 +108,7 @@ dependencies {
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.mockito.android)
     androidTestImplementation(libs.androidx.runner)
-
+    testImplementation(libs.mockito.inline)
     testImplementation(libs.koin.test)
     testImplementation(libs.mockito.core)
     testImplementation(libs.truth)

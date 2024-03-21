@@ -13,7 +13,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +23,7 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tek.holvi.R
 import com.tek.holvi.presentation.AuthenticationViewModel
 import com.tek.holvi.presentation.SQState
@@ -39,7 +39,7 @@ fun AuthenticationMainScreen(
 ) {
 
     val viewModel = get<AuthenticationViewModel>()
-    val sqState = viewModel.sqState.collectAsState().value
+    val sqState = viewModel.sqState.collectAsStateWithLifecycle().value
 
     var buttonEnabledState by remember {
         mutableStateOf(false)
