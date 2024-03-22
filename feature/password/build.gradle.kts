@@ -32,7 +32,6 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    testImplementation(libs.junit)
     implementation(libs.androidx.navigation.compose)
     api(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.serialization.json)
@@ -46,6 +45,13 @@ dependencies {
 
     implementation(project(":core:database"))
     implementation(project(":core:ui"))
+    implementation(project(":core:test"))
     implementation(project(":core:util"))
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 
 }

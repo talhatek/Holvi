@@ -1,9 +1,8 @@
-package com.tek.holvi.ui.add_screen
+package com.tek.password.presentation
 
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.tek.database.dao.PasswordDao
 import com.tek.database.data.PasswordDto
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
@@ -13,50 +12,41 @@ import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.domain.mapper.PasswordDtoToPasswordMapper
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
-import com.tek.password.presentation.AddPasswordState
-import com.tek.password.presentation.CrudViewModel
-import com.tek.password.presentation.PasswordsState
 import com.tek.test.HolviTestDispatchers
 import com.tek.util.AppDispatchers
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.junit.MockitoJUnitRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(MockitoJUnitRunner::class)
 class CrudViewModelTest {
 
-    @Mock
-    private lateinit var passwordDao: PasswordDao
-
-    @Mock
     private lateinit var passwordDtoToPasswordMapper: PasswordDtoToPasswordMapper
 
-    @InjectMocks
     private lateinit var addPasswordUseCase: AddPasswordUseCase
 
-    @InjectMocks
+
     private lateinit var updatePasswordUseCase: UpdatePasswordUseCase
 
-    @InjectMocks
+
     private lateinit var deletePasswordUseCase: DeletePasswordUseCase
 
-    @InjectMocks
+
     private lateinit var getPasswordBySiteNameUseCase: GetPasswordBySiteNameUseCase
 
-    @InjectMocks
+
     private lateinit var observePasswordUseCase: ObservePasswordUseCase
 
-    @InjectMocks
-    private val passwordGeneratorUseCase = PasswordGeneratorUseCase()
+
+    private lateinit var passwordGeneratorUseCase: PasswordGeneratorUseCase
 
     private lateinit var appDispatchers: AppDispatchers
 
@@ -69,6 +59,13 @@ class CrudViewModelTest {
     @Before
     fun setup() {
         appDispatchers = HolviTestDispatchers(testDispatchers)
+        passwordDtoToPasswordMapper = mockk()
+        addPasswordUseCase = mockk()
+        getPasswordBySiteNameUseCase = mockk()
+        updatePasswordUseCase = mockk()
+        deletePasswordUseCase = mockk()
+        observePasswordUseCase = mockk()
+        passwordGeneratorUseCase = mockk()
         vm = CrudViewModel(
             getPasswordBySiteNameUseCase,
             addPasswordUseCase,
@@ -77,7 +74,7 @@ class CrudViewModelTest {
             deletePasswordUseCase,
             observePasswordUseCase,
             appDispatchers,
-            false
+            true
         )
     }
 
@@ -99,7 +96,7 @@ class CrudViewModelTest {
     @Test
     fun addPassword_Success() {
         runTest {
-
+            coEvery { addPasswordUseCase.invoke(generatePassword()) } just runs
             vm.passwordAddState.test {
                 vm.add(generatePassword())
                 assertThat(awaitItem()).isEqualTo(AddPasswordState.Success)
@@ -119,6 +116,16 @@ class CrudViewModelTest {
 
     @Test
     fun generatePassword_InitiallyEmptyThenGeneratesEightCharacters() {
+        every {
+            passwordGeneratorUseCase.invoke(
+                true,
+                true,
+                true,
+                true,
+                8,
+                charArrayOf()
+            )
+        } returns "aA44!^bv"
         runTest {
             vm.passwordStateFlow.test {
                 vm.generate()
@@ -131,10 +138,9 @@ class CrudViewModelTest {
     @Test
     fun observePasswordsEmpty() {
         runTest {
-            Mockito.`when`((observePasswordUseCase.invoke(""))).thenReturn(flowOf(emptyList()))
+            every { observePasswordUseCase.invoke("") } returns flowOf(emptyList())
             vm.passwordsState.test {
                 assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
-                vm.observePasswords()
                 testDispatchers.scheduler.advanceTimeBy(251L)
                 val item = awaitItem() as PasswordsState.Success
                 assertThat(item.isEmpty).isEqualTo(true)
@@ -148,11 +154,9 @@ class CrudViewModelTest {
     @Test
     fun observePasswordsItem() {
         runTest {
-            Mockito.`when`((observePasswordUseCase.invoke("")))
-                .thenReturn(flowOf(listOf(generatePasswordDto())))
+            every { observePasswordUseCase.invoke("") } returns flowOf(listOf(generatePassword()))
             vm.passwordsState.test {
                 assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
-                vm.observePasswords()
                 testDispatchers.scheduler.advanceTimeBy(251L)
                 val item = awaitItem() as PasswordsState.Success
                 assertThat(item.isEmpty).isEqualTo(false)

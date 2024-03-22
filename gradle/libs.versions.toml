@@ -21,6 +21,7 @@ material = "1.11.0"
 material3 = "1.2.1"
 mockitoAndroid = "3.10.0"
 mockitoInline = "2.13.0"
+mockk = "1.13.10"
 navigationRuntimeKtx = "2.7.7"
 okhttp = "4.9.1"
 retrofit = "2.9.0"
@@ -75,6 +76,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoAndroid" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockitoInline" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }

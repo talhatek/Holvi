@@ -78,13 +78,14 @@ class CrudViewModel(
         }
     }
 
-    fun observePasswords() {
+
+    private fun observePasswords() {
         viewModelScope.launch(appDispatchers.IO) {
             queryFlow.collectLatest { query ->
                 observePassword.invoke(query).collectLatest { data ->
                     _passwordsState.value = (PasswordsState.Success(
                         isEmpty = data.isEmpty(),
-                        data = convertData(data),
+                        data = data.toPersistentList(),
                         isQueried = query.isNotEmpty()
                     ))
                 }
