@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tek.password.domain.PasswordGeneratorUseCase
+import com.tek.util.AppDispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -13,7 +14,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class GenerateViewModel(private val passwordGenerator: PasswordGeneratorUseCase) : ViewModel() {
+class GenerateViewModel(
+    private val passwordGenerator: PasswordGeneratorUseCase,
+    private val appDispatchers: AppDispatchers
+) : ViewModel() {
     val symbolState = MutableStateFlow(true)
     val numberState = MutableStateFlow(true)
     val upperCaseState = MutableStateFlow(true)
@@ -30,21 +34,26 @@ class GenerateViewModel(private val passwordGenerator: PasswordGeneratorUseCase)
     val uiEvent = _uiEvent.asSharedFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(appDispatchers.Default) {
             _activeCount.collectLatest {
-                val tmp = mutableListOf<Int>()
-                for (i in 1..50) {
-                    if (i % _activeCount.value == 0 && !dropdownItems.value.contains(i) && i > it)
-                        tmp.add(i)
-                }
-                dropdownItems.value = tmp
+                dropdownItems.value = generateSequence(it) { value ->
+                    if (value.plus(it) < LENGTH_LIMIT) {
+                        value.plus(it)
+                    } else {
+                        null
+                    }
+                }.toList()
             }
         }
     }
 
 
     fun updateActiveCount(isActive: Boolean) {
-        _activeCount.value = if (isActive) _activeCount.value + 1 else _activeCount.value - 1
+        _activeCount.value =
+            (if (isActive) _activeCount.value + 1 else _activeCount.value - 1).coerceIn(
+                minimumValue = 1,
+                maximumValue = 4
+            )
         lengthSelectorText.value = "Password length"
         currentSelectedLength.value = -1
 
@@ -82,13 +91,14 @@ class GenerateViewModel(private val passwordGenerator: PasswordGeneratorUseCase)
     }
 
     private fun sendUiEvent(event: GenerateViewUiEvent) {
-        viewModelScope.launch {
+        viewModelScope.launch(appDispatchers.Main) {
             _uiEvent.emit(event)
         }
     }
 
     companion object {
         const val SCOPE_NAME = "GENERATE_VIEW_MODEL_SCOPE"
+        const val LENGTH_LIMIT = 50
     }
 }
 
