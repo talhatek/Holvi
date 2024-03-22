@@ -15,12 +15,12 @@ class PasswordGeneratorUseCase {
     private var symbol: String = "@#=+!£$%&?/*-"
 
     operator fun invoke(
-        isWithLetters: Boolean = true,
+        isWithLowercase: Boolean = true,
         isWithUppercase: Boolean = true,
         isWithNumbers: Boolean = true,
         isWithSpecial: Boolean = true,
         length: Int,
-        forbiddenLetters: CharArray = charArrayOf()
+        forbiddenChars: CharArray = charArrayOf()
     ): String {
 
         var result = ""
@@ -32,7 +32,7 @@ class PasswordGeneratorUseCase {
         var symbolCounter = 0
         var selectedTypeCounter = 0
 
-        for (ch in forbiddenLetters) {
+        for (ch in forbiddenChars) {
             when {
                 lowerCaseLetters.contains(ch) -> this.lowerCaseLetters =
                     lowerCaseLetters.replace(ch.toString(), "")
@@ -45,7 +45,7 @@ class PasswordGeneratorUseCase {
             }
         }
 
-        if (isWithLetters) {
+        if (isWithLowercase) {
             result += this.lowerCaseLetters
             selectedTypeCounter++
         }

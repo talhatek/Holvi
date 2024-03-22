@@ -7,7 +7,9 @@
 - Biometric
 - Koin
 - Room DB
+- Retrofit
 - Lifecycle
+- MockK
 
 ### Screens
 

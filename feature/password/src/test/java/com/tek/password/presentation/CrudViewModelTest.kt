@@ -3,7 +3,6 @@ package com.tek.password.presentation
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.tek.database.data.PasswordDto
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
@@ -19,6 +18,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -30,28 +30,14 @@ import org.junit.Test
 class CrudViewModelTest {
 
     private lateinit var passwordDtoToPasswordMapper: PasswordDtoToPasswordMapper
-
     private lateinit var addPasswordUseCase: AddPasswordUseCase
-
-
     private lateinit var updatePasswordUseCase: UpdatePasswordUseCase
-
-
     private lateinit var deletePasswordUseCase: DeletePasswordUseCase
-
-
     private lateinit var getPasswordBySiteNameUseCase: GetPasswordBySiteNameUseCase
-
-
     private lateinit var observePasswordUseCase: ObservePasswordUseCase
-
-
     private lateinit var passwordGeneratorUseCase: PasswordGeneratorUseCase
-
     private lateinit var appDispatchers: AppDispatchers
-
-    private lateinit var vm: CrudViewModel
-
+    private lateinit var crudViewModel: CrudViewModel
 
     private val testDispatchers = UnconfinedTestDispatcher()
 
@@ -66,15 +52,15 @@ class CrudViewModelTest {
         deletePasswordUseCase = mockk()
         observePasswordUseCase = mockk()
         passwordGeneratorUseCase = mockk()
-        vm = CrudViewModel(
-            getPasswordBySiteNameUseCase,
-            addPasswordUseCase,
-            updatePasswordUseCase,
-            passwordGeneratorUseCase,
-            deletePasswordUseCase,
-            observePasswordUseCase,
-            appDispatchers,
-            true
+        crudViewModel = CrudViewModel(
+            getPasswordBySiteName = getPasswordBySiteNameUseCase,
+            addPassword = addPasswordUseCase,
+            updatePassword = updatePasswordUseCase,
+            passwordGenerator = passwordGeneratorUseCase,
+            deletePassword = deletePasswordUseCase,
+            observePassword = observePasswordUseCase,
+            appDispatchers = appDispatchers,
+            observeOnStart = true
         )
     }
 
@@ -86,19 +72,22 @@ class CrudViewModelTest {
         userName = "User Name"
     )
 
-    private fun generatePasswordDto() = PasswordDto(
-        id = 0,
-        siteName = "Site Name",
-        password = "Password",
-        userName = "User Name"
+    private fun generateOnlyPassword() = PasswordGeneratorUseCase().invoke(
+        isWithLowercase = true,
+        isWithUppercase = true,
+        isWithNumbers = true,
+        isWithSpecial = true,
+        length = 8,
+        forbiddenChars = charArrayOf()
     )
+
 
     @Test
     fun addPassword_Success() {
         runTest {
             coEvery { addPasswordUseCase.invoke(generatePassword()) } just runs
-            vm.passwordAddState.test {
-                vm.add(generatePassword())
+            crudViewModel.passwordAddState.test {
+                crudViewModel.add(generatePassword())
                 assertThat(awaitItem()).isEqualTo(AddPasswordState.Success)
             }
         }
@@ -107,8 +96,8 @@ class CrudViewModelTest {
     @Test
     fun addPassword_FailsWhenSiteNameIsEmpty() {
         runTest {
-            vm.passwordAddState.test {
-                vm.add(generatePassword().copy(siteName = ""))
+            crudViewModel.passwordAddState.test {
+                crudViewModel.add(generatePassword().copy(siteName = ""))
                 assertThat((awaitItem() as? AddPasswordState.Failure)?.message).isEqualTo("You must fill required fields.")
             }
         }
@@ -118,17 +107,20 @@ class CrudViewModelTest {
     fun generatePassword_InitiallyEmptyThenGeneratesEightCharacters() {
         every {
             passwordGeneratorUseCase.invoke(
-                true,
-                true,
-                true,
-                true,
-                8,
-                charArrayOf()
+                isWithLowercase = true,
+                isWithUppercase = true,
+                isWithNumbers = true,
+                isWithSpecial = true,
+                length = 8,
+                forbiddenChars = charArrayOf()
             )
-        } returns "aA44!^bv"
+        } returns "aA44!^bV"
         runTest {
-            vm.passwordStateFlow.test {
-                vm.generate()
+            crudViewModel.passwordStateFlow.test {
+                crudViewModel.generate()
+                verify(exactly = 1) {
+                    passwordGeneratorUseCase(any(), any(), any(), any(), any(), any())
+                }
                 assertThat(awaitItem().length).isEqualTo(0)
                 assertThat(awaitItem().length).isEqualTo(8)
             }
@@ -139,14 +131,13 @@ class CrudViewModelTest {
     fun observePasswords_EmptyResult() {
         runTest {
             every { observePasswordUseCase.invoke("") } returns flowOf(emptyList())
-            vm.passwordsState.test {
+            crudViewModel.passwordsState.test {
                 assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
                 testDispatchers.scheduler.advanceTimeBy(251L)
                 val item = awaitItem() as PasswordsState.Success
                 assertThat(item.isEmpty).isEqualTo(true)
                 assertThat(item.isQueried).isEqualTo(false)
                 assertThat(item.data.size).isEqualTo(0)
-                cancelAndIgnoreRemainingEvents()
             }
         }
     }
@@ -155,14 +146,13 @@ class CrudViewModelTest {
     fun observePasswords_WithDataResult() {
         runTest {
             every { observePasswordUseCase.invoke("") } returns flowOf(listOf(generatePassword()))
-            vm.passwordsState.test {
+            crudViewModel.passwordsState.test {
                 assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
                 testDispatchers.scheduler.advanceTimeBy(251L)
                 val item = awaitItem() as PasswordsState.Success
                 assertThat(item.isEmpty).isEqualTo(false)
                 assertThat(item.data.size).isEqualTo(1)
                 assertThat(item.isQueried).isEqualTo(false)
-                cancelAndIgnoreRemainingEvents()
             }
         }
     }
@@ -171,12 +161,11 @@ class CrudViewModelTest {
     fun observePasswords_ErrorResult() {
         runTest {
             every { observePasswordUseCase.invoke("") }.throws(Exception())
-            vm.passwordsState.test {
+            crudViewModel.passwordsState.test {
                 assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
                 testDispatchers.scheduler.advanceTimeBy(251L)
                 val item = awaitItem() as PasswordsState.Error
                 assertThat(item.message).isEqualTo("Something occurred!")
-                cancelAndIgnoreRemainingEvents()
             }
         }
     }
