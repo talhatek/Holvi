@@ -285,7 +285,7 @@ fun AllScreen(navController: NavController) {
                                             }
                                         },
                                         onDelete = {
-                                            crudViewModel.delete(item.siteName)
+                                            crudViewModel.delete(item.id)
                                         },
                                         onUpdate = {
                                             navController.navigateWithArgs(

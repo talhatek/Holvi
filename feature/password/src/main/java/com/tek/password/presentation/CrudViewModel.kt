@@ -53,7 +53,7 @@ class CrudViewModel(
 
     private val queryInput = MutableStateFlow("")
 
-    private val queryFlow = queryInput.debounce(250).distinctUntilChanged()
+    val queryFlow = queryInput.debounce(250).distinctUntilChanged()
 
 
     private val _passwordsState = MutableStateFlow<PasswordsState>(PasswordsState.Init)
@@ -85,6 +85,9 @@ class CrudViewModel(
         }
         viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
             queryFlow.collectLatest { query ->
+                if (query.isEmpty() and (_passwordsState.value is PasswordsState.Init)) {
+                    _passwordsState.value = PasswordsState.Loading
+                }
                 observePassword.invoke(query).collectLatest { data ->
                     _passwordsState.value = (PasswordsState.Success(
                         isEmpty = data.isEmpty(),
@@ -114,39 +117,44 @@ class CrudViewModel(
     }
 
     fun update(password: Password) {
-        viewModelScope.launch(appDispatchers.IO) {
-            if (control(password = password)) {
-                try {
-                    updatePassword.invoke(password)
-                    _passwordAddState.emit(AddPasswordState.Success)
-                    _clearInputsSharedFlow.emit(ClearFocus.Clear)
-                } catch (ex: Exception) {
-                    _passwordAddState.emit(AddPasswordState.Failure("Password could not updated. ${ex.message}"))
-                }
-            } else
-                _passwordAddState.emit(AddPasswordState.Failure("You must fill required fields."))
+        val exceptionHandler = CoroutineExceptionHandler { _, ex ->
+            viewModelScope.launch(appDispatchers.Main) {
+                _passwordAddState.emit(AddPasswordState.Failure("${ex.message}"))
+            }
+        }
+        viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
+            if (!control(password = password)) {
+                throw Exception("You must fill required fields.")
+            }
+            updatePassword.invoke(password)
+            _passwordAddState.emit(AddPasswordState.Success)
+            _clearInputsSharedFlow.emit(ClearFocus.Clear)
+
         }
     }
 
-    fun delete(siteName: String) {
-        viewModelScope.launch(appDispatchers.IO) {
-            try {
-                val item = getPasswordBySiteName.invoke(siteName)
-                val effectedRowCount = deletePassword.invoke(item)
-                if (effectedRowCount > 0) {
-                    deletedItem.value = item
-                    clearDeletedItemJob = viewModelScope.launch {
-                        delay(4.seconds)
-                        if (isActive) {
-                            deletedItem.value = null
-                        }
-                    }
-                    _passwordDeleteState.emit(DeletePasswordState.Success)
-                } else
-                    _passwordDeleteState.emit(DeletePasswordState.NotFound)
-
-            } catch (ex: Exception) {
+    fun delete(id: Int) {
+        val exceptionHandler = CoroutineExceptionHandler { _, ex ->
+            viewModelScope.launch(appDispatchers.Main) {
                 _passwordDeleteState.emit(DeletePasswordState.Failure)
+
+            }
+        }
+        viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
+            val item = getPasswordBySiteName.invoke(id)
+            val effectedRowCount = deletePassword.invoke(item)
+            if (effectedRowCount > 0) {
+                deletedItem.value = item
+                clearDeletedItemJob = viewModelScope.launch(appDispatchers.IO) {
+                    delay(4.seconds)
+                    if (isActive) {
+                        deletedItem.value = null
+                    }
+                }
+                _passwordDeleteState.emit(DeletePasswordState.Success)
+            } else {
+                _passwordDeleteState.emit(DeletePasswordState.NotFound)
+
             }
         }
     }

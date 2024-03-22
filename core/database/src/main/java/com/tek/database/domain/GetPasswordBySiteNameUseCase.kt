@@ -8,7 +8,7 @@ class GetPasswordBySiteNameUseCase(
     private val mapper: PasswordDtoToPasswordMapper
 ) {
 
-    suspend operator fun invoke(siteName: String) =
-        mapper.invoke(passwordDao.getPasswordBySiteName(siteName))
+    suspend operator fun invoke(id: Int) =
+        mapper.invoke(passwordDao.getPasswordBySiteName(id))
 
 }

@@ -20,8 +20,8 @@ interface PasswordDao {
     @Query("SELECT * FROM passworddto")
     fun getAllPasswords(): List<PasswordDto>
 
-    @Query("SELECT * FROM passworddto where passworddto.site_name = :siteName")
-    suspend fun getPasswordBySiteName(siteName: String): PasswordDto
+    @Query("SELECT * FROM passworddto where passworddto.id = :id")
+    suspend fun getPasswordBySiteName(id: Int): PasswordDto
 
 
     @Query("SELECT passworddto.site_name FROM passworddto")
