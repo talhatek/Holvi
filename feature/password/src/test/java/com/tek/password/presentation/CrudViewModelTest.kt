@@ -136,7 +136,7 @@ class CrudViewModelTest {
     }
 
     @Test
-    fun observePasswordsEmpty() {
+    fun observePasswords_EmptyResult() {
         runTest {
             every { observePasswordUseCase.invoke("") } returns flowOf(emptyList())
             vm.passwordsState.test {
@@ -152,7 +152,7 @@ class CrudViewModelTest {
     }
 
     @Test
-    fun observePasswordsItem() {
+    fun observePasswords_WithDataResult() {
         runTest {
             every { observePasswordUseCase.invoke("") } returns flowOf(listOf(generatePassword()))
             vm.passwordsState.test {
@@ -162,6 +162,20 @@ class CrudViewModelTest {
                 assertThat(item.isEmpty).isEqualTo(false)
                 assertThat(item.data.size).isEqualTo(1)
                 assertThat(item.isQueried).isEqualTo(false)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+    }
+
+    @Test
+    fun observePasswords_ErrorResult() {
+        runTest {
+            every { observePasswordUseCase.invoke("") }.throws(Exception())
+            vm.passwordsState.test {
+                assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
+                testDispatchers.scheduler.advanceTimeBy(251L)
+                val item = awaitItem() as PasswordsState.Error
+                assertThat(item.message).isEqualTo("Something occurred!")
                 cancelAndIgnoreRemainingEvents()
             }
         }

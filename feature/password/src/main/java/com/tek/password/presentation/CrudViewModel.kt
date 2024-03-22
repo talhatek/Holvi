@@ -2,7 +2,6 @@ package com.tek.password.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tek.database.data.PasswordDto
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
@@ -13,6 +12,7 @@ import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.util.AppDispatchers
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -80,7 +80,10 @@ class CrudViewModel(
 
 
     private fun observePasswords() {
-        viewModelScope.launch(appDispatchers.IO) {
+        val exceptionHandler = CoroutineExceptionHandler { _, _ ->
+            _passwordsState.value = PasswordsState.Error(message = "Something occurred!")
+        }
+        viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
             queryFlow.collectLatest { query ->
                 observePassword.invoke(query).collectLatest { data ->
                     _passwordsState.value = (PasswordsState.Success(
@@ -93,23 +96,20 @@ class CrudViewModel(
         }
     }
 
-    private fun convertData(data: List<PasswordDto>) = data.map {
-        Password(id = it.id, siteName = it.siteName, password = it.password, userName = it.userName)
-    }.sortedBy { it.id }.toPersistentList()
-
-
     fun add(password: Password) {
-        viewModelScope.launch(appDispatchers.IO) {
-            if (control(password = password)) {
-                try {
-                    addPassword.invoke(password)
-                    _passwordAddState.emit(AddPasswordState.Success)
-                    _clearInputsSharedFlow.emit(ClearFocus.Clear)
-                } catch (ex: Exception) {
-                    _passwordAddState.emit(AddPasswordState.Failure("Password could not added. ${ex.message}"))
-                }
-            } else
-                _passwordAddState.emit(AddPasswordState.Failure("You must fill required fields."))
+        val exceptionHandler = CoroutineExceptionHandler { _, ex ->
+            viewModelScope.launch(appDispatchers.Main) {
+                _passwordAddState.emit(AddPasswordState.Failure("${ex.message}"))
+            }
+        }
+        viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
+            if (!control(password = password)) {
+                throw Exception("You must fill required fields.")
+            }
+            addPassword.invoke(password)
+            _passwordAddState.emit(AddPasswordState.Success)
+            _clearInputsSharedFlow.emit(ClearFocus.Clear)
+
         }
     }
 
