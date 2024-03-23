@@ -10,6 +10,7 @@
 - Retrofit
 - Lifecycle
 - MockK
+- Kotest
 
 ### Screens
 

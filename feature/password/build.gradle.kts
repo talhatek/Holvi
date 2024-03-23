@@ -50,7 +50,7 @@ dependencies {
 
     testImplementation(libs.mockk)
     testImplementation(libs.koin.test)
-    testImplementation(libs.truth)
+    testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
 

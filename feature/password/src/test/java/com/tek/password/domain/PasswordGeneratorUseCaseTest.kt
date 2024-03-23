@@ -1,6 +1,9 @@
 package com.tek.password.domain
 
-import com.google.common.truth.Truth.assertThat
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.string.shouldBeEmpty
 import kotlin.test.Test
 
 
@@ -14,7 +17,8 @@ class PasswordGeneratorUseCaseTest {
 
         val password = passwordGeneratorUseCase(length = expectedLength)
 
-        assertThat(password.length).isEqualTo(expectedLength)
+        password.length shouldBeExactly expectedLength
+
     }
 
     @Test
@@ -33,10 +37,11 @@ class PasswordGeneratorUseCaseTest {
         val number = password.any { it.isDigit() }
         val symbol = password.any { !it.isLetterOrDigit() }
 
-        assertThat(lowercase).isTrue()
-        assertThat(uppercase).isTrue()
-        assertThat(number).isTrue()
-        assertThat(symbol).isTrue()
+
+        lowercase.shouldBeTrue()
+        uppercase.shouldBeTrue()
+        number.shouldBeTrue()
+        symbol.shouldBeTrue()
     }
 
     @Test
@@ -55,10 +60,10 @@ class PasswordGeneratorUseCaseTest {
         val number = password.any { it.isDigit() }
         val symbol = password.any { !it.isLetterOrDigit() }
 
-        assertThat(lowercase).isFalse()
-        assertThat(uppercase).isTrue()
-        assertThat(number).isTrue()
-        assertThat(symbol).isTrue()
+        lowercase.shouldBeFalse()
+        uppercase.shouldBeTrue()
+        number.shouldBeTrue()
+        symbol.shouldBeTrue()
     }
 
     @Test
@@ -77,10 +82,10 @@ class PasswordGeneratorUseCaseTest {
         val number = password.any { it.isDigit() }
         val symbol = password.any { !it.isLetterOrDigit() }
 
-        assertThat(lowercase).isTrue()
-        assertThat(uppercase).isFalse()
-        assertThat(number).isTrue()
-        assertThat(symbol).isTrue()
+        lowercase.shouldBeTrue()
+        uppercase.shouldBeFalse()
+        number.shouldBeTrue()
+        symbol.shouldBeTrue()
     }
 
     @Test
@@ -99,10 +104,10 @@ class PasswordGeneratorUseCaseTest {
         val number = password.any { it.isDigit() }
         val symbol = password.any { !it.isLetterOrDigit() }
 
-        assertThat(lowercase).isTrue()
-        assertThat(uppercase).isTrue()
-        assertThat(number).isFalse()
-        assertThat(symbol).isTrue()
+        lowercase.shouldBeTrue()
+        uppercase.shouldBeTrue()
+        number.shouldBeFalse()
+        symbol.shouldBeTrue()
     }
 
     @Test
@@ -121,10 +126,10 @@ class PasswordGeneratorUseCaseTest {
         val number = password.any { it.isDigit() }
         val symbol = password.any { !it.isLetterOrDigit() }
 
-        assertThat(lowercase).isTrue()
-        assertThat(uppercase).isTrue()
-        assertThat(number).isTrue()
-        assertThat(symbol).isFalse()
+        lowercase.shouldBeTrue()
+        uppercase.shouldBeTrue()
+        number.shouldBeTrue()
+        symbol.shouldBeFalse()
     }
 
 
@@ -141,19 +146,19 @@ class PasswordGeneratorUseCaseTest {
         )
 
         println(password)
-        assertThat(
-            password.toCharArray()
-                .any { forbiddenLetters.contains(it) }).isFalse()
-        assertThat(password.toCharArray().contains('z')).isTrue()
-        assertThat(password.toCharArray().contains('Z')).isTrue()
-        assertThat(password.toCharArray().contains('9')).isTrue()
-        assertThat(password.toCharArray().contains('?')).isTrue()
-        assertThat(password.length).isEqualTo(4)
+
+        password.toCharArray()
+            .any { forbiddenLetters.contains(it) }.shouldBeFalse()
+        password.toCharArray().contains('z').shouldBeTrue()
+        password.toCharArray().contains('Z').shouldBeTrue()
+        password.toCharArray().contains('9').shouldBeTrue()
+        password.toCharArray().contains('?').shouldBeTrue()
+        password.length shouldBeExactly 4
     }
 
     @Test
     fun `generates password with zero length - returns empty string`() {
-        assertThat(passwordGeneratorUseCase(length = 0)).isEmpty()
+        passwordGeneratorUseCase.invoke(length = 0).shouldBeEmpty()
     }
 
     @Test(expected = IllegalArgumentException::class)

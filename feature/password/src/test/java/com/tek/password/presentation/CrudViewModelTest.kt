@@ -2,7 +2,6 @@ package com.tek.password.presentation
 
 
 import app.cash.turbine.test
-import com.google.common.truth.Truth.assertThat
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
@@ -13,6 +12,12 @@ import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.test.HolviTestDispatchers
 import com.tek.util.AppDispatchers
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.ints.shouldBeZero
+import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -80,7 +85,8 @@ class CrudViewModelTest {
             crudViewModel.passwordAddState.test {
                 crudViewModel.add(generatePassword())
                 coVerify(exactly = 1) { addPasswordUseCase.invoke(generatePassword()) }
-                assertThat(awaitItem()).isEqualTo(AddPasswordState.Success)
+                awaitItem() shouldBe AddPasswordState.Success
+
             }
         }
     }
@@ -90,10 +96,11 @@ class CrudViewModelTest {
         runTest {
             crudViewModel.passwordAddState.test {
                 crudViewModel.add(generatePassword().copy(siteName = ""))
-                assertThat((awaitItem() as? AddPasswordState.Failure)?.message).isEqualTo("You must fill required fields.")
+                (awaitItem() as AddPasswordState.Failure).message shouldBeEqual "You must fill required fields."
             }
         }
     }
+
     @Test
     fun `update password successfully`() {
         runTest {
@@ -101,7 +108,7 @@ class CrudViewModelTest {
             crudViewModel.passwordAddState.test {
                 crudViewModel.update(generatePassword())
                 coVerify(exactly = 1) { updatePasswordUseCase.invoke(generatePassword()) }
-                assertThat(awaitItem()).isEqualTo(AddPasswordState.Success)
+                awaitItem() shouldBe AddPasswordState.Success
             }
         }
     }
@@ -111,7 +118,7 @@ class CrudViewModelTest {
         runTest {
             crudViewModel.passwordAddState.test {
                 crudViewModel.update(generatePassword().copy(siteName = ""))
-                assertThat((awaitItem() as? AddPasswordState.Failure)?.message).isEqualTo("You must fill required fields.")
+                (awaitItem() as AddPasswordState.Failure).message shouldBeEqual "You must fill required fields."
             }
         }
     }
@@ -125,7 +132,7 @@ class CrudViewModelTest {
                 crudViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
-                assertThat(awaitItem()).isEqualTo(DeletePasswordState.Success)
+                awaitItem() shouldBe DeletePasswordState.Success
             }
         }
     }
@@ -139,7 +146,8 @@ class CrudViewModelTest {
                 crudViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
-                assertThat(awaitItem()).isEqualTo(DeletePasswordState.NotFound)
+                awaitItem() shouldBe DeletePasswordState.NotFound
+
             }
         }
     }
@@ -151,7 +159,7 @@ class CrudViewModelTest {
             crudViewModel.passwordDeleteState.test {
                 crudViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
-                assertThat(awaitItem()).isEqualTo(DeletePasswordState.Failure)
+                awaitItem() shouldBe DeletePasswordState.Failure
             }
         }
     }
@@ -165,7 +173,7 @@ class CrudViewModelTest {
                 crudViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
-                assertThat(awaitItem()).isEqualTo(DeletePasswordState.Failure)
+                awaitItem() shouldBe DeletePasswordState.Failure
             }
         }
     }
@@ -180,9 +188,9 @@ class CrudViewModelTest {
                 crudViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
-                assertThat(awaitItem()).isEqualTo(DeletePasswordState.Success)
+                awaitItem() shouldBe DeletePasswordState.Success
                 crudViewModel.undoDelete()
-                assertThat(awaitItem()).isEqualTo(DeletePasswordState.Undo)
+                awaitItem() shouldBe DeletePasswordState.Undo
             }
         }
     }
@@ -197,10 +205,10 @@ class CrudViewModelTest {
                 crudViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
-                assertThat(awaitItem()).isEqualTo(DeletePasswordState.Success)
+                awaitItem() shouldBe DeletePasswordState.Success
                 testDispatchers.scheduler.advanceTimeBy(4001)
                 crudViewModel.undoDelete()
-                assertThat(awaitItem()).isEqualTo(DeletePasswordState.Failure)
+                awaitItem() shouldBe DeletePasswordState.Failure
             }
         }
     }
@@ -220,12 +228,13 @@ class CrudViewModelTest {
         } returns "aA44!^bV"
         runTest {
             crudViewModel.passwordStateFlow.test {
-                assertThat(awaitItem().length).isEqualTo(0)
+                awaitItem().length shouldBe 0
+
                 crudViewModel.generate()
                 verify(exactly = 1) {
                     passwordGeneratorUseCase(any(), any(), any(), any(), any(), any())
                 }
-                assertThat(awaitItem().length).isEqualTo(8)
+                awaitItem().length shouldBeExactly 8
             }
         }
     }
@@ -235,8 +244,7 @@ class CrudViewModelTest {
         runTest {
             crudViewModel.updateQuery("aa")
             crudViewModel.queryFlow.test {
-                assertThat(awaitItem()).isEqualTo("aa")
-
+                awaitItem() shouldBeEqual "aa"
             }
         }
     }
@@ -246,13 +254,14 @@ class CrudViewModelTest {
         runTest {
             every { observePasswordUseCase.invoke("") } returns flowOf(emptyList())
             crudViewModel.passwordsState.test {
-                assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
+                awaitItem() shouldBe PasswordsState.Init
                 testDispatchers.scheduler.advanceTimeBy(251L)
-                assertThat(awaitItem()).isEqualTo(PasswordsState.Loading)
+                awaitItem() shouldBe PasswordsState.Loading
+
                 val item = awaitItem() as PasswordsState.Success
-                assertThat(item.isEmpty).isEqualTo(true)
-                assertThat(item.isQueried).isEqualTo(false)
-                assertThat(item.data.size).isEqualTo(0)
+                item.isEmpty.shouldBeTrue()
+                item.isQueried.shouldBeFalse()
+                item.data.size.shouldBeZero()
             }
         }
     }
@@ -262,13 +271,13 @@ class CrudViewModelTest {
         runTest {
             every { observePasswordUseCase.invoke("") } returns flowOf(listOf(generatePassword()))
             crudViewModel.passwordsState.test {
-                assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
+                awaitItem() shouldBe PasswordsState.Init
                 testDispatchers.scheduler.advanceTimeBy(251L)
-                assertThat(awaitItem()).isEqualTo(PasswordsState.Loading)
+                awaitItem() shouldBe PasswordsState.Loading
                 val item = awaitItem() as PasswordsState.Success
-                assertThat(item.isEmpty).isEqualTo(false)
-                assertThat(item.data.size).isEqualTo(1)
-                assertThat(item.isQueried).isEqualTo(false)
+                item.isEmpty.shouldBeFalse()
+                item.isQueried.shouldBeFalse()
+                item.data.size shouldBeExactly 1
             }
         }
     }
@@ -278,11 +287,11 @@ class CrudViewModelTest {
         runTest {
             every { observePasswordUseCase.invoke("") }.throws(Exception())
             crudViewModel.passwordsState.test {
-                assertThat(awaitItem()).isEqualTo(PasswordsState.Init)
+                awaitItem() shouldBe PasswordsState.Init
                 testDispatchers.scheduler.advanceTimeBy(251L)
-                assertThat(awaitItem()).isEqualTo(PasswordsState.Loading)
+                awaitItem() shouldBe PasswordsState.Loading
                 val item = awaitItem() as PasswordsState.Error
-                assertThat(item.message).isEqualTo("Something occurred!")
+                item.message shouldBeEqual "Something occurred!"
             }
         }
     }

@@ -105,11 +105,11 @@ dependencies {
 
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.kotest.assertions.core)
     androidTestImplementation(libs.androidx.runner)
     testImplementation(libs.mockk)
     testImplementation(libs.koin.test)
-    testImplementation(libs.truth)
+    testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
 
