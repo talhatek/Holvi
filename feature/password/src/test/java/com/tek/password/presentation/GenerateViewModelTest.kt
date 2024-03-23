@@ -1,10 +1,12 @@
 package com.tek.password.presentation
 
 import app.cash.turbine.test
-import com.google.common.truth.Truth.assertThat
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.test.HolviTestDispatchers
 import com.tek.util.AppDispatchers
+import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.string.shouldBeEmpty
+import io.kotest.matchers.types.shouldBeTypeOf
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,7 +63,7 @@ class GenerateViewModelTest {
         runTest {
             val activeCount = generateViewModel.activeCount.first()
             generateViewModel.dropdownItems.test {
-                assertThat(awaitItem()).isEqualTo(getDropdownItems(activeCount))
+                awaitItem() shouldBeEqual getDropdownItems(activeCount)
             }
         }
     }
@@ -73,7 +75,8 @@ class GenerateViewModelTest {
                 awaitItem()
                 generateViewModel.updateActiveCount(false)
                 val activeCount = generateViewModel.activeCount.first()
-                assertThat(awaitItem()).isEqualTo(getDropdownItems(activeCount))
+                awaitItem() shouldBeEqual getDropdownItems(activeCount)
+
 
             }
         }
@@ -92,10 +95,10 @@ class GenerateViewModelTest {
         } returns "11aaAA!!"
         runTest {
             generateViewModel.currentPassword.test {
-                assertThat(awaitItem()).isEmpty()
+                awaitItem().shouldBeEmpty()
                 generateViewModel.currentSelectedLength.value = 4
                 generateViewModel.generatePassword()
-                assertThat(awaitItem()).isEqualTo("11aaAA!!")
+                awaitItem() shouldBeEqual "11aaAA!!"
             }
         }
     }
@@ -105,7 +108,8 @@ class GenerateViewModelTest {
         runTest {
             generateViewModel.uiEvent.test {
                 generateViewModel.generatePassword()
-                assertThat(awaitItem()).isInstanceOf(GenerateViewUiEvent.SnackbarEvent::class.java)
+                awaitItem().shouldBeTypeOf<GenerateViewUiEvent.SnackbarEvent>()
+
 
             }
         }
@@ -117,8 +121,7 @@ class GenerateViewModelTest {
             generateViewModel.uiEvent.test {
                 generateViewModel.currentSelectedLength.value = 4
                 generateViewModel.copyToClipBoard(mockk())
-                assertThat(awaitItem()).isInstanceOf(GenerateViewUiEvent.SnackbarEvent::class.java)
-
+                awaitItem().shouldBeTypeOf<GenerateViewUiEvent.SnackbarEvent>()
             }
 
         }
