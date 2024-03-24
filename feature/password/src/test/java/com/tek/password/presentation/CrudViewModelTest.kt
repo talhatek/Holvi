@@ -5,7 +5,6 @@ import app.cash.turbine.test
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
-import com.tek.database.domain.ObservePasswordUseCase
 import com.tek.database.domain.PagingPasswordUseCase
 import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.domain.mapper.PasswordDtoToPasswordMapper
@@ -13,11 +12,8 @@ import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.test.HolviTestDispatchers
 import com.tek.util.AppDispatchers
-import io.kotest.matchers.booleans.shouldBeFalse
-import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.ints.shouldBeExactly
-import io.kotest.matchers.ints.shouldBeZero
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -27,7 +23,6 @@ import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -42,7 +37,6 @@ class CrudViewModelTest {
     private lateinit var updatePasswordUseCase: UpdatePasswordUseCase
     private lateinit var deletePasswordUseCase: DeletePasswordUseCase
     private lateinit var getPasswordBySiteNameUseCase: GetPasswordBySiteNameUseCase
-    private lateinit var observePasswordUseCase: ObservePasswordUseCase
     private lateinit var passwordGeneratorUseCase: PasswordGeneratorUseCase
     private lateinit var appDispatchers: AppDispatchers
     private lateinit var crudViewModel: CrudViewModel
@@ -59,7 +53,6 @@ class CrudViewModelTest {
         getPasswordBySiteNameUseCase = mockk()
         updatePasswordUseCase = mockk()
         deletePasswordUseCase = mockk()
-        observePasswordUseCase = mockk()
         passwordGeneratorUseCase = mockk()
         crudViewModel = CrudViewModel(
             pagingPassword = pagingPasswordUseCase,
@@ -214,8 +207,6 @@ class CrudViewModelTest {
             }
         }
     }
-
-
     @Test
     fun `generates password successfully`() {
         every {
@@ -251,49 +242,13 @@ class CrudViewModelTest {
         }
     }
 
-    @Test
-    fun `observes passwords successfully, returns empty list`() {
-        runTest {
-            every { observePasswordUseCase.invoke("") } returns flowOf(emptyList())
-            crudViewModel.passwordsState.test {
-                awaitItem() shouldBe PasswordsState.Init
-                testDispatchers.scheduler.advanceTimeBy(251L)
-                awaitItem() shouldBe PasswordsState.Loading
-
-                val item = awaitItem() as PasswordsState.Success
-                item.isEmpty.shouldBeTrue()
-                item.isQueried.shouldBeFalse()
-                item.data.size.shouldBeZero()
-            }
-        }
-    }
 
     @Test
-    fun `observes passwords successfully, returns list`() {
+    fun `paging passwords throws exception`() {
         runTest {
-            every { observePasswordUseCase.invoke("") } returns flowOf(listOf(generatePassword()))
-            crudViewModel.passwordsState.test {
-                awaitItem() shouldBe PasswordsState.Init
-                testDispatchers.scheduler.advanceTimeBy(251L)
-                awaitItem() shouldBe PasswordsState.Loading
-                val item = awaitItem() as PasswordsState.Success
-                item.isEmpty.shouldBeFalse()
-                item.isQueried.shouldBeFalse()
-                item.data.size shouldBeExactly 1
-            }
-        }
-    }
-
-    @Test
-    fun `observes passwords throws exception`() {
-        runTest {
-            every { observePasswordUseCase.invoke("") }.throws(Exception())
-            crudViewModel.passwordsState.test {
-                awaitItem() shouldBe PasswordsState.Init
-                testDispatchers.scheduler.advanceTimeBy(251L)
-                awaitItem() shouldBe PasswordsState.Loading
-                val item = awaitItem() as PasswordsState.Error
-                item.message shouldBeEqual "Something occurred!"
+            every { pagingPasswordUseCase.invoke("") }.throws(Exception())
+            crudViewModel.paging.test {
+                awaitError()
             }
         }
     }
