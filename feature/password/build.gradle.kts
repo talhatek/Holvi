@@ -42,7 +42,8 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.material3.android)
 
-
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
     implementation(project(":core:database"))
     implementation(project(":core:ui"))
     implementation(project(":core:test"))

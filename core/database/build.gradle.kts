@@ -39,7 +39,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":core:util"))
-
+    implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)

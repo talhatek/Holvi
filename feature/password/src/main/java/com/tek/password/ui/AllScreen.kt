@@ -20,7 +20,6 @@ import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -34,7 +33,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -109,10 +107,10 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.tek.database.model.Password
 import com.tek.password.presentation.CrudViewModel
 import com.tek.password.presentation.DeletePasswordState
-import com.tek.password.presentation.PasswordsState
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.Screen
@@ -123,20 +121,20 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.androidx.compose.get
-import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
 
 @Composable
 fun AllScreen(navController: NavController) {
 
     val primaryColor = HolviTheme.colors.primaryBackground
-    val crudViewModel = get<CrudViewModel>(parameters = { parametersOf(true) })
+    val crudViewModel = get<CrudViewModel>()
     val passwordDeleteState = crudViewModel.passwordDeleteState.collectAsState(initial = null).value
     val scope = rememberCoroutineScope()
     val snackbarController = SnackbarController(scope = scope)
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels
+    val paging = crudViewModel.paging.collectAsLazyPagingItems()
 
     val lazyListState = rememberLazyListState()
 
@@ -220,106 +218,81 @@ fun AllScreen(navController: NavController) {
         },
         floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
-        when (val passwordState =
-            crudViewModel.passwordsState.collectAsState(initial = PasswordsState.Init).value) {
-            is PasswordsState.Loading -> {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(color = HolviTheme.colors.appForeground)
-                }
+        Column(
+            modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp, top = 16.dp, bottom = 16.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Search(viewModel = crudViewModel)
             }
 
-            is PasswordsState.Success -> {
-                Column(
-                    modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
-                ) {
-                    if (passwordState.isEmpty and passwordState.isQueried or passwordState.isEmpty.not()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(end = 16.dp, top = 16.dp, bottom = 16.dp),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            Search(viewModel = crudViewModel)
-                        }
+            if (paging.itemCount == 0) {
+                if (paging.loadState.isIdle.not()) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(color = HolviTheme.colors.appForeground)
                     }
-
-                    if (passwordState.isEmpty) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize(),
-                        ) {
-                            Text(
-                                text = "You don't have any saved password.",
-                                color = HolviTheme.colors.appForeground,
-                                style = HolviTheme.typography.body
-                            )
-                        }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .padding(end = 8.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(
-                                16.dp,
-                                Alignment.Top
-                            ),
-                            contentPadding = PaddingValues(top = 16.dp),
-                            state = lazyListState,
-                            content = {
-                                items(
-                                    passwordState.data,
-                                    key = { password -> password.id }
-                                ) { item ->
-                                    PasswordItem(
-                                        modifier = Modifier,
-                                        fabPosition = fabPosition,
-                                        threshold = .3f,
-                                        password = item,
-                                        onCopied = {
-                                            coroutineScope.launch {
-                                                snackbarHostState.showSnackbar(
-                                                    "Password copied to clipboard!"
-                                                )
-                                            }
-                                        },
-                                        onDelete = {
-                                            crudViewModel.delete(item.id)
-                                        },
-                                        onUpdate = {
-                                            navController.navigateWithArgs(
-                                                route = Screen.UpdateScreen.route,
-                                                args = Bundle().apply {
-                                                    putString("password", Json.encodeToString(item))
-                                                })
-                                        },
-                                        onUpdateFabColor = { color ->
-                                            if (lazyListState.layoutInfo.visibleItemsInfo.any { visibleItem -> visibleItem.key == item.id }) {
-                                                fabColor = color
-                                            }
-                                        }
-                                    )
-                                }
-                            },
+                } else {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        Text(
+                            text = "You don't have any saved password.",
+                            color = HolviTheme.colors.appForeground,
+                            style = HolviTheme.typography.body
                         )
                     }
                 }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(end = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(
+                        16.dp,
+                        Alignment.Top
+                    ),
+                    content = {
+                        items(count = paging.itemCount) { index ->
+                            paging[index]?.let { item ->
+                                PasswordItem(
+                                    modifier = Modifier,
+                                    fabPosition = fabPosition,
+                                    threshold = .3f,
+                                    password = item,
+                                    onCopied = {
+                                        coroutineScope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                "Password copied to clipboard!"
+                                            )
+                                        }
+                                    },
+                                    onDelete = {
+                                        crudViewModel.delete(item.id)
+                                    },
+                                    onUpdate = {
+                                        navController.navigateWithArgs(
+                                            route = Screen.UpdateScreen.route,
+                                            args = Bundle().apply {
+                                                putString("password", Json.encodeToString(item))
+                                            })
+                                    },
+                                    onUpdateFabColor = { color ->
+                                        if (lazyListState.layoutInfo.visibleItemsInfo.any { visibleItem -> visibleItem.key == item.id }) {
+                                            fabColor = color
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    })
             }
-
-            is PasswordsState.Error -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text(
-                        text = passwordState.message,
-                        style = HolviTheme.typography.body
-                    )
-                }
-            }
-
-            else -> Unit
         }
     }
 }

@@ -6,6 +6,7 @@ import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
 import com.tek.database.domain.ObservePasswordUseCase
+import com.tek.database.domain.PagingPasswordUseCase
 import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.domain.mapper.PasswordDtoToPasswordMapper
 import com.tek.database.model.Password
@@ -36,6 +37,7 @@ import org.junit.Test
 class CrudViewModelTest {
 
     private lateinit var passwordDtoToPasswordMapper: PasswordDtoToPasswordMapper
+    private lateinit var pagingPasswordUseCase: PagingPasswordUseCase
     private lateinit var addPasswordUseCase: AddPasswordUseCase
     private lateinit var updatePasswordUseCase: UpdatePasswordUseCase
     private lateinit var deletePasswordUseCase: DeletePasswordUseCase
@@ -53,20 +55,20 @@ class CrudViewModelTest {
         appDispatchers = HolviTestDispatchers(testDispatchers)
         passwordDtoToPasswordMapper = mockk()
         addPasswordUseCase = mockk()
+        pagingPasswordUseCase = mockk()
         getPasswordBySiteNameUseCase = mockk()
         updatePasswordUseCase = mockk()
         deletePasswordUseCase = mockk()
         observePasswordUseCase = mockk()
         passwordGeneratorUseCase = mockk()
         crudViewModel = CrudViewModel(
+            pagingPassword = pagingPasswordUseCase,
             getPasswordBySiteName = getPasswordBySiteNameUseCase,
             addPassword = addPasswordUseCase,
             updatePassword = updatePasswordUseCase,
             passwordGenerator = passwordGeneratorUseCase,
             deletePassword = deletePasswordUseCase,
-            observePassword = observePasswordUseCase,
             appDispatchers = appDispatchers,
-            observeOnStart = true
         )
     }
 

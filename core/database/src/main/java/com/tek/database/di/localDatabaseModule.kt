@@ -1,7 +1,6 @@
 package com.tek.database.di
 
 import android.app.Application
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -13,6 +12,7 @@ import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetAllPasswordsUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
 import com.tek.database.domain.ObservePasswordUseCase
+import com.tek.database.domain.PagingPasswordUseCase
 import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.domain.mapper.PasswordDtoToPasswordMapper
 import com.tek.util.Constant
@@ -37,7 +37,6 @@ val localDatabaseModule = module {
     }
 
     single<SupportSQLiteOpenHelper.Factory> {
-        Log.e("db issue", "fetch " + getSq(androidApplication()))
         return@single SupportFactory(SQLiteDatabase.getBytes(getSq(androidApplication()).toCharArray()))
     }
 
@@ -45,6 +44,8 @@ val localDatabaseModule = module {
         getDataStore(androidApplication())
     }
 
+
+    factoryOf(::PagingPasswordUseCase)
     factoryOf(::AddPasswordUseCase)
     factoryOf(::UpdatePasswordUseCase)
     factoryOf(::DeletePasswordUseCase)
