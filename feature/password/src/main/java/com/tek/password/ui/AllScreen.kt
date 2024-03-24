@@ -108,6 +108,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.tek.database.model.Password
 import com.tek.password.presentation.CrudViewModel
 import com.tek.password.presentation.DeletePasswordState
@@ -158,6 +159,7 @@ fun AllScreen(navController: NavController) {
         passwordDeleteState?.let {
             when (it) {
                 is DeletePasswordState.Success -> {
+                    paging.refresh()
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Successfully deleted!",
@@ -171,10 +173,13 @@ fun AllScreen(navController: NavController) {
                     }
                 }
 
-                is DeletePasswordState.Undo -> snackbarController.showSnackbar(
-                    snackbarHostState = snackbarHostState,
-                    message = "Password recovered!"
-                )
+                is DeletePasswordState.Undo -> {
+                    paging.refresh()
+                    snackbarController.showSnackbar(
+                        snackbarHostState = snackbarHostState,
+                        message = "Password recovered!"
+                    )
+                }
 
                 else -> snackbarController.showSnackbar(
                     snackbarHostState = snackbarHostState,
@@ -259,7 +264,10 @@ fun AllScreen(navController: NavController) {
                         Alignment.Top
                     ),
                     content = {
-                        items(count = paging.itemCount) { index ->
+                        items(
+                            count = paging.itemCount,
+                            key = paging.itemKey { it.id }
+                        ) { index ->
                             paging[index]?.let { item ->
                                 PasswordItem(
                                     modifier = Modifier,

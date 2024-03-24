@@ -3,7 +3,6 @@ package com.tek.password.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import androidx.paging.map
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -62,17 +60,8 @@ class CrudViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging = queryFlow.flatMapLatest {
-        pagingPassword.invoke(it).mapLatest { pagingData ->
-            pagingData.map { dto ->
-                Password(
-                    id = dto.id,
-                    siteName = dto.siteName,
-                    userName = dto.userName,
-                    password = dto.password
-                )
-            }
-        }.cachedIn(viewModelScope).flowOn(appDispatchers.IO)
-    }
+        pagingPassword.invoke(it)
+    }.cachedIn(viewModelScope).flowOn(appDispatchers.IO)
 
     fun updateQuery(query: String) {
         queryInput.value = query
@@ -116,13 +105,13 @@ class CrudViewModel(
         val exceptionHandler = CoroutineExceptionHandler { _, ex ->
             viewModelScope.launch(appDispatchers.Main) {
                 _passwordDeleteState.emit(DeletePasswordState.Failure)
-
             }
         }
         viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
             val item = getPasswordBySiteName.invoke(id)
             val effectedRowCount = deletePassword.invoke(item)
             if (effectedRowCount > 0) {
+
                 deletedItem.value = item
                 viewModelScope.launch(appDispatchers.IO) {
                     delay(4.seconds)
