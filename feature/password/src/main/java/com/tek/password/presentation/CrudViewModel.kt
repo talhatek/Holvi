@@ -11,7 +11,6 @@ import com.tek.database.domain.UpdatePasswordUseCase
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.util.AppDispatchers
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -54,14 +53,10 @@ class CrudViewModel(
 
     val queryFlow = queryInput.debounce(250).distinctUntilChanged()
 
-
-    private val _passwordsState = MutableStateFlow<PasswordsState>(PasswordsState.Init)
-    val passwordsState get() = _passwordsState.asStateFlow()
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val paging = queryFlow.flatMapLatest {
         pagingPassword.invoke(it)
-    }.cachedIn(viewModelScope).flowOn(appDispatchers.IO)
+    }.flowOn(appDispatchers.IO).cachedIn(viewModelScope)
 
     fun updateQuery(query: String) {
         queryInput.value = query
@@ -156,18 +151,6 @@ class CrudViewModel(
         return data
     }
 
-}
-
-sealed class PasswordsState {
-    data object Loading : PasswordsState()
-    data object Init : PasswordsState()
-    class Success(
-        val isEmpty: Boolean,
-        val data: PersistentList<Password>,
-        val isQueried: Boolean
-    ) : PasswordsState()
-
-    class Error(val message: String) : PasswordsState()
 }
 
 sealed interface DeletePasswordState {

@@ -11,6 +11,10 @@ android {
         minSdk = 24
 
     }
+    //needed for androidx.pager isLoggable mock issue
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

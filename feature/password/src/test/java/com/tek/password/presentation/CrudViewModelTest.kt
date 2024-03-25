@@ -1,6 +1,7 @@
 package com.tek.password.presentation
 
-
+import androidx.paging.AsyncPagingDataDiffer
+import androidx.paging.PagingData
 import app.cash.turbine.test
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
@@ -11,9 +12,12 @@ import com.tek.database.domain.mapper.PasswordDtoToPasswordMapper
 import com.tek.database.model.Password
 import com.tek.password.domain.PasswordGeneratorUseCase
 import com.tek.test.HolviTestDispatchers
+import com.tek.test.TestDiffCallback
+import com.tek.test.TestListCallback
 import com.tek.util.AppDispatchers
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.ints.shouldBeZero
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -22,11 +26,17 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CrudViewModelTest {
@@ -46,6 +56,7 @@ class CrudViewModelTest {
 
     @Before
     fun setup() {
+        Dispatchers.setMain(testDispatchers)
         appDispatchers = HolviTestDispatchers(testDispatchers)
         passwordDtoToPasswordMapper = mockk()
         addPasswordUseCase = mockk()
@@ -63,8 +74,13 @@ class CrudViewModelTest {
             deletePassword = deletePasswordUseCase,
             appDispatchers = appDispatchers,
         )
+
     }
 
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     private fun generatePassword() = Password(
         id = 0,
@@ -207,6 +223,7 @@ class CrudViewModelTest {
             }
         }
     }
+
     @Test
     fun `generates password successfully`() {
         every {
@@ -242,14 +259,40 @@ class CrudViewModelTest {
         }
     }
 
-
     @Test
-    fun `paging passwords throws exception`() {
+    fun `paging passwords success`() {
         runTest {
-            every { pagingPasswordUseCase.invoke("") }.throws(Exception())
+            val response = PagingData.from(listOf(generatePassword()))
+            val test = AsyncPagingDataDiffer(
+                diffCallback = TestDiffCallback<Password>(),
+                updateCallback = TestListCallback(),
+                workerDispatcher = testDispatchers
+            )
+            every { pagingPasswordUseCase.invoke("") } returns flowOf(response)
             crudViewModel.paging.test {
-                awaitError()
+                val item = awaitItem()
+                test.submitData(item)
+                test.itemCount shouldBe 1
             }
         }
     }
+
+    @Test
+    fun `paging passwords empty`() {
+        runTest {
+            val response = PagingData.empty<Password>()
+            val test = AsyncPagingDataDiffer(
+                diffCallback = TestDiffCallback<Password>(),
+                updateCallback = TestListCallback(),
+                workerDispatcher = testDispatchers
+            )
+            every { pagingPasswordUseCase.invoke("") } returns flowOf(response)
+            crudViewModel.paging.test {
+                val item = awaitItem()
+                test.submitData(item)
+                test.itemCount.shouldBeZero()
+            }
+        }
+    }
+
 }
