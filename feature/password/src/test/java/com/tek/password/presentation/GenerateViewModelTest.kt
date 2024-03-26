@@ -16,19 +16,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
-
-fun main() {
-    val sequence = generateSequence(4) { prev ->
-        if (prev.plus(4) < 50) {
-            prev.plus(4)
-
-        } else {
-            null
-        }
-    }
-    println(sequence.toList().joinToString { "-$it-" })
-}
-
 class GenerateViewModelTest {
 
     private lateinit var passwordGeneratorUseCase: PasswordGeneratorUseCase

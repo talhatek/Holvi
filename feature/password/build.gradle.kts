@@ -53,6 +53,8 @@ dependencies {
     implementation(project(":core:test"))
     implementation(project(":core:util"))
 
+    implementation(libs.firebase.firestore.ktx)
+
     testImplementation(libs.mockk)
     testImplementation(libs.koin.test)
     testImplementation(libs.kotest.assertions.core)

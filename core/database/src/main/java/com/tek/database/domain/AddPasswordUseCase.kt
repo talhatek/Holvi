@@ -13,8 +13,4 @@ class AddPasswordUseCase(private val passwordDao: PasswordDao) {
             }
         )
     }
-
-    suspend operator fun invoke(item: PasswordDto) {
-        passwordDao.addPassword(item)
-    }
 }

@@ -1,11 +1,7 @@
 package com.tek.password.domain
 
-import android.util.Base64
 import com.tek.database.model.Password
 import java.security.SecureRandom
-import javax.crypto.Cipher
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.SecretKeySpec
 
 class PasswordGeneratorUseCase {
 
@@ -122,60 +118,12 @@ class PasswordGeneratorUseCase {
 
     companion object {
 
-        fun String.encrypt(password: String): String {
-            val secretKeySpec = SecretKeySpec(password.repeat(4).toByteArray(), "AES")
-            val iv = ByteArray(16)
-            val charArray = password.toCharArray()
-            for (i in charArray.indices) {
-                iv[i] = charArray[i].code.toByte()
-            }
-            val ivParameterSpec = IvParameterSpec(iv)
-
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec)
-
-            val encryptedValue = cipher.doFinal(this.toByteArray())
-            return Base64.encodeToString(encryptedValue, Base64.DEFAULT)
-        }
-
-        private fun String.decrypt(password: String): String {
-            val secretKeySpec = SecretKeySpec(password.repeat(4).toByteArray(), "AES")
-            val iv = ByteArray(16)
-            val charArray = password.toCharArray()
-            for (i in charArray.indices) {
-                iv[i] = charArray[i].code.toByte()
-            }
-            val ivParameterSpec = IvParameterSpec(iv)
-
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec)
-
-            val decryptedByteValue = cipher.doFinal(Base64.decode(this, Base64.DEFAULT))
-            return String(decryptedByteValue)
-        }
-
-        fun Map<String, Any>.toPassword(key: String): Password {
+        fun Map<String, Any>.toPassword(): Password {
             return Password(
                 id = (this.getValue("id") as Long).toInt(),
                 password = this.getValue("password") as String,
                 userName = this.getValue("userName") as String,
                 siteName = this.getValue("siteName") as String,
-            ).decrypt(key)
-        }
-
-        fun Password.encrypt(key: String): Password {
-            return this.copy(
-                siteName = this.siteName.encrypt(key),
-                password = this.password.encrypt(key),
-                userName = this.userName.encrypt(key)
-            )
-        }
-
-        private fun Password.decrypt(key: String): Password {
-            return this.copy(
-                siteName = this.siteName.decrypt(key),
-                password = this.password.decrypt(key),
-                userName = this.userName.decrypt(key)
             )
         }
     }

@@ -25,7 +25,7 @@ interface PasswordDao {
     fun pagingSourcePasswords(query: String): PagingSource<Int, PasswordDto>
 
     @Query("SELECT * FROM passwords")
-    fun getAllPasswords(): List<PasswordDto>
+    suspend fun getAllPasswords(): List<PasswordDto>
 
     @Query("SELECT * FROM passwords where passwords.id = :id")
     suspend fun getPasswordBySiteName(id: Int): PasswordDto

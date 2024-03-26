@@ -5,7 +5,9 @@ import com.tek.password.presentation.CrudViewModel
 import com.tek.password.presentation.GenerateViewModel
 import com.tek.password.presentation.PortViewModel
 import com.tek.util.AppDispatchers
+import com.tek.util.CipherProvider
 import com.tek.util.HolviAppDispatchers
+import com.tek.util.HolviCipherProvider
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.Koin
 import org.koin.core.module.dsl.factoryOf
@@ -20,6 +22,7 @@ val passwordModule = module {
     viewModelOf(::PortViewModel)
     factoryOf(::PasswordGeneratorUseCase)
     factoryOf<AppDispatchers> { HolviAppDispatchers() }
+    factoryOf<CipherProvider> { HolviCipherProvider() }
 
 }
 

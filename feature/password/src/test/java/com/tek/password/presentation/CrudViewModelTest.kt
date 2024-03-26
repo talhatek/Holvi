@@ -56,7 +56,9 @@ class CrudViewModelTest {
 
     @Before
     fun setup() {
+        //we need for .flowOn operations... appDispatchers not working there
         Dispatchers.setMain(testDispatchers)
+
         appDispatchers = HolviTestDispatchers(testDispatchers)
         passwordDtoToPasswordMapper = mockk()
         addPasswordUseCase = mockk()
@@ -82,8 +84,8 @@ class CrudViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun generatePassword() = Password(
-        id = 0,
+    private fun generatePassword(id: Int = 0) = Password(
+        id = id,
         siteName = "Site Name",
         password = "Password",
         userName = "User Name"

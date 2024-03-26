@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.tek.database.HolviDb
+import com.tek.database.domain.AddEncryptedPasswordUseCase
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetAllPasswordsUseCase
@@ -47,6 +48,7 @@ val localDatabaseModule = module {
 
     factoryOf(::PagingPasswordUseCase)
     factoryOf(::AddPasswordUseCase)
+    factoryOf(::AddEncryptedPasswordUseCase)
     factoryOf(::UpdatePasswordUseCase)
     factoryOf(::DeletePasswordUseCase)
     factoryOf(::GetAllPasswordsUseCase)

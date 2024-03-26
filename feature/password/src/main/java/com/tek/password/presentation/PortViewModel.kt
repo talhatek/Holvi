@@ -2,24 +2,23 @@ package com.tek.password.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tek.database.domain.AddPasswordUseCase
+import com.tek.database.domain.AddEncryptedPasswordUseCase
 import com.tek.database.domain.ExportPasswordUseCase
 import com.tek.database.domain.ExportResult
 import com.tek.database.domain.GetAllPasswordsUseCase
 import com.tek.database.domain.ImportPasswordUseCase
-import com.tek.password.domain.PasswordGeneratorUseCase.Companion.encrypt
 import com.tek.password.domain.PasswordGeneratorUseCase.Companion.toPassword
-import kotlinx.coroutines.Dispatchers
+import com.tek.util.AppDispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class PortViewModel(
     private val getAllPasswords: GetAllPasswordsUseCase,
-    private val addPassword: AddPasswordUseCase,
+    private val addEncryptedPassword: AddEncryptedPasswordUseCase,
     private val importPassword: ImportPasswordUseCase,
     private val exportPassword: ExportPasswordUseCase,
+    private val appDispatchers: AppDispatchers
 ) : ViewModel() {
     private val _portResult = MutableSharedFlow<PortResult>()
     val portResult
@@ -38,29 +37,31 @@ class PortViewModel(
     }
 
     private fun import() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(appDispatchers.IO) {
             val data = getAllPasswords()
             if (data.isEmpty()) {
                 _portResult.emit(PortResult.Error("You do not have any password to import!"))
                 return@launch
             }
-            val pathId = UUID.randomUUID().toString().take(4)
+            val pathId = generateRandomPathId()
             data.forEachIndexed addEach@{ index, password ->
-                importPassword.invoke("port$pathId", index.toString(), password.encrypt(pathId))
+                importPassword.invoke(pathId, index.toString(), password)
             }
             _portResult.emit(PortResult.ImportSuccess(pathId))
         }
     }
 
+
     private fun export(pathId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(appDispatchers.IO) {
             with(exportPassword.invoke("port$pathId")) {
                 when (this) {
                     is ExportResult.Error ->
                         _portResult.emit(PortResult.Error("Such key does not exist!"))
 
                     is ExportResult.Success -> data.forEach {
-                        it.toPassword(pathId).let { password -> addPassword.invoke(password) }
+                        it.toPassword()
+                            .let { password -> addEncryptedPassword.invoke(pathId, password) }
                     }.also {
                         PortResult.ExportSuccess("Export Completed!")
                     }
@@ -68,6 +69,8 @@ class PortViewModel(
             }
         }
     }
+
+    private fun generateRandomPathId() = "1111"
 }
 
 sealed class PortEvent {
