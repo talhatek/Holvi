@@ -54,7 +54,11 @@ class PortViewModel(
             }
             val path = pathId ?: generateRandomPathId()
             data.forEachIndexed addEach@{ index, password ->
-                val res = importPassword.invoke(path, index.toString(), password)
+                val res = importPassword.invoke(
+                    pathId = path,
+                    index = index.toString(),
+                    data = password
+                )
                 if (pathId == null) {
                     res.await()
                 }
@@ -73,7 +77,12 @@ class PortViewModel(
 
                     is ExportResult.Success -> data.forEach {
                         it.toPassword()
-                            .let { password -> addEncryptedPassword.invoke(pathId, password) }
+                            .let { password ->
+                                addEncryptedPassword.invoke(
+                                    pathId = pathId,
+                                    item = password
+                                )
+                            }
                     }.also {
                         _portResult.emit(PortResult.ExportSuccess("Export Completed!"))
                     }

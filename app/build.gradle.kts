@@ -27,6 +27,7 @@ android {
 
 
     }
+
     signingConfigs {
         val properties = Properties().apply {
             load(rootProject.file("local.properties").reader())

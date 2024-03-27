@@ -13,7 +13,6 @@ class ExportPasswordUseCase(
             } else {
                 return ExportResult.Success(querySnapshot.documents.mapNotNull { it.data })
             }
-
         }
     }
 }

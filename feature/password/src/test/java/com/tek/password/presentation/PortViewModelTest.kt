@@ -69,9 +69,11 @@ class PortViewModelTest {
         runTest {
             coEvery { getAllPasswordsUseCase.invoke() } returns listOf(
                 generatePassword(0),
+                generatePassword(1),
             )
             every {
                 importPasswordUseCase.invoke("1111", "0", generatePassword(0))
+                importPasswordUseCase.invoke("1111", "1", generatePassword(1))
             } returns mockTask()
             portViewModel.portResult.test {
                 portViewModel.onEvent(PortEvent.Import(pathId = "1111"))
