@@ -1,6 +1,7 @@
 package com.tek.password.presentation
 
 import app.cash.turbine.test
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.tek.database.domain.AddEncryptedPasswordUseCase
 import com.tek.database.domain.ExportPasswordUseCase
@@ -12,6 +13,7 @@ import com.tek.test.HolviTestDispatchers
 import com.tek.util.AppDispatchers
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,7 +38,7 @@ class PortViewModelTest {
 
     @Before
     fun setup() {
-        fireStore = mockk<FirebaseFirestore>(relaxed = true)
+        fireStore = mockk<FirebaseFirestore>(relaxed = false)
         appDispatchers = HolviTestDispatchers(testDispatchers)
         cipherProvider = HolviTestCipherProvider()
         addPasswordUseCase = AddEncryptedPasswordUseCase(mockk(), cipherProvider)
@@ -65,8 +67,11 @@ class PortViewModelTest {
             coEvery { getAllPasswordsUseCase.invoke() } returns listOf(
                 generatePassword(0),
             )
+            every {
+                importPasswordUseCase.invoke("1111", "0", generatePassword(0))
+            } returns mockTask()
             portViewModel.portResult.test {
-                portViewModel.onEvent(PortEvent.Import(shouldAwait = false))
+                portViewModel.onEvent(PortEvent.Import(pathId = "1111"))
                 awaitItem().shouldBeInstanceOf<PortResult.ImportSuccess>()
 
             }
@@ -76,12 +81,21 @@ class PortViewModelTest {
     @Test
     fun `import passwords failure`() {
         runTest {
-            coEvery { getAllPasswordsUseCase.invoke() }.throws(Exception())
-
+            coEvery { getAllPasswordsUseCase.invoke() } returns listOf(
+                generatePassword(0),
+            )
+            every {
+                importPasswordUseCase.invoke("1111", "0", generatePassword(0))
+            }.throws(Exception())
             portViewModel.portResult.test {
-                portViewModel.onEvent(PortEvent.Import(shouldAwait = false))
+                portViewModel.onEvent(PortEvent.Import(pathId = "1111"))
                 awaitItem().shouldBeInstanceOf<PortResult.Error>()
+
             }
         }
     }
+}
+
+private fun mockTask(): Task<Void> {
+    return mockk<Task<Void>>(relaxed = true)
 }

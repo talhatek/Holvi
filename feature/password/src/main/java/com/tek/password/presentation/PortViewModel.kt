@@ -30,7 +30,7 @@ class PortViewModel(
     fun onEvent(event: PortEvent) {
         when (event) {
             is PortEvent.Import -> {
-                import(event.shouldAwait)
+                import(event.pathId)
             }
 
             is PortEvent.Export -> {
@@ -39,8 +39,8 @@ class PortViewModel(
         }
     }
 
-    //shouldAwait needed for testing. We cant mock .await()
-    private fun import(shouldAwait: Boolean = true) {
+    //pathId needed for testing. We cant mock .await() nor any() collectionPath
+    private fun import(pathId: String?) {
         val exceptionHandler = CoroutineExceptionHandler { _, ex ->
             viewModelScope.launch(appDispatchers.Main) {
                 _portResult.emit(PortResult.Error("${ex.message}"))
@@ -52,10 +52,10 @@ class PortViewModel(
                 _portResult.emit(PortResult.Error("You do not have any password to import!"))
                 return@launch
             }
-            val path = generateRandomPathId()
+            val path = pathId ?: generateRandomPathId()
             data.forEachIndexed addEach@{ index, password ->
                 val res = importPassword.invoke(path, index.toString(), password)
-                if (shouldAwait) {
+                if (pathId == null) {
                     res.await()
                 }
             }
@@ -87,7 +87,7 @@ class PortViewModel(
 
 sealed class PortEvent {
 
-    data class Import(val shouldAwait: Boolean) : PortEvent()
+    data class Import(val pathId: String?) : PortEvent()
 
     data class Export(val pathId: String) : PortEvent()
 
