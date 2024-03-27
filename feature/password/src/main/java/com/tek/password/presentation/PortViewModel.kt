@@ -75,7 +75,7 @@ class PortViewModel(
                         it.toPassword()
                             .let { password -> addEncryptedPassword.invoke(pathId, password) }
                     }.also {
-                        PortResult.ExportSuccess("Export Completed!")
+                        _portResult.emit(PortResult.ExportSuccess("Export Completed!"))
                     }
                 }
             }
