@@ -9,9 +9,12 @@ import com.tek.database.domain.GetAllPasswordsUseCase
 import com.tek.database.domain.ImportPasswordUseCase
 import com.tek.password.domain.PasswordGeneratorUseCase.Companion.toPassword
 import com.tek.util.AppDispatchers
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class PortViewModel(
     private val getAllPasswords: GetAllPasswordsUseCase,
@@ -27,7 +30,7 @@ class PortViewModel(
     fun onEvent(event: PortEvent) {
         when (event) {
             is PortEvent.Import -> {
-                import()
+                import(event.shouldAwait)
             }
 
             is PortEvent.Export -> {
@@ -36,18 +39,27 @@ class PortViewModel(
         }
     }
 
-    private fun import() {
-        viewModelScope.launch(appDispatchers.IO) {
+    //shouldAwait needed for testing. We cant mock .await()
+    private fun import(shouldAwait: Boolean = true) {
+        val exceptionHandler = CoroutineExceptionHandler { _, ex ->
+            viewModelScope.launch(appDispatchers.Main) {
+                _portResult.emit(PortResult.Error("${ex.message}"))
+            }
+        }
+        viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
             val data = getAllPasswords()
             if (data.isEmpty()) {
                 _portResult.emit(PortResult.Error("You do not have any password to import!"))
                 return@launch
             }
-            val pathId = generateRandomPathId()
+            val path = generateRandomPathId()
             data.forEachIndexed addEach@{ index, password ->
-                importPassword.invoke(pathId, index.toString(), password)
+                val res = importPassword.invoke(path, index.toString(), password)
+                if (shouldAwait) {
+                    res.await()
+                }
             }
-            _portResult.emit(PortResult.ImportSuccess(pathId))
+            _portResult.emit(PortResult.ImportSuccess(path))
         }
     }
 
@@ -70,14 +82,14 @@ class PortViewModel(
         }
     }
 
-    private fun generateRandomPathId() = "1111"
+    private fun generateRandomPathId() = UUID.randomUUID().toString().take(n = 4)
 }
 
 sealed class PortEvent {
 
-    data object Import : PortEvent()
+    data class Import(val shouldAwait: Boolean) : PortEvent()
 
-    class Export(val pathId: String) : PortEvent()
+    data class Export(val pathId: String) : PortEvent()
 
 }
 

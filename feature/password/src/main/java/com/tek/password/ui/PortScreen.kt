@@ -104,7 +104,7 @@ fun PortScreen(navController: NavController) {
         ) {
 
             Button(
-                onClick = { viewModel.onEvent(PortEvent.Import) },
+                onClick = { viewModel.onEvent(PortEvent.Import(shouldAwait = true)) },
                 colors = holviButtonColors()
             ) {
                 Text(

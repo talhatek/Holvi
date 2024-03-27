@@ -1,6 +1,7 @@
 package com.tek.password.presentation
 
 import app.cash.turbine.test
+import com.google.firebase.firestore.FirebaseFirestore
 import com.tek.database.domain.AddEncryptedPasswordUseCase
 import com.tek.database.domain.ExportPasswordUseCase
 import com.tek.database.domain.GetAllPasswordsUseCase
@@ -9,10 +10,9 @@ import com.tek.database.model.Password
 import com.tek.test.HolviTestCipherProvider
 import com.tek.test.HolviTestDispatchers
 import com.tek.util.AppDispatchers
+import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.coEvery
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -26,9 +26,9 @@ class PortViewModelTest {
     private lateinit var addPasswordUseCase: AddEncryptedPasswordUseCase
     private lateinit var importPasswordUseCase: ImportPasswordUseCase
     private lateinit var exportPasswordUseCase: ExportPasswordUseCase
-
     private lateinit var appDispatchers: AppDispatchers
     private lateinit var cipherProvider: HolviTestCipherProvider
+    private lateinit var fireStore: FirebaseFirestore
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -36,10 +36,11 @@ class PortViewModelTest {
 
     @Before
     fun setup() {
+        fireStore = mockk<FirebaseFirestore>(relaxed = true)
         appDispatchers = HolviTestDispatchers(testDispatchers)
         cipherProvider = HolviTestCipherProvider()
         addPasswordUseCase = AddEncryptedPasswordUseCase(mockk(), cipherProvider)
-        importPasswordUseCase = ImportPasswordUseCase(mockk(), cipherProvider)
+        importPasswordUseCase = ImportPasswordUseCase(fireStore, cipherProvider)
         exportPasswordUseCase = mockk()
         getAllPasswordsUseCase = mockk()
         portViewModel = PortViewModel(
@@ -64,10 +65,22 @@ class PortViewModelTest {
             coEvery { getAllPasswordsUseCase.invoke() } returns listOf(
                 generatePassword(0),
             )
-            coEvery { importPasswordUseCase("1111", "0", generatePassword(0)) } just runs
             portViewModel.portResult.test {
-                portViewModel.onEvent(PortEvent.Import)
+                portViewModel.onEvent(PortEvent.Import(shouldAwait = false))
+                awaitItem().shouldBeInstanceOf<PortResult.ImportSuccess>()
 
+            }
+        }
+    }
+
+    @Test
+    fun `import passwords failure`() {
+        runTest {
+            coEvery { getAllPasswordsUseCase.invoke() }.throws(Exception())
+
+            portViewModel.portResult.test {
+                portViewModel.onEvent(PortEvent.Import(shouldAwait = false))
+                awaitItem().shouldBeInstanceOf<PortResult.Error>()
             }
         }
     }
