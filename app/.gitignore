@@ -250,3 +250,4 @@ fabric.properties
 # End of https://www.toptal.com/developers/gitignore/api/android,androidstudio,java,kotlin
 /release/output-metadata.json
 /google-services.json
+/lint-baseline.xml

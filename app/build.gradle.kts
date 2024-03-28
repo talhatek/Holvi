@@ -24,8 +24,13 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
 
-
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+    buildFeatures {
+        buildConfig = true
     }
 
     signingConfigs {
@@ -35,7 +40,7 @@ android {
         create("release") {
             storeFile = file(properties["key.dir"].toString())
             storePassword = properties["key.storePassword"].toString()
-            keyAlias = properties["key.keyAlias"].toString()
+            keyAlias = properties["key.alies"].toString()
             keyPassword = properties["key.keyPassword"].toString()
         }
     }

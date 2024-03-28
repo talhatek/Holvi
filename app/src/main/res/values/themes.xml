@@ -1,15 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Holvi" parent="Theme.Holvi.NoActionBar">
-
+    <style name="Holvi">
         <item name="android:forceDarkAllowed" tools:ignore="NewApi">false</item>
-
-    </style>
-
-    <style name="Theme.Holvi.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
+
     </style>
 
 

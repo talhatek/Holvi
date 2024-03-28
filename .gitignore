@@ -253,3 +253,4 @@ fabric.properties
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/migrations.xml
 /.idea/deploymentTargetDropDown.xml
+/gradle/wrapper/gradle-8.6-wrapper.jar.sha256

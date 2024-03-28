@@ -13,13 +13,13 @@
         android:icon="@mipmap/ic_holvi_app"
         android:supportsRtl="true"
         android:roundIcon="@mipmap/ic_holvi_app_round"
-        android:theme="@style/Theme.Holvi"
+        android:theme="@style/Holvi"
         tools:targetApi="s">
 
         <activity
             android:name=".ui.activity.AuthenticationActivity"
             android:exported="true"
-            android:theme="@style/Theme.Holvi.NoActionBar">
+            android:theme="@style/Holvi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,7 +29,7 @@
         <activity
             android:name=".ui.activity.MenuActivity"
             android:exported="true"
-            android:theme="@style/Theme.Holvi.NoActionBar" />
+            android:theme="@style/Holvi" />
 
     </application>
 

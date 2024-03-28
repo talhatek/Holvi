@@ -11,6 +11,9 @@ android {
     namespace = "com.tek.network"
     compileSdk = 34
 
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         minSdk = 24
 
