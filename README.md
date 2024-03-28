@@ -11,6 +11,7 @@
 - Lifecycle
 - MockK
 - Kotest
+- Diktat
 
 ### Screens
 
