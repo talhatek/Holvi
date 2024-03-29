@@ -27,7 +27,7 @@ fun MenuScreen(navController: NavController, onExitClick: () -> Unit) {
                     .padding(top = it.calculateTopPadding()),
                 itemList = listOf(
                     Screen.CardScreen,
-                    Screen.PasswordScreen,
+                    Screen.PasswordMenuScreen,
                 )
             ) { menuType ->
                 navController.navigate(menuType)

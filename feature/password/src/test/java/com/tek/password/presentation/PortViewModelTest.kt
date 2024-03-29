@@ -134,7 +134,6 @@ class PortViewModelTest {
             portViewModel.portResult.test {
                 portViewModel.onEvent(PortEvent.Export(pathId = "1111"))
                 awaitItem().shouldBeInstanceOf<PortResult.Error>()
-
             }
         }
     }

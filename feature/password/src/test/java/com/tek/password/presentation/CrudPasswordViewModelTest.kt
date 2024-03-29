@@ -39,7 +39,7 @@ import org.junit.Test
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class CrudViewModelTest {
+class CrudPasswordViewModelTest {
 
     private lateinit var passwordDtoToPasswordMapper: PasswordDtoToPasswordMapper
     private lateinit var pagingPasswordUseCase: PagingPasswordUseCase
@@ -49,7 +49,7 @@ class CrudViewModelTest {
     private lateinit var getPasswordBySiteNameUseCase: GetPasswordBySiteNameUseCase
     private lateinit var passwordGeneratorUseCase: PasswordGeneratorUseCase
     private lateinit var appDispatchers: AppDispatchers
-    private lateinit var crudViewModel: CrudViewModel
+    private lateinit var crudPasswordViewModel: CrudPasswordViewModel
 
     private val testDispatchers = UnconfinedTestDispatcher()
 
@@ -67,7 +67,7 @@ class CrudViewModelTest {
         updatePasswordUseCase = mockk()
         deletePasswordUseCase = mockk()
         passwordGeneratorUseCase = mockk()
-        crudViewModel = CrudViewModel(
+        crudPasswordViewModel = CrudPasswordViewModel(
             pagingPassword = pagingPasswordUseCase,
             getPasswordBySiteName = getPasswordBySiteNameUseCase,
             addPassword = addPasswordUseCase,
@@ -95,8 +95,8 @@ class CrudViewModelTest {
     fun `add password successfully`() {
         runTest {
             coEvery { addPasswordUseCase.invoke(generatePassword()) } just runs
-            crudViewModel.passwordAddState.test {
-                crudViewModel.add(generatePassword())
+            crudPasswordViewModel.passwordAddState.test {
+                crudPasswordViewModel.add(generatePassword())
                 coVerify(exactly = 1) { addPasswordUseCase.invoke(generatePassword()) }
                 awaitItem() shouldBe AddPasswordState.Success
 
@@ -107,8 +107,8 @@ class CrudViewModelTest {
     @Test
     fun `add password fails, due to empty site name`() {
         runTest {
-            crudViewModel.passwordAddState.test {
-                crudViewModel.add(generatePassword().copy(siteName = ""))
+            crudPasswordViewModel.passwordAddState.test {
+                crudPasswordViewModel.add(generatePassword().copy(siteName = ""))
                 (awaitItem() as AddPasswordState.Failure).message shouldBeEqual "You must fill required fields."
             }
         }
@@ -118,8 +118,8 @@ class CrudViewModelTest {
     fun `update password successfully`() {
         runTest {
             coEvery { updatePasswordUseCase.invoke(generatePassword()) } just runs
-            crudViewModel.passwordAddState.test {
-                crudViewModel.update(generatePassword())
+            crudPasswordViewModel.passwordAddState.test {
+                crudPasswordViewModel.update(generatePassword())
                 coVerify(exactly = 1) { updatePasswordUseCase.invoke(generatePassword()) }
                 awaitItem() shouldBe AddPasswordState.Success
             }
@@ -129,8 +129,8 @@ class CrudViewModelTest {
     @Test
     fun `update password fails`() {
         runTest {
-            crudViewModel.passwordAddState.test {
-                crudViewModel.update(generatePassword().copy(siteName = ""))
+            crudPasswordViewModel.passwordAddState.test {
+                crudPasswordViewModel.update(generatePassword().copy(siteName = ""))
                 (awaitItem() as AddPasswordState.Failure).message shouldBeEqual "You must fill required fields."
             }
         }
@@ -141,8 +141,8 @@ class CrudViewModelTest {
         runTest {
             coEvery { getPasswordBySiteNameUseCase.invoke(generatePassword().id) } returns generatePassword()
             coEvery { deletePasswordUseCase.invoke(generatePassword()) } returns 1
-            crudViewModel.passwordDeleteState.test {
-                crudViewModel.delete(generatePassword().id)
+            crudPasswordViewModel.passwordDeleteState.test {
+                crudPasswordViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
                 awaitItem() shouldBe DeletePasswordState.Success
@@ -155,8 +155,8 @@ class CrudViewModelTest {
         runTest {
             coEvery { getPasswordBySiteNameUseCase.invoke(generatePassword().id) } returns generatePassword()
             coEvery { deletePasswordUseCase.invoke(generatePassword()) } returns 0
-            crudViewModel.passwordDeleteState.test {
-                crudViewModel.delete(generatePassword().id)
+            crudPasswordViewModel.passwordDeleteState.test {
+                crudPasswordViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
                 awaitItem() shouldBe DeletePasswordState.NotFound
@@ -169,8 +169,8 @@ class CrudViewModelTest {
     fun `delete password  getPasswordBySiteNameUseCase throw exception`() {
         runTest {
             coEvery { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }.throws(Exception())
-            crudViewModel.passwordDeleteState.test {
-                crudViewModel.delete(generatePassword().id)
+            crudPasswordViewModel.passwordDeleteState.test {
+                crudPasswordViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 awaitItem() shouldBe DeletePasswordState.Failure
             }
@@ -182,8 +182,8 @@ class CrudViewModelTest {
         runTest {
             coEvery { getPasswordBySiteNameUseCase.invoke(generatePassword().id) } returns generatePassword()
             coEvery { deletePasswordUseCase.invoke(generatePassword()) }.throws(Exception())
-            crudViewModel.passwordDeleteState.test {
-                crudViewModel.delete(generatePassword().id)
+            crudPasswordViewModel.passwordDeleteState.test {
+                crudPasswordViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
                 awaitItem() shouldBe DeletePasswordState.Failure
@@ -197,12 +197,12 @@ class CrudViewModelTest {
             coEvery { getPasswordBySiteNameUseCase.invoke(generatePassword().id) } returns generatePassword()
             coEvery { deletePasswordUseCase.invoke(generatePassword()) } returns 1
             coEvery { addPasswordUseCase.invoke(generatePassword()) } just runs
-            crudViewModel.passwordDeleteState.test {
-                crudViewModel.delete(generatePassword().id)
+            crudPasswordViewModel.passwordDeleteState.test {
+                crudPasswordViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
                 awaitItem() shouldBe DeletePasswordState.Success
-                crudViewModel.undoDelete()
+                crudPasswordViewModel.undoDelete()
                 awaitItem() shouldBe DeletePasswordState.Undo
             }
         }
@@ -214,13 +214,13 @@ class CrudViewModelTest {
             coEvery { getPasswordBySiteNameUseCase.invoke(generatePassword().id) } returns generatePassword()
             coEvery { deletePasswordUseCase.invoke(generatePassword()) } returns 1
             coEvery { addPasswordUseCase.invoke(generatePassword()) } just runs
-            crudViewModel.passwordDeleteState.test {
-                crudViewModel.delete(generatePassword().id)
+            crudPasswordViewModel.passwordDeleteState.test {
+                crudPasswordViewModel.delete(generatePassword().id)
                 coVerify(exactly = 1) { getPasswordBySiteNameUseCase.invoke(generatePassword().id) }
                 coVerify(exactly = 1) { deletePasswordUseCase.invoke(generatePassword()) }
                 awaitItem() shouldBe DeletePasswordState.Success
                 testDispatchers.scheduler.advanceTimeBy(4001)
-                crudViewModel.undoDelete()
+                crudPasswordViewModel.undoDelete()
                 awaitItem() shouldBe DeletePasswordState.Failure
             }
         }
@@ -239,10 +239,10 @@ class CrudViewModelTest {
             )
         } returns "aA44!^bV"
         runTest {
-            crudViewModel.passwordStateFlow.test {
+            crudPasswordViewModel.passwordStateFlow.test {
                 awaitItem().length shouldBe 0
 
-                crudViewModel.generate()
+                crudPasswordViewModel.generate()
                 verify(exactly = 1) {
                     passwordGeneratorUseCase(any(), any(), any(), any(), any(), any())
                 }
@@ -254,8 +254,8 @@ class CrudViewModelTest {
     @Test
     fun `updates query successfully`() {
         runTest {
-            crudViewModel.updateQuery("aa")
-            crudViewModel.queryFlow.test {
+            crudPasswordViewModel.updateQuery("aa")
+            crudPasswordViewModel.queryFlow.test {
                 awaitItem() shouldBeEqual "aa"
             }
         }
@@ -271,7 +271,7 @@ class CrudViewModelTest {
                 workerDispatcher = testDispatchers
             )
             every { pagingPasswordUseCase.invoke("") } returns flowOf(response)
-            crudViewModel.paging.test {
+            crudPasswordViewModel.paging.test {
                 val item = awaitItem()
                 test.submitData(item)
                 test.itemCount shouldBe 1
@@ -289,7 +289,7 @@ class CrudViewModelTest {
                 workerDispatcher = testDispatchers
             )
             every { pagingPasswordUseCase.invoke("") } returns flowOf(response)
-            crudViewModel.paging.test {
+            crudPasswordViewModel.paging.test {
                 val item = awaitItem()
                 test.submitData(item)
                 test.itemCount.shouldBeZero()

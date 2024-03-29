@@ -1,28 +1,40 @@
 package com.tek.card.presentation
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tek.database.domain.AddCardUseCase
+import com.tek.database.domain.UpdateCardUseCase
 import com.tek.database.model.Card
 import com.tek.network.domain.GetCardInformationUseCase
 import com.tek.util.AppDispatchers
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CardViewModel(
+class CrudCardViewModel(
+    private val addCard: AddCardUseCase,
+    private val updateCard: UpdateCardUseCase,
     private val getCardInformation: GetCardInformationUseCase,
     private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
-    private val _cards = mutableStateOf<CardState>(CardState.Initial)
-    val cards: State<CardState> get() = _cards
+    private val _cardState = MutableStateFlow<CardState>(CardState.Initial)
+    val cardState
+        get() = _cardState.asStateFlow()
+
+    private val _cardEffect = MutableSharedFlow<CardEffect>()
+    val cardEffect
+        get() = _cardEffect.asSharedFlow()
 
     init {
         viewModelScope.launch {
             delay(3000)
-            _cards.value = CardState.Loaded(
+            _cardState.value = CardState.Loaded(
                 data = listOf(
                     Card(
                         id = 0,
@@ -99,6 +111,62 @@ class CardViewModel(
 
         }
     }
+
+    internal fun add(card: Card) {
+        val exceptionHandler = CoroutineExceptionHandler { _, ex ->
+            viewModelScope.launch(appDispatchers.Main) {
+                _cardEffect.emit(
+                    CardEffect.Error(
+                        type = TYPE.ADD,
+                        message = ex.message.orEmpty()
+                    )
+                )
+            }
+        }
+        viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
+            addCard.invoke(card)
+            _cardEffect.emit(
+                CardEffect.Success(
+                    type = TYPE.ADD,
+                    message = "Successfully added!"
+                )
+            )
+        }
+    }
+
+    internal fun update(card: Card) {
+        val exceptionHandler = CoroutineExceptionHandler { _, ex ->
+            viewModelScope.launch(appDispatchers.Main) {
+                _cardEffect.emit(
+                    CardEffect.Error(
+                        type = TYPE.UPDATE,
+                        message = ex.message.orEmpty()
+                    )
+                )
+            }
+        }
+        viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
+            updateCard.invoke(card)
+            _cardEffect.emit(
+                CardEffect.Success(
+                    type = TYPE.UPDATE,
+                    message = "Successfully updated!"
+                )
+            )
+        }
+    }
+}
+
+sealed class CardEffect {
+    data class Success(val type: TYPE, val message: String) : CardEffect()
+    data class Error(val type: TYPE, val message: String) : CardEffect()
+
+}
+
+enum class TYPE {
+    ADD,
+    UPDATE,
+    DELETE
 }
 
 sealed class CardState {

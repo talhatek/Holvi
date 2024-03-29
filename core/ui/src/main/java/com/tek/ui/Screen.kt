@@ -8,16 +8,17 @@ import androidx.navigation.Navigator
 sealed class Screen(val route: String) {
     data object MenuScreen : Screen("menu")
     data object CardScreen : Screen("card")
-    data object PasswordScreen : Screen("password")
-    data object AllScreen : Screen("all")
-    data object AddScreen : Screen("add")
+    data object PasswordMenuScreen : Screen("password")
+    data object PasswordScreen : Screen("all")
+    data object AddPasswordScreen : Screen("add_password")
+    data object AddCardScreen : Screen("add_card")
     data object UpdateScreen : Screen("update")
     data object GenerateScreen : Screen("generate")
     data object PortScreen : Screen("port")
 }
 
 fun Screen.replaceWith(param: String, value: String) =
-    this.route.replace(oldValue = "{$param}", newValue = value)
+    route.replace(oldValue = "{$param}", newValue = value)
 
 fun NavController.navigateWithArgs(
     route: String,

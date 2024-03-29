@@ -23,7 +23,7 @@ fun PasswordMenuScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(top = it.calculateTopPadding()),
                 itemList = listOf(
-                    Screen.AllScreen,
+                    Screen.PasswordScreen,
                     Screen.GenerateScreen,
                     Screen.PortScreen,
                 )

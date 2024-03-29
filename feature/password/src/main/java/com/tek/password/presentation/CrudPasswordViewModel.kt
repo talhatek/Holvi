@@ -29,7 +29,7 @@ import kotlin.time.Duration.Companion.seconds
 
 
 @OptIn(FlowPreview::class)
-class CrudViewModel(
+class CrudPasswordViewModel(
     private val pagingPassword: PagingPasswordUseCase,
     private val getPasswordBySiteName: GetPasswordBySiteNameUseCase,
     private val addPassword: AddPasswordUseCase,

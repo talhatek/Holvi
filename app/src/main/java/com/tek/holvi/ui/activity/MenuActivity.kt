@@ -11,10 +11,10 @@ import androidx.navigation.compose.rememberNavController
 import com.tek.card.ui.CardScreen
 import com.tek.database.model.Password
 import com.tek.holvi.ui.MenuScreen
-import com.tek.password.ui.AddScreen
-import com.tek.password.ui.AllScreen
+import com.tek.password.ui.AddPasswordScreen
 import com.tek.password.ui.GenerateScreen
 import com.tek.password.ui.PasswordMenuScreen
+import com.tek.password.ui.PasswordScreen
 import com.tek.password.ui.PortScreen
 import com.tek.password.ui.UpdateScreen
 import com.tek.ui.HolviTheme
@@ -38,16 +38,17 @@ class MenuActivity : ComponentActivity() {
                                 this@MenuActivity.finish()
                             }
                         }
-                        composable(Screen.PasswordScreen.route) {
+                        composable(Screen.PasswordMenuScreen.route) {
                             PasswordMenuScreen(navController = navController)
                         }
                         composable(Screen.CardScreen.route) {
                             CardScreen(navController = navController)
                         }
-                        composable(Screen.AllScreen.route,
+                        composable(
+                            Screen.PasswordScreen.route,
                             enterTransition = {
                                 when (initialState.destination.route) {
-                                    Screen.AddScreen.route, Screen.UpdateScreen.route -> slideIntoContainer(
+                                    Screen.AddPasswordScreen.route, Screen.UpdateScreen.route -> slideIntoContainer(
                                         AnimatedContentTransitionScope.SlideDirection.Down,
                                         animationSpec = tween(700)
                                     )
@@ -57,7 +58,7 @@ class MenuActivity : ComponentActivity() {
                             },
                             exitTransition = {
                                 when (targetState.destination.route) {
-                                    Screen.AddScreen.route, Screen.UpdateScreen.route -> slideOutOfContainer(
+                                    Screen.AddPasswordScreen.route, Screen.UpdateScreen.route -> slideOutOfContainer(
                                         AnimatedContentTransitionScope.SlideDirection.Up,
                                         animationSpec = tween(700)
                                     )
@@ -66,9 +67,10 @@ class MenuActivity : ComponentActivity() {
                                 }
 
                             }) {
-                            AllScreen(navController = navController)
+                            PasswordScreen(navController = navController)
                         }
-                        composable(Screen.AddScreen.route,
+                        composable(
+                            Screen.AddPasswordScreen.route,
                             enterTransition = {
                                 slideIntoContainer(
                                     AnimatedContentTransitionScope.SlideDirection.Up,
@@ -81,7 +83,7 @@ class MenuActivity : ComponentActivity() {
                                     animationSpec = tween(700)
                                 )
                             }) {
-                            AddScreen(navController = navController)
+                            AddPasswordScreen(navController = navController)
                         }
                         composable(
                             route = Screen.UpdateScreen.route,

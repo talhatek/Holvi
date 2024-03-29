@@ -110,7 +110,7 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.tek.database.model.Password
-import com.tek.password.presentation.CrudViewModel
+import com.tek.password.presentation.CrudPasswordViewModel
 import com.tek.password.presentation.DeletePasswordState
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
@@ -125,17 +125,18 @@ import org.koin.androidx.compose.get
 import kotlin.math.abs
 
 @Composable
-fun AllScreen(navController: NavController) {
+fun PasswordScreen(navController: NavController) {
 
     val primaryColor = HolviTheme.colors.primaryBackground
-    val crudViewModel = get<CrudViewModel>()
-    val passwordDeleteState = crudViewModel.passwordDeleteState.collectAsState(initial = null).value
+    val crudPasswordViewModel = get<CrudPasswordViewModel>()
+    val passwordDeleteState =
+        crudPasswordViewModel.passwordDeleteState.collectAsState(initial = null).value
     val scope = rememberCoroutineScope()
     val snackbarController = SnackbarController(scope = scope)
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels
-    val paging = crudViewModel.paging.collectAsLazyPagingItems()
+    val paging = crudPasswordViewModel.paging.collectAsLazyPagingItems()
 
     val lazyListState = rememberLazyListState()
 
@@ -167,7 +168,7 @@ fun AllScreen(navController: NavController) {
                             duration = SnackbarDuration.Short
                         ).also { result ->
                             if (result == SnackbarResult.ActionPerformed) {
-                                crudViewModel.undoDelete()
+                                crudPasswordViewModel.undoDelete()
                             }
                         }
                     }
@@ -209,7 +210,7 @@ fun AllScreen(navController: NavController) {
                             fabPosition = it.positionInWindow()
                         }
                     },
-                onClick = { navController.navigate(Screen.AddScreen.route) },
+                onClick = { navController.navigate(Screen.AddPasswordScreen.route) },
                 shape = CircleShape,
                 containerColor = fabColorState.value
             ) {
@@ -232,7 +233,7 @@ fun AllScreen(navController: NavController) {
                     .padding(end = 16.dp, top = 16.dp, bottom = 16.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Search(viewModel = crudViewModel)
+                Search(viewModel = crudPasswordViewModel)
             }
 
             if (paging.itemCount == 0) {
@@ -282,7 +283,7 @@ fun AllScreen(navController: NavController) {
                                         }
                                     },
                                     onDelete = {
-                                        crudViewModel.delete(item.id)
+                                        crudPasswordViewModel.delete(item.id)
                                     },
                                     onUpdate = {
                                         navController.navigateWithArgs(
@@ -306,7 +307,7 @@ fun AllScreen(navController: NavController) {
 }
 
 @Composable
-fun Search(viewModel: CrudViewModel) {
+fun Search(viewModel: CrudPasswordViewModel) {
     var isExpanded by remember {
         mutableStateOf(false)
     }

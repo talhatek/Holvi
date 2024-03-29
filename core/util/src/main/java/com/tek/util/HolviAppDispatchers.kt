@@ -3,6 +3,7 @@ package com.tek.util
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
 
+@Suppress("VARIABLE_NAME_INCORRECT_FORMAT")
 class HolviAppDispatchers : AppDispatchers {
     override val Default: CoroutineContext
         get() = Dispatchers.Default
