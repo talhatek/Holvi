@@ -105,14 +105,10 @@ class CrudCardViewModel(
         }
     }
 
-    fun getBinInfo(bin: String) {
-        viewModelScope.launch(appDispatchers.IO) {
-            getCardInformation.invoke("456933")
+    private suspend fun getBinInfo(bin: String) = getCardInformation.invoke("456933")
 
-        }
-    }
 
-    internal fun add(card: Card) {
+    internal fun add(cardHolder: String, cardNumber: String, cvv: String, exp: String) {
         val exceptionHandler = CoroutineExceptionHandler { _, ex ->
             viewModelScope.launch(appDispatchers.Main) {
                 _cardEffect.emit(
@@ -124,7 +120,8 @@ class CrudCardViewModel(
             }
         }
         viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
-            addCard.invoke(card)
+            val info = getBinInfo(cardNumber.takeLast(6))
+
             _cardEffect.emit(
                 CardEffect.Success(
                     type = TYPE.ADD,

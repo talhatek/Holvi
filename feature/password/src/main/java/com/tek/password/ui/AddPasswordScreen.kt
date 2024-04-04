@@ -59,11 +59,10 @@ fun AddPasswordScreen(navController: NavController) {
                         )
                     }
                 }
-
-                else -> Unit
             }
         }
     }
+
     HolviScaffold(
         topBar = {
             TopAppBarBackWithLogo(navController = navController)

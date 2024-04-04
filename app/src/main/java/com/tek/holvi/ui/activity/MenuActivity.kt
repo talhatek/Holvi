@@ -8,7 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.tek.card.ui.CardScreen
+import com.tek.card.ui.AddCardScreen
 import com.tek.database.model.Password
 import com.tek.holvi.ui.MenuScreen
 import com.tek.password.ui.AddPasswordScreen
@@ -42,7 +42,7 @@ class MenuActivity : ComponentActivity() {
                             PasswordMenuScreen(navController = navController)
                         }
                         composable(Screen.CardScreen.route) {
-                            CardScreen(navController = navController)
+                            AddCardScreen(navController = navController)
                         }
                         composable(
                             Screen.PasswordScreen.route,
