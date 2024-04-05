@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,21 +31,40 @@ import androidx.compose.ui.text.input.getTextAfterSelection
 import androidx.compose.ui.text.input.getTextBeforeSelection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.tek.card.presentation.CardEffect
 import com.tek.card.presentation.CrudCardViewModel
 import com.tek.ui.HolviScaffold
 import com.tek.ui.HolviTheme
 import com.tek.ui.TopAppBarBackWithLogo
 import com.tek.ui.holviButtonColors
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 @Composable
 fun AddCardScreen(navController: NavController) {
     val crudCardViewModel = get<CrudCardViewModel>()
+
     var cardNumber by remember { mutableStateOf(TextFieldValue("")) }
     var cardHolderName by remember { mutableStateOf(TextFieldValue("")) }
     var cardCvv by remember { mutableStateOf(TextFieldValue("")) }
     var cardExp by remember { mutableStateOf(TextFieldValue("")) }
 
+    val snackState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(true) {
+        crudCardViewModel.cardEffect.collectLatest {
+            scope.launch {
+                snackState.showSnackbar(
+                    it.message
+                )
+            }
+            if (it is CardEffect.Success) {
+                cardNumber = TextFieldValue("")
+            }
+        }
+    }
     HolviScaffold(
         topBar = {
             TopAppBarBackWithLogo(navController = navController)
@@ -60,7 +83,34 @@ fun AddCardScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(.7f),
                 value = cardNumber,
                 label = "Card Number",
-                onValueChanged = { value -> cardNumber = value }
+                onValueChanged = { value ->
+                    if (remover(cardNumber.text, value.text)) {
+                        cardNumber = if (cardNumber.text.last() == ' ') {
+                            value.copy(
+                                text = value.text.dropLast(1),
+                                selection = TextRange(value.text.length.minus(1))
+                            )
+                        } else {
+                            value
+                        }
+                        return@Input
+                    }
+                    if (value.text.replace(" ", "").last().isDigit().not()) {
+                        return@Input
+                    }
+                    cardNumber = if ((value.text.replace(
+                            " ",
+                            ""
+                        ).length.mod(4) == 1) and (value.text.length > 1)
+                    ) {
+                        TextFieldValue(
+                            text = value.text.dropLast(1) + " " + value.text.last(),
+                            selection = TextRange(value.text.length.plus(1))
+                        )
+                    } else {
+                        value
+                    }
+                }
             )
 
             Input(
@@ -161,6 +211,9 @@ fun AddCardScreen(navController: NavController) {
                         value = cardCvv,
                         label = "Cvv",
                         onValueChanged = { value ->
+                            if (value.text.any { !it.isDigit() }) {
+                                return@Input
+                            }
                             if (value.text.length <= 3) {
                                 cardCvv = value
                             }
@@ -175,14 +228,17 @@ fun AddCardScreen(navController: NavController) {
                 colors = holviButtonColors(),
                 onClick = {
                     crudCardViewModel.add(
-                        cardHolder = cardHolderName.text,
-                        cardNumber = cardNumber.text,
+                        cardHolder = cardHolderName.text.trim(),
+                        cardNumber = cardNumber.text.replace(" ", ""),
                         cvv = cardCvv.text,
                         exp = cardExp.text
                     )
                 }) {
                 Text(text = "Add", style = HolviTheme.typography.body)
             }
+
+            SnackbarHost(hostState = snackState, Modifier)
+
         }
     }
 }

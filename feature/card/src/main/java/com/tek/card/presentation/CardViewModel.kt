@@ -1,111 +1,44 @@
 package com.tek.card.presentation
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tek.database.domain.AddCardUseCase
+import com.tek.database.domain.ObserveCardUseCase
 import com.tek.database.domain.UpdateCardUseCase
 import com.tek.database.model.Card
 import com.tek.network.domain.GetCardInformationUseCase
 import com.tek.util.AppDispatchers
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class CrudCardViewModel(
     private val addCard: AddCardUseCase,
+    private val observeCard: ObserveCardUseCase,
     private val updateCard: UpdateCardUseCase,
     private val getCardInformation: GetCardInformationUseCase,
     private val appDispatchers: AppDispatchers
 ) : ViewModel() {
 
-    private val _cardState = MutableStateFlow<CardState>(CardState.Initial)
+    @OptIn(ExperimentalCoroutinesApi::class)
     val cardState
-        get() = _cardState.asStateFlow()
+        get() = observeCard().onStart {
+            flowOf(CardState.Initial)
+        }.flatMapLatest {
+            flowOf(CardState.Loaded(it))
+        }
 
     private val _cardEffect = MutableSharedFlow<CardEffect>()
     val cardEffect
         get() = _cardEffect.asSharedFlow()
 
-    init {
-        viewModelScope.launch {
-            delay(3000)
-            _cardState.value = CardState.Loaded(
-                data = listOf(
-                    Card(
-                        id = 0,
-                        number = "1111 1111 1111 1111",
-                        exp = "04/24",
-                        cvv = "456",
-                        holderName = "Talha Tek",
-                        color = Color.Red
-                    ),
-                    Card(
-                        id = 0,
-                        number = "1111 1111 1111 1111",
-                        exp = "04/24",
-                        cvv = "456",
-                        holderName = "Talha Tek",
-                        color = Color.Yellow
-                    ),
-                    Card(
-                        id = 0,
-                        number = "1111 1111 1111 1111",
-                        exp = "04/24",
-                        cvv = "456",
-                        holderName = "Talha Tek",
-                        color = Color.Green
-                    ),
-                    Card(
-                        id = 0,
-                        number = "1111 1111 1111 1111",
-                        exp = "04/24",
-                        cvv = "456",
-                        holderName = "Talha Tek",
-                        color = Color.Cyan
-                    ),
-                    Card(
-                        id = 0,
-                        number = "1111 1111 1111 1111",
-                        exp = "04/24",
-                        cvv = "456",
-                        holderName = "Talha Tek",
-                        color = Color.Red
-                    ),
-                    Card(
-                        id = 0,
-                        number = "1111 1111 1111 1111",
-                        exp = "04/24",
-                        cvv = "456",
-                        holderName = "Talha Tek",
-                        color = Color.Yellow
-                    ),
-                    Card(
-                        id = 0,
-                        number = "1111 1111 1111 1111",
-                        exp = "04/24",
-                        cvv = "456",
-                        holderName = "Talha Tek",
-                        color = Color.Green
-                    ),
-                    Card(
-                        id = 0,
-                        number = "1111 1111 1111 1111",
-                        exp = "04/24",
-                        cvv = "456",
-                        holderName = "Talha Tek",
-                        color = Color.Cyan
-                    ),
-                )
-            )
-        }
-    }
 
-    private suspend fun getBinInfo(bin: String) = getCardInformation.invoke("456933")
+    private suspend fun getBinInfo(bin: String) = getCardInformation.invoke(bin)
 
 
     internal fun add(cardHolder: String, cardNumber: String, cvv: String, exp: String) {
@@ -120,7 +53,32 @@ class CrudCardViewModel(
             }
         }
         viewModelScope.launch(appDispatchers.IO + exceptionHandler) {
+            if (!isValidated(cardHolder, cardNumber, cvv, exp)) {
+                _cardEffect.emit(
+                    CardEffect.Error(
+                        type = TYPE.ADD,
+                        message = "Make sure you are not missing any information!"
+                    )
+                )
+            }
+            _cardEffect.emit(
+                CardEffect.Info(
+                    type = TYPE.ADD,
+                    message = "In progress..."
+                )
+            )
             val info = getBinInfo(cardNumber.takeLast(6))
+            // TODO: fetch somehow bank colors and icon
+            addCard.invoke(
+                number = cardNumber,
+                exp = exp,
+                cvv = cvv,
+                holder = cardHolder,
+                company = info.company.orEmpty(),
+                provider = info.cardProvider?.name.orEmpty(),
+                cardColor = "ff212529",
+                textColor = "ffE5E4E2"
+            )
 
             _cardEffect.emit(
                 CardEffect.Success(
@@ -129,6 +87,16 @@ class CrudCardViewModel(
                 )
             )
         }
+    }
+
+    private fun isValidated(
+        cardHolder: String,
+        cardNumber: String,
+        cvv: String,
+        exp: String
+    ): Boolean {
+        return cardHolder.isNotBlank() and (cardNumber.length >= 2) and (cvv.length == 3) and (exp.length == 5) and (exp[2] == '/') and
+                (exp.replace("/", "").all { it.isDigit() })
     }
 
     internal fun update(card: Card) {
@@ -154,9 +122,15 @@ class CrudCardViewModel(
     }
 }
 
-sealed class CardEffect {
-    data class Success(val type: TYPE, val message: String) : CardEffect()
-    data class Error(val type: TYPE, val message: String) : CardEffect()
+sealed class CardEffect(open val type: TYPE, open val message: String) {
+    data class Success(override val type: TYPE, override val message: String) :
+        CardEffect(type, message)
+
+    data class Info(override val type: TYPE, override val message: String) :
+        CardEffect(type, message)
+
+    data class Error(override val type: TYPE, override val message: String) :
+        CardEffect(type, message)
 
 }
 

@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tek.card.R
 import com.tek.database.model.Card
+import com.tek.network.model.CardProvider
 import com.tek.ui.HolviTheme
 
 @Composable
@@ -120,24 +121,26 @@ fun CardContent(card: Card) {
     Column(
         modifier = Modifier
             .size(DpSize(400.dp, 200.dp))
-            .background(card.color, RoundedCornerShape(16.0.dp))
+            .background(card.cardColor, RoundedCornerShape(16.0.dp))
             .padding(horizontal = 16.dp)
             .padding(bottom = 8.dp)
             .clipToBounds(),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Icon(
+        Text(
             modifier = Modifier
-                .size(64.dp)
-                .align(Alignment.End),
-            painter = painterResource(id = R.drawable.wise),
-            contentDescription = "bank_icon"
+                .align(Alignment.End)
+                .padding(all = 12.dp),
+            text = card.company,
+            color = card.textColor,
+            style = HolviTheme.typography.title.copy(letterSpacing = 12.sp)
         )
 
         Spacer(modifier = Modifier.wrapContentSize())
 
         Text(
             text = card.number,
+            color = card.textColor,
             style = HolviTheme.typography.title.copy(letterSpacing = 12.sp)
         )
 
@@ -152,13 +155,22 @@ fun CardContent(card: Card) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.Start)
                 ) {
-                    Text(text = "07/2027", style = HolviTheme.typography.body)
+                    Text(
+                        text = card.exp,
+                        color = card.textColor,
+                        style = HolviTheme.typography.body
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = "033", style = HolviTheme.typography.body)
+                    Text(
+                        text = card.cvv,
+                        color = card.textColor,
+                        style = HolviTheme.typography.body
+                    )
 
                 }
                 Text(
-                    text = card.holderName,
+                    text = card.holder,
+                    color = card.textColor,
                     style = HolviTheme.typography.body.copy(letterSpacing = 3.sp)
                 )
 
@@ -166,9 +178,17 @@ fun CardContent(card: Card) {
 
             Icon(
                 modifier = Modifier.size(48.dp),
-                painter = painterResource(id = R.drawable.visa),
-                contentDescription = "payment_icon"
+                painter = painterResource(id = providerResource(CardProvider.valueOf(card.provider))),
+                contentDescription = "payment_icon",
+                tint = card.textColor,
             )
         }
+    }
+}
+
+fun providerResource(provider: CardProvider): Int {
+    return when (provider) {
+        CardProvider.VISA -> R.drawable.visa
+        CardProvider.MASTER -> R.drawable.master
     }
 }

@@ -9,6 +9,9 @@ data class Card(
     val number: String,
     val exp: String,
     val cvv: String,
-    val holderName: String,
-    val color: Color
+    val holder: String,
+    val provider: String,
+    val company: String,
+    val cardColor: Color,
+    val textColor: Color
 )

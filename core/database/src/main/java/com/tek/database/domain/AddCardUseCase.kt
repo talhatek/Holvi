@@ -2,22 +2,31 @@ package com.tek.database.domain
 
 import com.tek.database.dao.CardDao
 import com.tek.database.data.CardDto
-import com.tek.database.model.Card
 
 class AddCardUseCase(private val cardDao: CardDao) {
 
-    suspend operator fun invoke(card: Card) {
+    suspend operator fun invoke(
+        number: String,
+        holder: String,
+        exp: String,
+        cvv: String,
+        company: String,
+        provider: String,
+        cardColor: String,
+        textColor: String
+    ) {
         cardDao.addCard(
-            with(card) {
-                CardDto(
-                    id = 0,
-                    cardNumber = number,
-                    cardHolder = holderName,
-                    expiration = exp,
-                    cvv = cvv,
-                    color = color.value
-                )
-            }
+            CardDto(
+                id = 0,
+                number = number,
+                holder = holder,
+                expiration = exp,
+                cvv = cvv,
+                company = company,
+                provider = provider,
+                color = cardColor,
+                textColor = textColor
+            )
         )
     }
 }

@@ -7,14 +7,18 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.tek.database.HolviDb
+import com.tek.database.domain.AddCardUseCase
 import com.tek.database.domain.AddEncryptedPasswordUseCase
 import com.tek.database.domain.AddPasswordUseCase
 import com.tek.database.domain.DeletePasswordUseCase
 import com.tek.database.domain.GetAllPasswordsUseCase
 import com.tek.database.domain.GetPasswordBySiteNameUseCase
+import com.tek.database.domain.ObserveCardUseCase
 import com.tek.database.domain.ObservePasswordUseCase
 import com.tek.database.domain.PagingPasswordUseCase
+import com.tek.database.domain.UpdateCardUseCase
 import com.tek.database.domain.UpdatePasswordUseCase
+import com.tek.database.domain.mapper.CardDtoToCardMapper
 import com.tek.database.domain.mapper.PasswordDtoToPasswordMapper
 import com.tek.util.Constant
 import com.tek.util.Constant.DATA_STORE_REGISTRATION_DEFAULT_KEY
@@ -36,6 +40,9 @@ val localDatabaseModule = module {
     single {
         get<HolviDb>().passwordDao
     }
+    single {
+        get<HolviDb>().cardDao
+    }
 
     single<SupportSQLiteOpenHelper.Factory> {
         return@single SupportFactory(SQLiteDatabase.getBytes(getSq(androidApplication()).toCharArray()))
@@ -45,6 +52,9 @@ val localDatabaseModule = module {
         getDataStore(androidApplication())
     }
 
+    factory { AddCardUseCase(get()) }
+    factory { ObserveCardUseCase(get(), CardDtoToCardMapper()) }
+    factory { UpdateCardUseCase(get()) }
 
     factoryOf(::PagingPasswordUseCase)
     factoryOf(::AddPasswordUseCase)

@@ -11,11 +11,14 @@ class UpdateCardUseCase(private val cardDao: CardDao) {
             with(card) {
                 CardDto(
                     id = 0,
-                    cardNumber = number,
-                    cardHolder = holderName,
+                    number = number,
+                    holder = holder,
                     expiration = exp,
                     cvv = cvv,
-                    color = color.value
+                    company = company,
+                    provider = provider,
+                    color = cardColor.value.toString(),
+                    textColor = textColor.value.toString()
                 )
             }
         )

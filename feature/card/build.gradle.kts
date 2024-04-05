@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(project(":core:database"))
     implementation(project(":core:ui"))
