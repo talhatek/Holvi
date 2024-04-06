@@ -112,6 +112,10 @@ private val poppinsRegular = FontFamily(
     Font(R.font.poppins_regular, FontWeight.Normal)
 )
 
+private val credCRegular = FontFamily(
+    Font(R.font.credc, FontWeight.Normal)
+)
+
 data class AppTypography(
     val largestHeader: TextStyle = TextStyle(
         fontFamily = poppinsBold,
@@ -121,6 +125,11 @@ data class AppTypography(
     val title: TextStyle = TextStyle(
         fontFamily = poppinsSemiBold,
         fontSize = 16.sp
+    ),
+    val card: TextStyle = TextStyle(
+        fontFamily = credCRegular,
+        fontSize = 12.sp,
+        letterSpacing = 8.sp
     ),
     val body: TextStyle = TextStyle(
         fontFamily = poppinsRegular,

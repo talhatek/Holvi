@@ -82,6 +82,7 @@ fun AddCardScreen(navController: NavController) {
             Input(
                 modifier = Modifier.fillMaxWidth(.7f),
                 value = cardNumber,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = "Card Number",
                 onValueChanged = { value ->
                     if (remover(cardNumber.text, value.text)) {
@@ -116,7 +117,6 @@ fun AddCardScreen(navController: NavController) {
             Input(
                 modifier = Modifier.fillMaxWidth(.7f),
                 value = cardHolderName,
-
                 label = "Card Holder Name",
                 onValueChanged = { value -> cardHolderName = value }
             )
