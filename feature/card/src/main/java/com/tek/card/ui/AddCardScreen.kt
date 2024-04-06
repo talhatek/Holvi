@@ -96,20 +96,27 @@ fun AddCardScreen(navController: NavController) {
                         }
                         return@Input
                     }
-                    if (value.text.replace(" ", "").last().isDigit().not()) {
+                    if (value.text.noWhiteSpaces().any { !it.isDigit() }) {
                         return@Input
                     }
-                    cardNumber = if ((value.text.replace(
-                            " ",
-                            ""
-                        ).length.mod(4) == 1) and (value.text.length > 1)
-                    ) {
-                        TextFieldValue(
-                            text = value.text.dropLast(1) + " " + value.text.last(),
-                            selection = TextRange(value.text.length.plus(1))
-                        )
+                    if (singleInput(cardNumber.text, value.text)) {
+                        cardNumber = if (
+                            (value.text.noWhiteSpaces().length.mod(4) == 1) and
+                            (value.text.length > 1)
+                        ) {
+                            TextFieldValue(
+                                text = value.text.dropLast(1) + " " + value.text.last(),
+                                selection = TextRange(value.text.length.plus(1))
+                            )
+                        } else {
+                            value
+                        }
                     } else {
-                        value
+                        val newText = value.text.chunked(4).joinToString(separator = " ")
+                        cardNumber = TextFieldValue(
+                            text = newText,
+                            selection = TextRange(newText.length)
+                        )
                     }
                 }
             )
@@ -229,7 +236,7 @@ fun AddCardScreen(navController: NavController) {
                 onClick = {
                     crudCardViewModel.add(
                         cardHolder = cardHolderName.text.trim(),
-                        cardNumber = cardNumber.text.replace(" ", ""),
+                        cardNumber = cardNumber.text.noWhiteSpaces(),
                         cvv = cardCvv.text,
                         exp = cardExp.text
                     )
@@ -246,6 +253,15 @@ fun AddCardScreen(navController: NavController) {
 private fun remover(oldValue: String, newValue: String): Boolean {
     return oldValue.length > newValue.length
 }
+
+private fun singleInput(oldValue: String, newValue: String): Boolean {
+    return newValue.length == oldValue.length.plus(1)
+}
+
+private fun String.noWhiteSpaces(): String {
+    return this.replace(" ", "")
+}
+
 
 private fun insertText(textFieldValue: TextFieldValue, insertText: String): TextFieldValue {
     val maxChars = textFieldValue.text.length
