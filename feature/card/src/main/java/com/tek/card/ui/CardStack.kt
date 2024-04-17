@@ -239,7 +239,8 @@ fun CardContent(card: Card, isEvenIndex: Boolean) {
 
 fun providerResource(provider: CardProvider): Int {
     return when (provider) {
-        CardProvider.VISA -> R.drawable.visa
         CardProvider.MASTER -> R.drawable.master
+        else -> R.drawable.visa
+
     }
 }

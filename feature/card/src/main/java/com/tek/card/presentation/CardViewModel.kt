@@ -126,7 +126,11 @@ sealed class CardEffect(open val type: TYPE, open val message: String) {
     data class Success(override val type: TYPE, override val message: String) :
         CardEffect(type, message)
 
-    data class Info(override val type: TYPE, override val message: String) :
+    data class Info(
+        override val type: TYPE,
+        override val message: String,
+        val action: ACTION? = null
+    ) :
         CardEffect(type, message)
 
     data class Error(override val type: TYPE, override val message: String) :
@@ -139,6 +143,11 @@ enum class TYPE {
     UPDATE,
     DELETE
 }
+
+enum class ACTION {
+    ADDITIONAL_INFO
+}
+
 
 sealed class CardState {
 

@@ -36,29 +36,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDate
-
-fun main() {
-    fun generateMonthlyExpirationDates(
-        startYear: Int = 2024,
-        endYear: Int = 2025
-    ): Sequence<String> {
-        val currentMonth = LocalDate.now().monthValue
-
-        return generateSequence(startYear) { it + 1 }
-            .takeWhile { it <= endYear }
-            .flatMap { year ->
-                generateSequence(
-                    if (year == startYear) currentMonth else 1
-                ) { it + 1 }
-                    .takeWhile { it <= 12 }
-                    .map { month -> "%02d/%d".format(month, year) }
-            }
-    }
-    generateMonthlyExpirationDates().forEach {
-        println(it)
-    }
-}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CrudPasswordViewModelTest {
@@ -318,5 +295,4 @@ class CrudPasswordViewModelTest {
             }
         }
     }
-
 }
